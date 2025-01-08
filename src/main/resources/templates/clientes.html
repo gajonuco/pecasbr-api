@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <title>Clientes</title>
+</head>
+<body class="container mt-5">
+    <h2 class="text-center mb-4">Gestão de Clientes</h2>
+    <form id="cliente-form">
+        <div class="form-group mb-3">
+            <label for="nome">Nome</label>
+            <input type="text" class="form-control" id="nome" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="telefone">Telefone</label>
+            <input type="tel" class="form-control" id="telefone" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+    </form>
+    <div class="mt-5">
+        <h3>Lista de Clientes</h3>
+        <ul id="clientes-list" class="list-group"></ul>
+    </div>
+    <script src="/js/cliente.js"></script>
+</body>
+</html>
