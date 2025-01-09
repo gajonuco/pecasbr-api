@@ -3,11 +3,16 @@ package com.sistema_restful.oficina_mecanica.controller;
 import com.sistema_restful.oficina_mecanica.model.Cliente;
 import com.sistema_restful.oficina_mecanica.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -16,24 +21,39 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    // Cadastrar um cliente
     @PostMapping
-    public ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente) {
-        Cliente clienteSalvo = clienteService.salvarCliente(cliente);
-        return new ResponseEntity<>(clienteSalvo, HttpStatus.CREATED);
+    public ResponseEntity<Object> cadastrarCliente(@Valid @RequestBody Cliente cliente) {
+        try {
+            Cliente clienteSalvo = clienteService.salvarCliente(cliente);
+            return ResponseEntity.status(HttpStatus.CREATED).body(clienteSalvo);
+        } catch (IllegalArgumentException ex) {
+            // Retorna uma mensagem detalhada para erros de validação ou lógica de negócio
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", HttpStatus.BAD_REQUEST.value(),
+                    "erro", "Requisição inválida",
+                    "mensagem", ex.getMessage(),
+                    "timestamp", System.currentTimeMillis()
+            ));
+        } catch (Exception ex) {
+            // Retorna uma mensagem detalhada para erros inesperados
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "erro", "Erro interno no servidor",
+                    "mensagem", "Ocorreu um erro inesperado ao processar sua requisição. Tente novamente mais tarde.",
+                    "timestamp", System.currentTimeMillis()
+            ));
+        }
     }
 
-    // Cadastrar múltiplos clientes
-    @PostMapping("/batch")
-    public ResponseEntity<List<Cliente>> cadastrarClientes(@RequestBody List<Cliente> clientes) {
-        List<Cliente> clientesSalvos = clienteService.salvarClientes(clientes);
-        return new ResponseEntity<>(clientesSalvos, HttpStatus.CREATED);
-    }
 
-    // Listar todos os clientes
     @GetMapping
-    public List<Cliente> listarClientes() {
-        return clienteService.listarClientes();
+    public ResponseEntity<Page<Cliente>> listarClientes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nome") String sortBy
+    ) {
+        Page<Cliente> clientes = clienteService.listarClientes(page, size, sortBy);
+        return ResponseEntity.ok(clientes);
     }
 
     // Listar clientes específicos por IDs
@@ -43,13 +63,6 @@ public class ClienteController {
         return new ResponseEntity<>(clientes, HttpStatus.OK);
     }
 
-    // Buscar um cliente específico por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
-        return clienteService.buscarClientePorId(id)
-                .map(cliente -> new ResponseEntity<>(cliente, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
 
     // Atualizar um cliente pelo ID
     @PutMapping("/{id}")
