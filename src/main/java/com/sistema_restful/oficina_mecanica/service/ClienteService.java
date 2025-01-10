@@ -5,13 +5,14 @@ import com.sistema_restful.oficina_mecanica.model.Endereco;
 import com.sistema_restful.oficina_mecanica.repo.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClienteService {
@@ -80,10 +81,26 @@ public class ClienteService {
         return clienteRepository.findAll(pageable);
     }
 
-    // Listar clientes específicos por lista de IDs
     public List<Cliente> listarClientesEspecificos(List<Long> ids) {
-        return clienteRepository.findAllById(ids);
+        // Busca os clientes pelos IDs fornecidos
+        List<Cliente> clientes = clienteRepository.findClientesByIds(ids);
+
+        // Valida se todos os IDs fornecidos foram encontrados
+        if (clientes.size() != ids.size()) {
+            List<Long> idsEncontrados = clientes.stream()
+                    .map(Cliente::getId)
+                    .toList();
+            List<Long> idsNaoEncontrados = ids.stream()
+                    .filter(id -> !idsEncontrados.contains(id))
+                    .toList();
+
+            throw new IllegalArgumentException("IDs não encontrados: " + idsNaoEncontrados);
+        }
+
+        return clientes;
     }
+
+
 
     // Atualizar cliente
     public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {

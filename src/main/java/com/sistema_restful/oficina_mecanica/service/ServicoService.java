@@ -3,6 +3,8 @@ package com.sistema_restful.oficina_mecanica.service;
 import com.sistema_restful.oficina_mecanica.model.Servico;
 import com.sistema_restful.oficina_mecanica.repo.ServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,24 +16,34 @@ public class ServicoService {
     @Autowired
     private ServicoRepository servicoRepository;
 
-    // Salvar um serviço
+    // Salvar um serviço com validações de negócios
     public Servico salvarServico(Servico servico) {
+        if (servico.getPreco() != null && servico.getPreco() < 50.0) {
+            throw new IllegalArgumentException("O preço mínimo para um serviço é R$50.00.");
+        }
+
         return servicoRepository.save(servico);
     }
 
-    // Salvar múltiplos serviços
-    public List<Servico> salvarServicos(List<Servico> servicos) {
-        return servicoRepository.saveAll(servicos);
+
+    // Listar todos os serviços com paginação e ordenação
+    public Page<Servico> listarServicos(Pageable pageable) {
+        return servicoRepository.findAll(pageable);
     }
 
-    // Listar todos os serviços
-    public List<Servico> listarServicos() {
-        return servicoRepository.findAll();
-    }
-
-    // Listar serviços específicos por uma lista de IDs
+    // Listar serviços específicos por lista de IDs com validações
     public List<Servico> listarServicosEspecificos(List<Long> ids) {
-        return servicoRepository.findAllById(ids);
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("A lista de IDs não pode ser vazia ou nula.");
+        }
+
+        List<Servico> servicos = servicoRepository.findAllById(ids);
+
+        if (servicos.size() != ids.size()) {
+            throw new IllegalArgumentException("Alguns IDs fornecidos não correspondem a serviços existentes.");
+        }
+
+        return servicos;
     }
 
     // Buscar serviço por ID

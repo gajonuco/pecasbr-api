@@ -3,6 +3,8 @@ package com.sistema_restful.oficina_mecanica.service;
 import com.sistema_restful.oficina_mecanica.model.Peca;
 import com.sistema_restful.oficina_mecanica.repo.PecaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,31 +16,39 @@ public class PecaService {
     @Autowired
     private PecaRepository pecaRepository;
 
-    // Salvar uma peça
     public Peca salvarPeca(Peca peca) {
+        if (peca.getNome() == null || peca.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome da peça é obrigatório.");
+        }
+        if (peca.getPreco() == null || peca.getPreco() <= 0) {
+            throw new IllegalArgumentException("O preço da peça deve ser maior que zero.");
+        }
         return pecaRepository.save(peca);
     }
 
-    // Salvar múltiplas peças
-    public List<Peca> salvarPecas(List<Peca> pecas) {
-        return pecaRepository.saveAll(pecas);
-    }
 
-    // Listar todas as peças
-    public List<Peca> listarPecas() {
-        return pecaRepository.findAll();
+    // Listar todas as peças com paginação e ordenação
+    public Page<Peca> listarPecas(Pageable pageable) {
+        return pecaRepository.findAll(pageable);
     }
 
     // Listar peças específicas por lista de IDs
     public List<Peca> listarPecasEspecificas(List<Long> ids) {
-        return pecaRepository.findAllById(ids);
-    }
+        List<Peca> pecas = pecaRepository.findAllById(ids);
 
-    // Buscar peça por ID
-    public Optional<Peca> buscarPecaPorId(Long id) {
-        return pecaRepository.findById(id);
-    }
+        // Valida se todos os IDs foram encontrados
+        if (pecas.size() != ids.size()) {
+            List<Long> idsEncontrados = pecas.stream()
+                    .map(Peca::getId)
+                    .toList();
+            List<Long> idsNaoEncontrados = ids.stream()
+                    .filter(id -> !idsEncontrados.contains(id))
+                    .toList();
+            throw new IllegalArgumentException("IDs não encontrados: " + idsNaoEncontrados);
+        }
 
+        return pecas;
+    }
     // Atualizar uma peça pelo ID
     public Peca atualizarPeca(Long id, Peca pecaAtualizada) {
         return pecaRepository.findById(id).map(peca -> {

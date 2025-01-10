@@ -56,12 +56,24 @@ public class ClienteController {
         return ResponseEntity.ok(clientes);
     }
 
-    // Listar clientes específicos por IDs
     @PostMapping("/especificos")
-    public ResponseEntity<List<Cliente>> listarClientesEspecificos(@RequestBody List<Long> ids) {
+    public ResponseEntity<Object> listarClientesEspecificos(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "erro", "A lista de IDs não pode ser nula ou vazia."
+            ));
+        }
+
         List<Cliente> clientes = clienteService.listarClientesEspecificos(ids);
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+        if (clientes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "erro", "Nenhum cliente foi encontrado com os IDs fornecidos."
+            ));
+        }
+
+        return ResponseEntity.ok(clientes);
     }
+
 
 
     // Atualizar um cliente pelo ID
