@@ -83,10 +83,4 @@ public class ServicoController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Excluir múltiplos serviços
-    @DeleteMapping("/batch")
-    public ResponseEntity<Void> deletarServicos(@RequestBody List<Long> ids) {
-        servicoService.deletarServicos(ids);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

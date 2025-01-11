@@ -63,8 +63,4 @@ public class PecaService {
         pecaRepository.deleteById(id);
     }
 
-    // Excluir múltiplas peças por lista de IDs
-    public void deletarPecas(List<Long> ids) {
-        pecaRepository.deleteAllById(ids);
-    }
 }

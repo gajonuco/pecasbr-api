@@ -139,10 +139,6 @@ public class OrcamentoService {
         orcamentoRepository.deleteById(id);
     }
 
-    public void deletarOrcamentos(List<Long> ids) {
-        orcamentoRepository.deleteAllById(ids);
-    }
-
     private Orcamento processarOrcamento(OrcamentoDTO orcamentoDTO, Orcamento orcamento) {
         // Obter o cliente pelo ID
         Cliente cliente = clienteRepository.findById(orcamentoDTO.getClienteId())

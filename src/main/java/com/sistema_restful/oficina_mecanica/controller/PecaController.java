@@ -85,10 +85,4 @@ public class PecaController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Excluir múltiplas peças
-    @DeleteMapping("/batch")
-    public ResponseEntity<Void> deletarPecas(@RequestBody List<Long> ids) {
-        pecaService.deletarPecas(ids);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

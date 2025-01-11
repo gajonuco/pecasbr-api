@@ -89,10 +89,4 @@ public class ClienteController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Excluir múltiplos clientes
-    @DeleteMapping("/batch")
-    public ResponseEntity<Void> deletarClientes(@RequestBody List<Long> ids) {
-        clienteService.deletarClientes(ids);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

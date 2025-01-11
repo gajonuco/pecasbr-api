@@ -75,7 +75,6 @@ public class ClienteService {
     }
 
 
-
     public Page<Cliente> listarClientes(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return clienteRepository.findAll(pageable);
@@ -101,7 +100,6 @@ public class ClienteService {
     }
 
 
-
     // Atualizar cliente
     public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {
         return clienteRepository.findById(id).map(cliente -> {
@@ -117,8 +115,4 @@ public class ClienteService {
         clienteRepository.deleteById(id);
     }
 
-    // Excluir múltiplos clientes por lista de IDs
-    public void deletarClientes(List<Long> ids) {
-        clienteRepository.deleteAllById(ids);
-    }
 }

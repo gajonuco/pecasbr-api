@@ -65,8 +65,5 @@ public class ServicoService {
         servicoRepository.deleteById(id);
     }
 
-    // Excluir múltiplos serviços por lista de IDs
-    public void deletarServicos(List<Long> ids) {
-        servicoRepository.deleteAllById(ids);
-    }
+
 }

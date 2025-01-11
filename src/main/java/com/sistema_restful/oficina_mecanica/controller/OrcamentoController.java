@@ -61,10 +61,4 @@ public class OrcamentoController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Excluir múltiplos orçamentos
-    @DeleteMapping("/batch")
-    public ResponseEntity<Void> deletarOrcamentos(@RequestBody List<Long> ids) {
-        orcamentoService.deletarOrcamentos(ids);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }
