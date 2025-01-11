@@ -1,6 +1,7 @@
 package com.sistema_restful.oficina_mecanica.controller;
 
 import com.sistema_restful.oficina_mecanica.dto.OrcamentoDTO;
+import com.sistema_restful.oficina_mecanica.dto.OrcamentoResponseDTO;
 import com.sistema_restful.oficina_mecanica.model.Orcamento;
 import com.sistema_restful.oficina_mecanica.service.OrcamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orcamentos")
@@ -17,40 +19,33 @@ public class OrcamentoController {
     @Autowired
     private OrcamentoService orcamentoService;
 
-    // Cadastrar um orçamento
     @PostMapping
-    public ResponseEntity<Orcamento> salvarOrcamento(@RequestBody OrcamentoDTO orcamentoDTO) {
-        Orcamento novoOrcamento = orcamentoService.salvarOrcamento(orcamentoDTO);
-        return new ResponseEntity<>(novoOrcamento, HttpStatus.CREATED);
-    }
-
-    // Cadastrar múltiplos orçamentos
-    @PostMapping("/batch")
-    public ResponseEntity<List<Orcamento>> salvarOrcamentos(@RequestBody List<OrcamentoDTO> orcamentosDTO) {
-        List<Orcamento> orcamentosSalvos = orcamentoService.salvarOrcamentos(orcamentosDTO);
-        return new ResponseEntity<>(orcamentosSalvos, HttpStatus.CREATED);
+    public ResponseEntity<Object> salvarOrcamento(@RequestBody OrcamentoDTO orcamentoDTO) {
+        try {
+            OrcamentoResponseDTO orcamento = orcamentoService.salvarOrcamento(orcamentoDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(orcamento);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "erro", "Dados inválidos",
+                    "mensagem", ex.getMessage()
+            ));
+        }
     }
 
     // Listar todos os orçamentos
     @GetMapping
-    public List<Orcamento> listarOrcamentos() {
-        return orcamentoService.listarOrcamentos();
+    public ResponseEntity<List<OrcamentoResponseDTO>> listarOrcamentos() {
+        List<OrcamentoResponseDTO> orcamentos = orcamentoService.listarOrcamentos();
+        return ResponseEntity.ok(orcamentos);
     }
 
     // Listar orçamentos específicos por uma lista de IDs
     @PostMapping("/especificos")
-    public ResponseEntity<List<Orcamento>> listarOrcamentosEspecificos(@RequestBody List<Long> ids) {
-        List<Orcamento> orcamentos = orcamentoService.listarOrcamentosEspecificos(ids);
-        return new ResponseEntity<>(orcamentos, HttpStatus.OK);
+    public ResponseEntity<List<OrcamentoResponseDTO>> listarOrcamentosEspecificos(@RequestBody List<Long> ids) {
+        List<OrcamentoResponseDTO> orcamentos = orcamentoService.listarOrcamentosEspecificos(ids);
+        return ResponseEntity.ok(orcamentos);
     }
 
-    // Buscar um orçamento específico por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Orcamento> buscarOrcamentoPorId(@PathVariable Long id) {
-        return orcamentoService.buscarOrcamentoPorId(id)
-                .map(orcamento -> new ResponseEntity<>(orcamento, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
 
     // Atualizar um orçamento por ID
     @PutMapping("/{id}")
