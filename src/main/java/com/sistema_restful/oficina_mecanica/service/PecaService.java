@@ -1,5 +1,6 @@
 package com.sistema_restful.oficina_mecanica.service;
 
+import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Peca;
 import com.sistema_restful.oficina_mecanica.repo.PecaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,17 +50,25 @@ public class PecaService {
 
         return pecas;
     }
-    // Atualizar uma peça pelo ID
     public Peca atualizarPeca(Long id, Peca pecaAtualizada) {
-        return pecaRepository.findById(id).map(peca -> {
-            peca.setNome(pecaAtualizada.getNome());
-            peca.setPreco(pecaAtualizada.getPreco());
-            return pecaRepository.save(peca);
-        }).orElseThrow(() -> new RuntimeException("Peça não encontrada"));
+        Peca pecaExistente = pecaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Peça com ID " + id + " não encontrada."));
+
+        if (pecaAtualizada.getNome() != null && !pecaAtualizada.getNome().trim().isEmpty()) {
+            pecaExistente.setNome(pecaAtualizada.getNome());
+        }
+
+        if (pecaAtualizada.getPreco() != null && pecaAtualizada.getPreco() > 0) {
+            pecaExistente.setPreco(pecaAtualizada.getPreco());
+        }
+
+        return pecaRepository.save(pecaExistente);
     }
 
-    // Excluir uma peça pelo ID
     public void deletarPeca(Long id) {
+        if (!pecaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Peça com ID " + id + " não encontrada.");
+        }
         pecaRepository.deleteById(id);
     }
 

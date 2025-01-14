@@ -72,17 +72,17 @@ public class PecaController {
 
 
 
-    // Atualizar uma peça pelo ID
+    // Controller layer
     @PutMapping("/{id}")
     public ResponseEntity<Peca> atualizarPeca(@PathVariable Long id, @RequestBody Peca peca) {
-        return new ResponseEntity<>(pecaService.atualizarPeca(id, peca), HttpStatus.OK);
+        Peca pecaAtualizada = pecaService.atualizarPeca(id, peca);
+        return ResponseEntity.ok(pecaAtualizada);
     }
 
-    // Excluir uma peça pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPeca(@PathVariable Long id) {
         pecaService.deletarPeca(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
 }

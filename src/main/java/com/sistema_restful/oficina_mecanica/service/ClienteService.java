@@ -1,5 +1,6 @@
 package com.sistema_restful.oficina_mecanica.service;
 
+import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Cliente;
 import com.sistema_restful.oficina_mecanica.model.Endereco;
 import com.sistema_restful.oficina_mecanica.repo.ClienteRepository;
@@ -102,17 +103,25 @@ public class ClienteService {
 
     // Atualizar cliente
     public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {
-        return clienteRepository.findById(id).map(cliente -> {
-            cliente.setNome(clienteAtualizado.getNome());
-            cliente.setTelefone(clienteAtualizado.getTelefone());
-            cliente.setEndereco(clienteAtualizado.getEndereco());
-            return clienteRepository.save(cliente);
-        }).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = buscarClientePorId(id);
+
+        // Atualiza somente os campos necessários
+        cliente.setNome(clienteAtualizado.getNome());
+        cliente.setTelefone(clienteAtualizado.getTelefone());
+        cliente.setEndereco(clienteAtualizado.getEndereco());
+        return clienteRepository.save(cliente);
     }
 
     // Excluir cliente por ID
     public void deletarCliente(Long id) {
-        clienteRepository.deleteById(id);
+        Cliente cliente = buscarClientePorId(id);
+        clienteRepository.delete(cliente);
+    }
+
+    // Método auxiliar para buscar cliente por ID com tratamento de exceção
+    private Cliente buscarClientePorId(Long id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id + " não encontrado."));
     }
 
 }
