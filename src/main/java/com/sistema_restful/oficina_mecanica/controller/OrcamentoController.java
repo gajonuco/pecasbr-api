@@ -46,19 +46,16 @@ public class OrcamentoController {
         return ResponseEntity.ok(orcamentos);
     }
 
-
-    // Atualizar um orçamento por ID
     @PutMapping("/{id}")
     public ResponseEntity<Orcamento> atualizarOrcamento(@PathVariable Long id, @RequestBody OrcamentoDTO orcamentoDTO) {
         Orcamento orcamentoAtualizado = orcamentoService.atualizarOrcamento(id, orcamentoDTO);
-        return new ResponseEntity<>(orcamentoAtualizado, HttpStatus.OK);
+        return ResponseEntity.ok(orcamentoAtualizado);
     }
 
-    // Excluir um orçamento por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarOrcamento(@PathVariable Long id) {
         orcamentoService.deletarOrcamento(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
 }

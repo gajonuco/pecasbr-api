@@ -2,6 +2,7 @@ package com.sistema_restful.oficina_mecanica.service;
 
 import com.sistema_restful.oficina_mecanica.dto.OrcamentoDTO;
 import com.sistema_restful.oficina_mecanica.dto.OrcamentoResponseDTO;
+import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.*;
 import com.sistema_restful.oficina_mecanica.repo.ClienteRepository;
 import com.sistema_restful.oficina_mecanica.repo.OrcamentoRepository;
@@ -131,26 +132,35 @@ public class OrcamentoService {
 
 
     public Orcamento atualizarOrcamento(Long id, OrcamentoDTO orcamentoDTO) {
-        return orcamentoRepository.findById(id).map(orcamento -> processarOrcamento(orcamentoDTO, orcamento))
-                .orElseThrow(() -> new RuntimeException("Orçamento não encontrado"));
+        Orcamento orcamentoExistente = orcamentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Orçamento com ID " + id + " não encontrado."));
+
+        Cliente cliente = clienteRepository.findById(orcamentoDTO.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + orcamentoDTO.getClienteId() + " não encontrado."));
+        orcamentoExistente.setCliente(cliente);
+
+        List<OrcamentoServico> orcamentoServicos = mapearOrcamentoServicos(orcamentoDTO.getServicos(), orcamentoExistente);
+        List<OrcamentoPeca> orcamentoPecas = mapearOrcamentoPecas(orcamentoDTO.getPecas(), orcamentoExistente);
+
+        orcamentoExistente.setOrcamentoServicos(orcamentoServicos);
+        orcamentoExistente.setOrcamentoPecas(orcamentoPecas);
+
+        orcamentoExistente.calcularValorTotal();
+        return orcamentoRepository.save(orcamentoExistente);
     }
 
     public void deletarOrcamento(Long id) {
+        if (!orcamentoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Orçamento com ID " + id + " não encontrado.");
+        }
         orcamentoRepository.deleteById(id);
     }
 
-    private Orcamento processarOrcamento(OrcamentoDTO orcamentoDTO, Orcamento orcamento) {
-        // Obter o cliente pelo ID
-        Cliente cliente = clienteRepository.findById(orcamentoDTO.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-        orcamento.setCliente(cliente);
-        orcamento.setDataCriacao(LocalDate.now());
-
-        // Processar e associar serviços com quantidades ao orçamento
-        List<OrcamentoServico> orcamentoServicos = orcamentoDTO.getServicos().stream()
+    private List<OrcamentoServico> mapearOrcamentoServicos(List<OrcamentoDTO.ServicoQuantidadeDTO> servicos, Orcamento orcamento) {
+        return servicos.stream()
                 .map(dto -> {
                     Servico servico = servicoRepository.findById(dto.getServicoId())
-                            .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Serviço com ID " + dto.getServicoId() + " não encontrado."));
                     OrcamentoServico orcamentoServico = new OrcamentoServico();
                     orcamentoServico.setServico(servico);
                     orcamentoServico.setQuantidade(dto.getQuantidade());
@@ -158,13 +168,13 @@ public class OrcamentoService {
                     return orcamentoServico;
                 })
                 .collect(Collectors.toList());
-        orcamento.setOrcamentoServicos(orcamentoServicos);
+    }
 
-        // Processar e associar peças com quantidades ao orçamento
-        List<OrcamentoPeca> orcamentoPecas = orcamentoDTO.getPecas().stream()
+    private List<OrcamentoPeca> mapearOrcamentoPecas(List<OrcamentoDTO.PecaQuantidadeDTO> pecas, Orcamento orcamento) {
+        return pecas.stream()
                 .map(dto -> {
                     Peca peca = pecaRepository.findById(dto.getPecaId())
-                            .orElseThrow(() -> new RuntimeException("Peça não encontrada"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Peça com ID " + dto.getPecaId() + " não encontrada."));
                     OrcamentoPeca orcamentoPeca = new OrcamentoPeca();
                     orcamentoPeca.setPeca(peca);
                     orcamentoPeca.setQuantidade(dto.getQuantidade());
@@ -172,10 +182,5 @@ public class OrcamentoService {
                     return orcamentoPeca;
                 })
                 .collect(Collectors.toList());
-        orcamento.setOrcamentoPecas(orcamentoPecas);
-
-        // Calcular valor total e desconto
-        orcamento.calcularValorTotal();
-        return orcamentoRepository.save(orcamento);
     }
 }

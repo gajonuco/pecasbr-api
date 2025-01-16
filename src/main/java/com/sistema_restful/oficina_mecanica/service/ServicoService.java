@@ -1,5 +1,6 @@
 package com.sistema_restful.oficina_mecanica.service;
 
+import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Servico;
 import com.sistema_restful.oficina_mecanica.repo.ServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,24 +47,26 @@ public class ServicoService {
         return servicos;
     }
 
-    // Buscar serviço por ID
-    public Optional<Servico> buscarServicoPorId(Long id) {
-        return servicoRepository.findById(id);
-    }
-
-    // Atualizar um serviço por ID
     public Servico atualizarServico(Long id, Servico servicoAtualizado) {
-        return servicoRepository.findById(id).map(servico -> {
-            servico.setNome(servicoAtualizado.getNome());
-            servico.setPreco(servicoAtualizado.getPreco());
-            return servicoRepository.save(servico);
-        }).orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+        Servico servicoExistente = servicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Serviço com ID " + id + " não encontrado."));
+
+        if (servicoAtualizado.getNome() != null && !servicoAtualizado.getNome().trim().isEmpty()) {
+            servicoExistente.setNome(servicoAtualizado.getNome());
+        }
+
+        if (servicoAtualizado.getPreco() != null && servicoAtualizado.getPreco() > 0) {
+            servicoExistente.setPreco(servicoAtualizado.getPreco());
+        }
+
+        return servicoRepository.save(servicoExistente);
     }
 
-    // Excluir um serviço por ID
     public void deletarServico(Long id) {
+        if (!servicoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Serviço com ID " + id + " não encontrado.");
+        }
         servicoRepository.deleteById(id);
     }
-
 
 }

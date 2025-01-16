@@ -70,17 +70,15 @@ public class ServicoController {
     }
 
 
-    // Atualizar um serviço por ID
     @PutMapping("/{id}")
-    public ResponseEntity<Servico> atualizarServico(@PathVariable Long id, @RequestBody Servico servico) {
-        return new ResponseEntity<>(servicoService.atualizarServico(id, servico), HttpStatus.OK);
+    public ResponseEntity<Servico> atualizarServico(@PathVariable Long id, @Valid @RequestBody Servico servico) {
+        return ResponseEntity.ok(servicoService.atualizarServico(id, servico));
     }
 
-    // Excluir um serviço por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarServico(@PathVariable Long id) {
         servicoService.deletarServico(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
 }
