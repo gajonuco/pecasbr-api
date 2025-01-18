@@ -2,7 +2,7 @@ package com.sistema_restful.oficina_mecanica.service;
 
 import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Servico;
-import com.sistema_restful.oficina_mecanica.repo.ServicoRepository;
+import com.sistema_restful.oficina_mecanica.repository.ServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

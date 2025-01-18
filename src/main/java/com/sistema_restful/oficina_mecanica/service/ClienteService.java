@@ -3,7 +3,7 @@ package com.sistema_restful.oficina_mecanica.service;
 import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Cliente;
 import com.sistema_restful.oficina_mecanica.model.Endereco;
-import com.sistema_restful.oficina_mecanica.repo.ClienteRepository;
+import com.sistema_restful.oficina_mecanica.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;

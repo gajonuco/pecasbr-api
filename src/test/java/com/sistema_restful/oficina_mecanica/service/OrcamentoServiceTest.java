@@ -58,7 +58,6 @@ public class OrcamentoServiceTest {
         peca = new Peca();
         peca.setId(1L);
         peca.setPreco(50.0);
-        peca.setDescricao("Peça Teste");
 
         orcamentoDTO = new OrcamentoDTO(
                 null,
