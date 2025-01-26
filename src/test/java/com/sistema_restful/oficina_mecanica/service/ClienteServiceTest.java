@@ -3,7 +3,7 @@ package com.sistema_restful.oficina_mecanica.service;
 import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Cliente;
 import com.sistema_restful.oficina_mecanica.model.Endereco;
-import com.sistema_restful.oficina_mecanica.repo.ClienteRepository;
+import com.sistema_restful.oficina_mecanica.repository.ClienteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

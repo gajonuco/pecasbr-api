@@ -1,4 +1,4 @@
-package com.sistema_restful.oficina_mecanica.repo;
+package com.sistema_restful.oficina_mecanica.repository;
 
 import com.sistema_restful.oficina_mecanica.model.Servico;
 import org.springframework.data.jpa.repository.JpaRepository;

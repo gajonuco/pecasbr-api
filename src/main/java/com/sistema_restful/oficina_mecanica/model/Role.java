@@ -3,21 +3,25 @@ package com.sistema_restful.oficina_mecanica.model;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "tb_roles")
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Long roleId;
+    @GeneratedValue(strategy = GenerationType.AUTO) // Use AUTO para geração de UUID
+    @Column(name = "role_id", columnDefinition = "UUID") // Define explicitamente como UUID
+    private UUID roleId;
+
+    @Column(nullable = false, unique = true) // Garante que os nomes sejam únicos
     private String name;
 
-    public Long getRoleId() {
+    public UUID getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(UUID roleId) {
         this.roleId = roleId;
     }
 
@@ -30,18 +34,19 @@ public class Role {
     }
 
     public enum Values {
+        ADMIN(UUID.randomUUID()),
+        BASIC(UUID.randomUUID());
 
-        ADMIN(1L),
-        BASIC(2L);
+        private final UUID roleId;
 
-        long roleId;
-
-        Values(long roleId) {
+        Values(UUID roleId) {
             this.roleId = roleId;
         }
 
-        public long getRoleId() {
+        public UUID getRoleId() {
             return roleId;
         }
     }
 }
+
+

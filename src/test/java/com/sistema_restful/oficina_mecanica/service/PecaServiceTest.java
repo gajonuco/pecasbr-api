@@ -2,7 +2,7 @@ package com.sistema_restful.oficina_mecanica.service;
 
 import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Peca;
-import com.sistema_restful.oficina_mecanica.repo.PecaRepository;
+import com.sistema_restful.oficina_mecanica.repository.PecaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -4,7 +4,7 @@ import com.sistema_restful.oficina_mecanica.dto.OrcamentoDTO;
 import com.sistema_restful.oficina_mecanica.dto.OrcamentoResponseDTO;
 import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.*;
-import com.sistema_restful.oficina_mecanica.repo.*;
+import com.sistema_restful.oficina_mecanica.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

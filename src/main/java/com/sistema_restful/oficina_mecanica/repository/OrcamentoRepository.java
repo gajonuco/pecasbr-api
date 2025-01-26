@@ -1,4 +1,4 @@
-package com.sistema_restful.oficina_mecanica.repo;
+package com.sistema_restful.oficina_mecanica.repository;
 
 import com.sistema_restful.oficina_mecanica.model.Orcamento;
 import org.springframework.data.jpa.repository.JpaRepository;

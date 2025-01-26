@@ -1,2 +1,5 @@
-INSERT IGNORE INTO tb_roles (role_id, name) VALUES (1, 'admin');
-INSERT IGNORE INTO tb_roles (role_id, name) VALUES (2, 'basic');
+INSERT INTO tb_roles (role_id, name)
+VALUES
+    ('00000000-0000-0000-0000-000000000001', 'ADMIN'),
+    ('00000000-0000-0000-0000-000000000002', 'BASIC')
+ON CONFLICT (role_id) DO NOTHING;
