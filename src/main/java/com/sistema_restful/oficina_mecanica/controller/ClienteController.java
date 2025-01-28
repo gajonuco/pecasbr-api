@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-
-
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -22,12 +23,16 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping
-    public ResponseEntity<Object> cadastrarCliente(@Valid @RequestBody Cliente cliente) {
+    public ResponseEntity<Object> cadastrarCliente(@Valid @RequestBody Cliente cliente, JwtAuthenticationToken token) {
         try {
-            Cliente clienteSalvo = clienteService.salvarCliente(cliente);
+            // Obtém o ID do usuário logado a partir do token
+            var userId = UUID.fromString(token.getName());
+
+            // Salva o cliente com o autor vinculado
+            Cliente clienteSalvo = clienteService.salvarClienteComAutor(cliente, userId);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(clienteSalvo);
         } catch (IllegalArgumentException ex) {
-            // Retorna uma mensagem detalhada para erros de validação ou lógica de negócio
             return ResponseEntity.badRequest().body(Map.of(
                     "status", HttpStatus.BAD_REQUEST.value(),
                     "erro", "Requisição inválida",
@@ -35,7 +40,6 @@ public class ClienteController {
                     "timestamp", System.currentTimeMillis()
             ));
         } catch (Exception ex) {
-            // Retorna uma mensagem detalhada para erros inesperados
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                     "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "erro", "Erro interno no servidor",
@@ -45,50 +49,79 @@ public class ClienteController {
         }
     }
 
-
     @GetMapping
     public ResponseEntity<Page<Cliente>> listarClientes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "nome") String sortBy
+            @RequestParam(defaultValue = "nome") String sortBy,
+            JwtAuthenticationToken token
     ) {
-        Page<Cliente> clientes = clienteService.listarClientes(page, size, sortBy);
-        return ResponseEntity.ok(clientes);
-    }
+        var userId = UUID.fromString(token.getName());
 
-    @PostMapping("/especificos")
-    public ResponseEntity<Object> listarClientesEspecificos(@RequestBody List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "erro", "A lista de IDs não pode ser nula ou vazia."
-            ));
-        }
+        var isAdmin = token.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 
-        List<Cliente> clientes = clienteService.listarClientesEspecificos(ids);
-        if (clientes.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                    "erro", "Nenhum cliente foi encontrado com os IDs fornecidos."
-            ));
+        Page<Cliente> clientes;
+        if (isAdmin) {
+            // Admin pode listar todos os clientes
+            clientes = clienteService.listarTodosClientes(page, size, sortBy);
+        } else {
+            // Usuário comum lista apenas os clientes que ele cadastrou
+            clientes = clienteService.listarClientesPorAutor(userId, page, size, sortBy);
         }
 
         return ResponseEntity.ok(clientes);
     }
 
-
-    // Atualizar um cliente pelo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizarCliente(
+    public ResponseEntity<Object> atualizarCliente(
             @PathVariable Long id,
-            @Valid @RequestBody Cliente cliente) {
-        Cliente clienteAtualizado = clienteService.atualizarCliente(id, cliente);
-        return ResponseEntity.ok(clienteAtualizado);
+            @Valid @RequestBody Cliente clienteAtualizado,
+            JwtAuthenticationToken token
+    ) {
+        var userId = UUID.fromString(token.getName());
+
+        var isAdmin = token.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        try {
+            Cliente clienteAtualizadoSalvo = clienteService.atualizarCliente(id, clienteAtualizado, userId, isAdmin);
+            return ResponseEntity.ok(clienteAtualizadoSalvo);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatus()).body(Map.of(
+                    "erro", ex.getReason()
+            ));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "erro", "Erro interno no servidor",
+                    "mensagem", "Ocorreu um erro inesperado ao processar sua requisição. Tente novamente mais tarde.",
+                    "timestamp", System.currentTimeMillis()
+            ));
+        }
     }
 
-    // Excluir um cliente pelo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarCliente(@PathVariable Long id) {
-        clienteService.deletarCliente(id);
-        return ResponseEntity.noContent().build();
-    }
+    public ResponseEntity<Object> deletarCliente(@PathVariable Long id, JwtAuthenticationToken token) {
+        var userId = UUID.fromString(token.getName());
 
+        var isAdmin = token.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        try {
+            clienteService.deletarCliente(id, userId, isAdmin);
+            return ResponseEntity.noContent().build();
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatus()).body(Map.of(
+                    "erro", ex.getReason()
+            ));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "erro", "Erro interno no servidor",
+                    "mensagem", "Ocorreu um erro inesperado ao processar sua requisição. Tente novamente mais tarde.",
+                    "timestamp", System.currentTimeMillis()
+            ));
+        }
+    }
 }

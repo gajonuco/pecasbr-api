@@ -30,8 +30,11 @@ public class Cliente {
     @Embedded
     private Endereco endereco;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "autor_id", nullable = false) // Define o autor do cadastro
+    private User autor;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Orcamento> orcamentos;
 }
-

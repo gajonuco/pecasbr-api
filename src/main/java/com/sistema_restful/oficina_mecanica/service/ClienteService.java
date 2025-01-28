@@ -4,16 +4,20 @@ import com.sistema_restful.oficina_mecanica.exception.ResourceNotFoundException;
 import com.sistema_restful.oficina_mecanica.model.Cliente;
 import com.sistema_restful.oficina_mecanica.model.Endereco;
 import com.sistema_restful.oficina_mecanica.repository.ClienteRepository;
+import com.sistema_restful.oficina_mecanica.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ClienteService {
@@ -21,7 +25,10 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public Cliente salvarCliente(Cliente cliente) {
+    @Autowired
+    private UserRepository userRepository;
+
+    public Cliente salvarCliente(Cliente cliente, UUID autorId) {
         if (cliente == null) {
             throw new IllegalArgumentException("Cliente não pode ser nulo.");
         }
@@ -65,6 +72,11 @@ public class ClienteService {
             }
         }
 
+        // Define o autor do cliente
+        var autor = userRepository.findById(autorId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
+        cliente.setAutor(autor);
+
         // Salvando o cliente
         try {
             return clienteRepository.save(cliente);
@@ -75,10 +87,14 @@ public class ClienteService {
         }
     }
 
-
-    public Page<Cliente> listarClientes(int page, int size, String sortBy) {
+    public Page<Cliente> listarTodosClientes(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return clienteRepository.findAll(pageable);
+    }
+
+    public Page<Cliente> listarClientesPorAutor(UUID autorId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        return clienteRepository.findByAutorUserId(autorId, pageable);
     }
 
     public List<Cliente> listarClientesEspecificos(List<Long> ids) {
@@ -100,28 +116,31 @@ public class ClienteService {
         return clientes;
     }
 
-
-    // Atualizar cliente
-    public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {
+    public Cliente atualizarCliente(Long id, Cliente clienteAtualizado, UUID userId, boolean isAdmin) {
         Cliente cliente = buscarClientePorId(id);
 
-        // Atualiza somente os campos necessários
+        if (!isAdmin && !cliente.getAutor().getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para atualizar este cliente.");
+        }
+
         cliente.setNome(clienteAtualizado.getNome());
         cliente.setTelefone(clienteAtualizado.getTelefone());
         cliente.setEndereco(clienteAtualizado.getEndereco());
         return clienteRepository.save(cliente);
     }
 
-    // Excluir cliente por ID
-    public void deletarCliente(Long id) {
+    public void deletarCliente(Long id, UUID userId, boolean isAdmin) {
         Cliente cliente = buscarClientePorId(id);
+
+        if (!isAdmin && !cliente.getAutor().getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para excluir este cliente.");
+        }
+
         clienteRepository.delete(cliente);
     }
 
-    // Método auxiliar para buscar cliente por ID com tratamento de exceção
     private Cliente buscarClientePorId(Long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id + " não encontrado."));
     }
-
 }
