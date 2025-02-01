@@ -19,7 +19,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query("SELECT c FROM Cliente c WHERE c.id IN :ids")
     List<Cliente> findClientesByIds(@Param("ids") List<Long> ids);
 
-    Page<Cliente> findByAutorUserId(UUID autorId, Pageable pageable);
+    Page<Cliente> findByAutorUserId(UUID userId, Pageable pageable);
 }
 
 

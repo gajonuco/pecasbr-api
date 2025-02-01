@@ -31,8 +31,8 @@ public class Cliente {
     private Endereco endereco;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "autor_id", nullable = false) // Define o autor do cadastro
-    private User autor;
+    @JoinColumn(name = "user_id", nullable = false) // Define o autor do cadastro
+    private User user;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -29,7 +30,7 @@ public class ClienteController {
             var userId = UUID.fromString(token.getName());
 
             // Salva o cliente com o autor vinculado
-            Cliente clienteSalvo = clienteService.salvarClienteComAutor(cliente, userId);
+            Cliente clienteSalvo = clienteService.salvarCliente(cliente, userId);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(clienteSalvo);
         } catch (IllegalArgumentException ex) {
@@ -88,8 +89,9 @@ public class ClienteController {
             Cliente clienteAtualizadoSalvo = clienteService.atualizarCliente(id, clienteAtualizado, userId, isAdmin);
             return ResponseEntity.ok(clienteAtualizadoSalvo);
         } catch (ResponseStatusException ex) {
-            return ResponseEntity.status(ex.getStatus()).body(Map.of(
-                    "erro", ex.getReason()
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of(
+
+                    "erro", Objects.requireNonNull(ex.getReason())
             ));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
@@ -112,8 +114,8 @@ public class ClienteController {
             clienteService.deletarCliente(id, userId, isAdmin);
             return ResponseEntity.noContent().build();
         } catch (ResponseStatusException ex) {
-            return ResponseEntity.status(ex.getStatus()).body(Map.of(
-                    "erro", ex.getReason()
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of(
+                    "erro", Objects.requireNonNull(ex.getReason())
             ));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
