@@ -22,6 +22,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ClienteDTO {
+
+    @NotBlank(message = "Login é obrigatório")
+    @Email(message = "E-mail inválido")
+    private String login;
+
+    @NotBlank(message = "Senha é obrigatória")
+    private String senha;
+
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
@@ -31,13 +39,9 @@ public class ClienteDTO {
     @Pattern(regexp = "\\d{10,11}", message = "Telefone deve ter 10 ou 11 dígitos")
     private String telefone;
 
-    @Email(message = "E-mail inválido")
-    private String email;
-
     @Pattern(regexp = "\\d{8}", message = "CEP deve conter 8 dígitos numéricos")
     private String cep;
 
-    private List<String> placas; // placas opcionais ao cadastrar cliente
-
+    private List<String> placas;
 }
 
