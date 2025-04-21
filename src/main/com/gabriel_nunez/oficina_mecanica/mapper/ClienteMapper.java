@@ -17,7 +17,6 @@ public class ClienteMapper {
         Cliente cliente = new Cliente();
         cliente.setNome(dto.getNome());
         cliente.setCpfCnpj(DocumentoUtils.formatarDocumento(dto.getCpfCnpj()));
-        cliente.setEmail(dto.getEmail());
         cliente.setTelefone(dto.getTelefone());
         cliente.setEndereco(endereco);
         return cliente;
@@ -28,10 +27,9 @@ public class ClienteMapper {
         response.put("id", cliente.getId());
         response.put("nome", cliente.getNome());
         response.put("cpf_cnpj", cliente.getCpfCnpj());
-        response.put("email", cliente.getEmail());
         response.put("telefone", cliente.getTelefone());
         response.put("endereco", cliente.getEndereco());
-    
+
         if (cliente.getVeiculos() != null && !cliente.getVeiculos().isEmpty()) {
             var veiculos = cliente.getVeiculos().stream().map(v -> {
                 Map<String, Object> veiculoMap = new LinkedHashMap<>();
@@ -46,9 +44,9 @@ public class ClienteMapper {
             }).toList();
             response.put("veiculos", veiculos);
         }
-    
+
         return response;
     }
-    
 }
+
 

@@ -1,13 +1,9 @@
-package com.sistema_restful.oficina_mecanica.repository;
+package com.gabriel_nunez.oficina_mecanica.repository;
 
+import com.gabriel_nunez.oficina_mecanica.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import com.sistema_restful.oficina_mecanica.model.User;
 
-import java.util.Optional;
-import java.util.UUID;
+public interface UserRepository extends JpaRepository<User, String> {
+    User findByLogin(String login);
 
-@Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByUsername(String username);
 }
