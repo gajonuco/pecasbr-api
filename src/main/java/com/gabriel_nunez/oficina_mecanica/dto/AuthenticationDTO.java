@@ -1,0 +1,4 @@
+package com.gabriel_nunez.oficina_mecanica.dto;
+
+public record AuthenticationDTO(String login, String password) {
+}
