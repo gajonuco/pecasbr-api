@@ -2,7 +2,6 @@ package com.gabriel_nunez.oficina_mecanica.service;
 
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 import com.gabriel_nunez.oficina_mecanica.repository.PecaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +12,11 @@ import java.util.List;
 @Service
 public class PecaService {
 
-    @Autowired
-    private PecaRepository pecaRepository;
+    private final PecaRepository pecaRepository;
+
+    public PecaService(PecaRepository pecaRepository) {
+        this.pecaRepository = pecaRepository;
+    }
 
     @Transactional
     public Peca salvar(Peca peca) {

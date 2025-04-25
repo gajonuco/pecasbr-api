@@ -1,8 +1,11 @@
 package com.gabriel_nunez.oficina_mecanica.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.gabriel_nunez.oficina_mecanica.dto.PecaDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 
+@Component
 public class PecaMapper {
 
     public static Peca toEntity(PecaDTO dto) {
