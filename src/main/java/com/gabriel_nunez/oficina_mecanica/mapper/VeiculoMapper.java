@@ -1,8 +1,12 @@
 package com.gabriel_nunez.oficina_mecanica.mapper;
 
 import com.gabriel_nunez.oficina_mecanica.model.Veiculo;
+
+import org.springframework.stereotype.Component;
+
 import com.gabriel_nunez.oficina_mecanica.dto.VeiculoDTO;
 
+@Component
 public class VeiculoMapper {
 
     public static Veiculo toEntity(VeiculoDTO dto) {

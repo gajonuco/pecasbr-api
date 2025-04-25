@@ -2,7 +2,7 @@ package com.gabriel_nunez.oficina_mecanica.user;
 
 public enum UserRole {
     ATENDENTE("atendente"),
-    MECANICA("mecanica"),
+    MECANICO("mecanico"),
     ADMINISTRADOR("admin");
 
     private String role;
