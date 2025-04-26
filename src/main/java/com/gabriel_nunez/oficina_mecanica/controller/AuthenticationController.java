@@ -10,10 +10,9 @@ import com.gabriel_nunez.oficina_mecanica.service.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("auth")
@@ -51,6 +50,7 @@ public class AuthenticationController {
         User user = userMapper.fromRegisterDTO(dto, endereco, senhaCriptografada);
         userRepository.save(user);
 
-        return ResponseEntity.ok("Usuário cadastrado com sucesso!");
+        URI location = URI.create("/auth/usuarios/" + user.getId());
+        return ResponseEntity.created(location).body("Usuário cadastrado com sucesso!");
     }
 }

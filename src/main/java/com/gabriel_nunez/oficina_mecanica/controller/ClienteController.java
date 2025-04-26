@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
@@ -29,7 +31,8 @@ public class ClienteController {
 
         try {
             Cliente salvo = clienteService.salvar(clienteDTO);
-            return ResponseEntity.ok(clienteMapper.toResponse(salvo));
+            URI location = URI.create("/clientes/" + salvo.getId());
+            return ResponseEntity.created(location).body(clienteMapper.toResponse(salvo));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(409).body(e.getMessage());
         }
