@@ -1,7 +1,7 @@
 package com.gabriel_nunez.oficina_mecanica.mapper;
 
 
-import com.gabriel_nunez.oficina_mecanica.dto.ServicoMecanicoResponseDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.ServicoMecanicoResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.model.ServicoMecanico;
 import org.springframework.stereotype.Component;
 

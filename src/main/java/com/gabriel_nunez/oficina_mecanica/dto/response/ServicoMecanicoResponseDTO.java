@@ -1,4 +1,4 @@
-package com.gabriel_nunez.oficina_mecanica.dto;
+package com.gabriel_nunez.oficina_mecanica.dto.response;
 
 import com.gabriel_nunez.oficina_mecanica.enums.StatusServico;
 import lombok.Data;

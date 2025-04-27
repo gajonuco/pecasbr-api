@@ -1,6 +1,7 @@
 package com.gabriel_nunez.oficina_mecanica.controller;
 
-import com.gabriel_nunez.oficina_mecanica.dto.PecaDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.request.PecaRequestDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.PecaResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.mapper.PecaMapper;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 import com.gabriel_nunez.oficina_mecanica.service.PecaService;
@@ -17,12 +18,14 @@ import java.net.URI;
 public class PecaController {
 
     private final PecaService pecaService;
+    private final PecaMapper pecaMapper;
 
     @PostMapping
-    public ResponseEntity<PecaDTO> cadastrarPeca(@Valid @RequestBody PecaDTO pecaDTO) {
-        Peca peca = PecaMapper.toEntity(pecaDTO);
+    public ResponseEntity<PecaResponseDTO> cadastrarPeca(@Valid @RequestBody PecaRequestDTO dto) {
+        Peca peca = pecaMapper.toEntity(dto);
         Peca salva = pecaService.salvar(peca);
+
         URI location = URI.create("/pecas/" + salva.getId());
-        return ResponseEntity.created(location).body(PecaMapper.toDTO(salva));
+        return ResponseEntity.created(location).body(pecaMapper.toResponse(salva));
     }
 }

@@ -1,7 +1,7 @@
 package com.gabriel_nunez.oficina_mecanica.controller;
 
-import com.gabriel_nunez.oficina_mecanica.dto.ServicoMecanicoRequestDTO;
-import com.gabriel_nunez.oficina_mecanica.dto.ServicoMecanicoResponseDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.request.ServicoMecanicoRequestDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.ServicoMecanicoResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.service.ServicoMecanicoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

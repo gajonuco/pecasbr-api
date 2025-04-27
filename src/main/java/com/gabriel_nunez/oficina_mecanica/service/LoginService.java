@@ -2,7 +2,7 @@ package com.gabriel_nunez.oficina_mecanica.service;
 
 import com.gabriel_nunez.oficina_mecanica.config.TokenService;
 import com.gabriel_nunez.oficina_mecanica.dto.AuthenticationDTO;
-import com.gabriel_nunez.oficina_mecanica.dto.LoginResponseDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.LoginResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.repository.UserRepository;
 import com.gabriel_nunez.oficina_mecanica.user.User;
 
