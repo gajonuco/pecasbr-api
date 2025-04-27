@@ -1,4 +1,4 @@
-package com.gabriel_nunez.oficina_mecanica.dto;
+package com.gabriel_nunez.oficina_mecanica.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PecaDTO {
+public class PecaRequestDTO {
 
     @NotBlank(message = "O nome da peça é obrigatório")
     private String nome;

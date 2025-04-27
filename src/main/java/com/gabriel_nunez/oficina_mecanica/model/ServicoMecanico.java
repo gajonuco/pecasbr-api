@@ -53,4 +53,8 @@ public class ServicoMecanico {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> mecanicosResponsaveis;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_servico_id")
+    private TipoServico tipoServico;
 }

@@ -1,8 +1,7 @@
-package com.gabriel_nunez.oficina_mecanica.dto;
+package com.gabriel_nunez.oficina_mecanica.dto.request;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,9 +9,9 @@ import java.util.List;
 public class ServicoMecanicoRequestDTO {
     private Long clienteId;
     private Long veiculoId;
+    private Long tipoServicoId;
     private List<Long> pecasUtilizadasIds;
     private List<String> mecanicosResponsaveisIds;
-    private BigDecimal valorTotal;
     private LocalDateTime dataInicio;
     private LocalDateTime dataConclusao;
 }

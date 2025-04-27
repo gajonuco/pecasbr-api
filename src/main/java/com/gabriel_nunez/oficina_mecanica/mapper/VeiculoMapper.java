@@ -1,15 +1,14 @@
 package com.gabriel_nunez.oficina_mecanica.mapper;
 
+import com.gabriel_nunez.oficina_mecanica.dto.request.VeiculoRequestDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.VeiculoResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Veiculo;
-
 import org.springframework.stereotype.Component;
-
-import com.gabriel_nunez.oficina_mecanica.dto.VeiculoDTO;
 
 @Component
 public class VeiculoMapper {
 
-    public static Veiculo toEntity(VeiculoDTO dto) {
+    public Veiculo toEntity(VeiculoRequestDTO dto) {
         Veiculo v = new Veiculo();
         v.setTipo(dto.getTipo());
         v.setPlaca(dto.getPlaca());
@@ -20,8 +19,9 @@ public class VeiculoMapper {
         return v;
     }
 
-    public static VeiculoDTO toDTO(Veiculo v) {
-        return VeiculoDTO.builder()
+    public VeiculoResponseDTO toResponseDTO(Veiculo v) {
+        return VeiculoResponseDTO.builder()
+            .id(v.getId())
             .tipo(v.getTipo())
             .placa(v.getPlaca())
             .marca(v.getMarca())
@@ -31,4 +31,3 @@ public class VeiculoMapper {
             .build();
     }
 }
-

@@ -1,14 +1,14 @@
 package com.gabriel_nunez.oficina_mecanica.mapper;
 
-import org.springframework.stereotype.Component;
-
-import com.gabriel_nunez.oficina_mecanica.dto.PecaDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.request.PecaRequestDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.PecaResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PecaMapper {
 
-    public static Peca toEntity(PecaDTO dto) {
+    public Peca toEntity(PecaRequestDTO dto) {
         Peca peca = new Peca();
         peca.setNome(dto.getNome());
         peca.setSku(dto.getSku().trim().toUpperCase());
@@ -19,14 +19,16 @@ public class PecaMapper {
         return peca;
     }
 
-    public static PecaDTO toDTO(Peca peca) {
-        return PecaDTO.builder()
+    public PecaResponseDTO toResponse(Peca peca) {
+        return PecaResponseDTO.builder()
+            .id(peca.getId())
             .nome(peca.getNome())
             .sku(peca.getSku())
             .marca(peca.getMarca())
             .preco(peca.getPreco())
             .quantidadeEmEstoque(peca.getQuantidadeEmEstoque())
             .dataVencimento(peca.getDataVencimento())
+            .obsoleta(peca.isObsoleta())
             .build();
     }
 }
