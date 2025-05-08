@@ -1,7 +1,10 @@
 package com.gabriel_nunez.oficina_mecanica.model;
 
-import com.gabriel_nunez.oficina_mecanica.enums.StatusServico;
-import com.gabriel_nunez.oficina_mecanica.user.User;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import com.gabriel_nunez.oficina_mecanica.enums.StatusOrcamento;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,60 +23,64 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.ToString;
 
 
+
+@Entity
+@Table(name = "orcamentos")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@Table(name = "servicos_mecanicos")
-public class ServicoMecanico {
+public class Orcamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private StatusServico status;
-
-    private BigDecimal valorTotal;
-
-    private LocalDateTime dataInicio;
-
-    private LocalDateTime dataConclusao;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_id", nullable = false)
+    @ToString.Exclude
     private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "veiculo_id")
+    @JoinColumn(name = "veiculo_id", nullable = false)
+    @ToString.Exclude
     private Veiculo veiculo;
 
     @ManyToMany
     @JoinTable(
-        name = "servico_peca",
-        joinColumns = @JoinColumn(name = "servico_id"),
+        name = "orcamento_peca",
+        joinColumns = @JoinColumn(name = "orcamento_id"),
         inverseJoinColumns = @JoinColumn(name = "peca_id")
     )
-    private List<Peca> pecasUtilizadas;
+    @ToString.Exclude
+    private List<Peca> pecas;
 
     @ManyToMany
     @JoinTable(
-        name = "servico_mecanico_user",
-        joinColumns = @JoinColumn(name = "servico_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+        name = "orcamento_servico",
+        joinColumns = @JoinColumn(name = "orcamento_id"),
+        inverseJoinColumns = @JoinColumn(name = "tipo_servico_id")
     )
-    private List<User> mecanicosResponsaveis;
+    @ToString.Exclude
+    private List<TipoServico> tiposServico;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tipo_servico_id")
-    private TipoServico tipoServico;
+    @Column(nullable = false)
+    private BigDecimal valorTotal;
+
+    @Column(nullable = false)
+    private LocalDate dataCriacao;
+
+    @Column(nullable = false)
+    private LocalDate dataValidade;
+
+    @Enumerated(EnumType.STRING)
+    private StatusOrcamento status;
+
+    private String observacoes;
 }

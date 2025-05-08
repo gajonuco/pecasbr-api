@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Notifications</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>Login</h1>
+<form id="login-form">
+    <label>Usuário: <input type="text" id="username" required></label><br>
+    <label>Senha: <input type="password" id="password" required></label><br>
+    <button type="submit">Entrar</button>
+</form>
+
+<div id="notifications" style="display: none;">
+    <h2>Notificações em tempo real</h2>
+</div>
+
+<script>
+    let stompClient = null;
+    let token = null;
+
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        axios.post('http://localhost:8080/auth/login', {
+            login: username,
+            password: password
+        })
+        .then(response => {
+            token = response.data.token;
+            console.log("Token JWT:", token);
+            connect();
+        })
+        .catch(error => {
+            alert("Falha na autenticação.");
+            console.error(error);
+        });
+    });
+
+    function connect() {
+        const socket = new SockJS('http://localhost:8080/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+            { Authorization: 'Bearer ' + token },
+            function (frame) {
+                console.log('Conectado: ' + frame);
+                document.getElementById('notifications').style.display = 'block';
+                stompClient.subscribe('/topic/notifications', function (message) {
+                    showNotification(message.body);
+                });
+            },
+            function (error) {
+                console.error('Erro na conexão WebSocket: ' + error);
+            }
+        );
+    }
+
+    function showNotification(message) {
+        const container = document.getElementById('notifications');
+        const notification = document.createElement('p');
+        notification.textContent = message;
+        container.appendChild(notification);
+    }
+</script>
+</body>
+</html>
