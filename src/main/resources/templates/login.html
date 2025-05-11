@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Real-Time Notifications</title>
+    <title>Login - Oficina Mecânica</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
@@ -20,9 +20,6 @@
 </div>
 
 <script>
-    let stompClient = null;
-    let token = null;
-
     document.getElementById('login-form').addEventListener('submit', function (e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
@@ -33,41 +30,27 @@
             password: password
         })
         .then(response => {
-            token = response.data.token;
-            console.log("Token JWT:", token);
-            connect();
+            const { token, tipo } = response.data;
+            sessionStorage.setItem('token', token);
+            sessionStorage.setItem('tipo', tipo); // armazena tipo do usuário
+
+            console.log("Login efetuado como:", tipo);
+
+            // Redireciona conforme o tipo de usuário
+            if (tipo === 'CLIENTE') {
+                window.location.href = "escolha-servico.html";
+            } else if (tipo === 'FUNCIONARIO') {
+                window.location.href = "painel-atendente.html";
+            } else {
+                alert("Tipo de usuário desconhecido.");
+            }
         })
         .catch(error => {
             alert("Falha na autenticação.");
             console.error(error);
         });
     });
-
-    function connect() {
-        const socket = new SockJS('http://localhost:8080/ws');
-        stompClient = Stomp.over(socket);
-
-        stompClient.connect(
-            { Authorization: 'Bearer ' + token },
-            function (frame) {
-                console.log('Conectado: ' + frame);
-                document.getElementById('notifications').style.display = 'block';
-                stompClient.subscribe('/topic/notifications', function (message) {
-                    showNotification(message.body);
-                });
-            },
-            function (error) {
-                console.error('Erro na conexão WebSocket: ' + error);
-            }
-        );
-    }
-
-    function showNotification(message) {
-        const container = document.getElementById('notifications');
-        const notification = document.createElement('p');
-        notification.textContent = message;
-        container.appendChild(notification);
-    }
 </script>
+
 </body>
 </html>

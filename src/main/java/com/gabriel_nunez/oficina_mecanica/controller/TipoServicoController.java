@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/tipos-servicos")
@@ -23,4 +24,11 @@ public class TipoServicoController {
         URI location = URI.create("/tipos-servicos/" + response.getId());
         return ResponseEntity.created(location).body(response);
     }
+
+    @GetMapping
+    public ResponseEntity<List<TipoServicoResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(tipoServicoService.listarTodos());
+    }
+    
+
 }

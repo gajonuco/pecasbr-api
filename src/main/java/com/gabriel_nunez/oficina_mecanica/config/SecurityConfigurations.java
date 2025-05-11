@@ -32,12 +32,18 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                    // Libera o endpoint WebSocket
+                .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/ws/**").permitAll()
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Libera CORS preflight
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/register-funcionario", "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/pecas", "/veiculos", "/clientes").permitAll()
+    
+                    // ✅ Libera GET de tipos-servicos para todos os usuários autenticados (User ou ClienteUsuario)
+                    .requestMatchers(HttpMethod.GET, "/tipos-servicos").authenticated()
+    
+                    // ❌ POST só para FUNCIONÁRIOS com ROLE_ADMIN
+                    .requestMatchers(HttpMethod.POST, "/tipos-servicos").hasRole("ADMIN")
+    
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

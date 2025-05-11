@@ -8,13 +8,13 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class NotificationController {
 
-    //server application
-///app/sendMessage
-    ///app/sendMessage
+    /*server application
+    app/sendMessage
+    app/sendMessage
     @MessageMapping("/sendMessage")
     @SendTo("/topic/notifications")
     public String sendMessage(String message){
         System.out.println("message : "+message);
         return message;
-    }
+    }*/
 }
