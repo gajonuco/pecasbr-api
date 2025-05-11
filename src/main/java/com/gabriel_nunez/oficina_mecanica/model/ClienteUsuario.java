@@ -1,12 +1,25 @@
 package com.gabriel_nunez.oficina_mecanica.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,7 +46,8 @@ public class ClienteUsuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // Ou adicione roles se quiser
+        // Atribui a role fixa para clientes
+        return List.of(() -> "ROLE_CLIENTE");
     }
 
     @Override

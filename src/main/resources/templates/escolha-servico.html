@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Escolha de Serviços</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>Escolha um serviço mecânico</h1>
+
+<label for="servicos">Selecione um serviço:</label>
+<select id="servicos" name="servicoSelecionado">
+    <option disabled selected>Carregando serviços...</option>
+</select>
+<br><br>
+<button id="enviar-btn">Enviar serviço</button>
+
+<script>
+    const token = sessionStorage.getItem('token');
+    let stompClient = null;
+
+    if (!token) {
+        alert("Você precisa estar logado para ver os serviços.");
+        window.location.href = "login.html";
+    }
+
+    if (sessionStorage.getItem('tipo') !== 'CLIENTE') {
+        alert("Acesso restrito a clientes.");
+        window.location.href = "login.html";
+    }
+
+
+    // Carrega os tipos de serviço
+    axios.get('http://localhost:8080/tipos-servicos', {
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(response => {
+        const select = document.getElementById('servicos');
+        select.innerHTML = ''; // Limpa a opção "Carregando..."
+
+        response.data.forEach(servico => {
+            const option = document.createElement('option');
+            option.value = servico.nome; // envia nome
+            option.textContent = servico.nome;
+            select.appendChild(option);
+        });
+    })
+    .catch(error => {
+        alert("Erro ao carregar os tipos de serviço.");
+        console.error(error);
+    });
+
+    // Conecta no WebSocket
+    function connectWebSocket() {
+        const socket = new SockJS('http://localhost:8080/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({ Authorization: 'Bearer ' + token }, frame => {
+            console.log("WebSocket conectado");
+        }, error => {
+            console.error("Erro no WebSocket", error);
+        });
+    }
+
+    // Envia seleção
+    document.getElementById('enviar-btn').addEventListener('click', () => {
+        const servicoSelecionado = document.getElementById('servicos').value;
+        if (stompClient && stompClient.connected) {
+            stompClient.send("/app/sendMessage", {}, servicoSelecionado);
+            alert("Serviço enviado com sucesso!");
+        } else {
+            alert("WebSocket não está conectado.");
+        }
+    });
+
+    connectWebSocket();
+</script>
+</body>
+</html>

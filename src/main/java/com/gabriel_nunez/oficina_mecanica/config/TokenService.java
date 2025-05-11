@@ -4,7 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.gabriel_nunez.oficina_mecanica.model.ClienteUsuario;
+import com.gabriel_nunez.oficina_mecanica.repository.ClienteUsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,6 +20,12 @@ public class TokenService {
 
     @Value("${api.security.token.secret}")
     private String secret;
+
+    private final ClienteUsuarioRepository clienteUsuarioRepository;
+
+    public TokenService(ClienteUsuarioRepository clienteUsuarioRepository) {
+        this.clienteUsuarioRepository = clienteUsuarioRepository;
+    }
 
     public String generateToken(String login) {
         try {
@@ -29,6 +39,21 @@ public class TokenService {
             throw new RuntimeException("Erro ao gerar token", exception);
         }
     }
+
+    public Authentication getAuthentication(String token) {
+        String subject = validateToken(token);
+        if (subject.isEmpty()) {
+            return null;
+        }
+    
+        ClienteUsuario usuario = clienteUsuarioRepository.findByLogin(subject).orElse(null);
+        if (usuario == null) {
+            return null;
+        }
+    
+        return new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+    }
+    
 
     public String validateToken(String token) {
         try {

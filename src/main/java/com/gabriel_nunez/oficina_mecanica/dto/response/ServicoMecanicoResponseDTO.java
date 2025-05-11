@@ -1,13 +1,26 @@
 package com.gabriel_nunez.oficina_mecanica.dto.response;
 
 import com.gabriel_nunez.oficina_mecanica.enums.StatusServico;
-import lombok.Data;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
+
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServicoMecanicoResponseDTO {
     private Long id;
     private StatusServico status;

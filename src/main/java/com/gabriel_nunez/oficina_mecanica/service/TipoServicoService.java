@@ -8,6 +8,9 @@ import com.gabriel_nunez.oficina_mecanica.repository.TipoServicoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class TipoServicoService {
@@ -19,5 +22,12 @@ public class TipoServicoService {
         TipoServico tipoServico = tipoServicoMapper.toEntity(dto);
         tipoServicoRepository.save(tipoServico);
         return tipoServicoMapper.toDTO(tipoServico);
+    }
+
+    public List<TipoServicoResponseDTO> listarTodos() {
+        return tipoServicoRepository.findAll()
+                .stream()
+                .map(tipoServicoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
