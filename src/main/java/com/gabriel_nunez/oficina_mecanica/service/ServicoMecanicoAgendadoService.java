@@ -1,9 +1,9 @@
 package com.gabriel_nunez.oficina_mecanica.service;
 
-import com.gabriel_nunez.oficina_mecanica.dto.request.ServicoMecanicoRequestDTO;
-import com.gabriel_nunez.oficina_mecanica.dto.response.ServicoMecanicoResponseDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.request.ServicoMecanicoAgendadoRequestDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.response.ServicoMecanicoAgendadoResponseDTO;
 import com.gabriel_nunez.oficina_mecanica.enums.StatusServico;
-import com.gabriel_nunez.oficina_mecanica.mapper.ServicoMecanicoMapper;
+import com.gabriel_nunez.oficina_mecanica.mapper.ServicoMecanicoAgendadoMapper;
 import com.gabriel_nunez.oficina_mecanica.model.*;
 import com.gabriel_nunez.oficina_mecanica.repository.*;
 import com.gabriel_nunez.oficina_mecanica.user.User;
@@ -15,40 +15,40 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class ServicoMecanicoService {
+public class ServicoMecanicoAgendadoService {
 
-    private final ServicoMecanicoRepository servicoRepository;
+    private final ServicoMecanicoAgendadoRepository servicoMecanicoAgendadoRepository;
     private final ClienteRepository clienteRepository;
     private final VeiculoRepository veiculoRepository;
     private final PecaRepository pecaRepository;
     private final UserRepository userRepository;
-    private final TipoServicoRepository tipoServicoRepository;
-    private final ServicoMecanicoMapper mapper;
+    private final TipoServicoMecanicoRepository tipoServicoMecanicoRepository;
+    private final ServicoMecanicoAgendadoMapper mapper;
 
-    public ServicoMecanicoService(ServicoMecanicoRepository servicoRepository,
+    public ServicoMecanicoAgendadoService(ServicoMecanicoAgendadoRepository servicoMecanicoAgendadoRepository,
                                   ClienteRepository clienteRepository,
                                   VeiculoRepository veiculoRepository,
                                   PecaRepository pecaRepository,
                                   UserRepository userRepository,
-                                  TipoServicoRepository tipoServicoRepository,
-                                  ServicoMecanicoMapper mapper) {
-        this.servicoRepository = servicoRepository;
+                                 TipoServicoMecanicoRepository tipoServicoMecanicoRepository,
+                                  ServicoMecanicoAgendadoMapper mapper) {
+        this.servicoMecanicoAgendadoRepository = servicoMecanicoAgendadoRepository;
         this.clienteRepository = clienteRepository;
         this.veiculoRepository = veiculoRepository;
         this.pecaRepository = pecaRepository;
         this.userRepository = userRepository;
-        this.tipoServicoRepository = tipoServicoRepository;
+        this.tipoServicoMecanicoRepository = tipoServicoMecanicoRepository;
         this.mapper = mapper;
     }
 
-    public ServicoMecanicoResponseDTO criarServico(ServicoMecanicoRequestDTO dto) {
+    public ServicoMecanicoAgendadoResponseDTO criarServico(ServicoMecanicoAgendadoRequestDTO dto) {
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado"));
 
         Veiculo veiculo = veiculoRepository.findById(dto.getVeiculoId())
                 .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado"));
 
-        TipoServico tipoServico = tipoServicoRepository.findById(dto.getTipoServicoId())
+        TipoServicoMecanico tipoServico = tipoServicoMecanicoRepository.findById(dto.getTipoServicoId())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de serviço não encontrado"));
 
         List<Peca> pecas = pecaRepository.findAllById(dto.getPecasUtilizadasIds());
@@ -62,7 +62,7 @@ public class ServicoMecanicoService {
 
         BigDecimal valorTotal = tipoServico.getValorBase().add(valorTotalPecas);
 
-        ServicoMecanico servico = ServicoMecanico.builder()
+        ServicoMecanicoAgendado servico = ServicoMecanicoAgendado.builder()
                 .cliente(cliente)
                 .veiculo(veiculo)
                 .tipoServico(tipoServico)
@@ -74,7 +74,7 @@ public class ServicoMecanicoService {
                 .dataConclusao(dto.getDataConclusao())
                 .build();
 
-        servicoRepository.save(servico);
+        servicoMecanicoAgendadoRepository.save(servico);
         return mapper.toDTO(servico);
     }
 }

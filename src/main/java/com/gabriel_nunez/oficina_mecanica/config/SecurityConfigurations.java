@@ -33,19 +33,21 @@ public class SecurityConfigurations {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/ws/**").permitAll()
+                    // Roteamento livre
+                    .requestMatchers("/ws/**", "/html/**", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                    // Autenticação
                     .requestMatchers(HttpMethod.POST, "/auth/register-funcionario", "/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/pecas", "/veiculos", "/clientes").permitAll()
-    
-                    // ✅ Libera GET de tipos-servicos para todos os usuários autenticados (User ou ClienteUsuario)
+                    .requestMatchers(HttpMethod.POST, "/pecas", "/veiculos", "/clientes","/api/ofertas-servico").permitAll()
+
                     .requestMatchers(HttpMethod.GET, "/tipos-servicos").authenticated()
-    
-                    // ❌ POST só para FUNCIONÁRIOS com ROLE_ADMIN
                     .requestMatchers(HttpMethod.POST, "/tipos-servicos").hasRole("ADMIN")
-    
+
+                    // Demais rotas exigem autenticação
                     .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

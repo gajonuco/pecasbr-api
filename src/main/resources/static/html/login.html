@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Oficina Mecânica</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="login-form">
+        <label>Usuário: <input type="text" id="username" required></label><br>
+        <label>Senha: <input type="password" id="password" required></label><br>
+        <button type="submit">Entrar</button>
+    </form>
+
+    <div id="notifications" style="display: none;">
+        <h2>Notificações em tempo real</h2>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/login.js"></script>
+</body>
+</html>

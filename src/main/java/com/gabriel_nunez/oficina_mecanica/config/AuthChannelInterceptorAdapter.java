@@ -18,19 +18,26 @@ public class AuthChannelInterceptorAdapter implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor =
-                MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader("Authorization");
+
             if (token != null && token.startsWith("Bearer ")) {
-                token = token.substring(7); // Remove "Bearer " do início
-                Authentication auth = tokenService.getAuthentication(token);
-                if (auth != null) {
-                    accessor.setUser(auth);
+                token = token.substring(7); // Remove o prefixo "Bearer "
+
+                try {
+                    Authentication authentication = tokenService.getAuthentication(token);
+                    if (authentication != null) {
+                        accessor.setUser(authentication); // Define o usuário autenticado no contexto STOMP
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao autenticar WebSocket: " + e.getMessage());
+                    // Você pode lançar exceção aqui para rejeitar a conexão se necessário
                 }
             }
         }
+
         return message;
     }
 }

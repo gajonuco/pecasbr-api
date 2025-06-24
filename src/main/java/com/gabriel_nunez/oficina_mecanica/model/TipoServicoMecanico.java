@@ -25,8 +25,8 @@ import java.math.BigDecimal;
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "tipos_servicos")
-public class TipoServico {
+@Table(name = "tipos_servicos_mecanicos")
+public class TipoServicoMecanico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

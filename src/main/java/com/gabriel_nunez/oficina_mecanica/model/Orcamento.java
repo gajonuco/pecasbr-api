@@ -68,7 +68,7 @@ public class Orcamento {
         inverseJoinColumns = @JoinColumn(name = "tipo_servico_id")
     )
     @ToString.Exclude
-    private List<TipoServico> tiposServico;
+    private List<TipoServicoMecanico> tiposServico;
 
     @Column(nullable = false)
     private BigDecimal valorTotal;
