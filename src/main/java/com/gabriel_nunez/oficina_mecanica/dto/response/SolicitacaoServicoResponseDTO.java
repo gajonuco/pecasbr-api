@@ -1,13 +1,7 @@
 package com.gabriel_nunez.oficina_mecanica.dto.response;
 
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
+import lombok.*;
 
 @Builder
 @Getter
@@ -15,7 +9,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolicitacaoServicoResponseDTO {
+    private Long id;
     private String nomeCliente;
+    private String loginCliente; // <-- Adicionado
     private String nomeServico;
     private LocalDateTime dataHora;
+    private Long tipoServicoId;
+    private Long clienteId;
 }

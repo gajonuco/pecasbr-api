@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ServicoMecanicoRequestDTO {
+public class ServicoMecanicoAgendadoRequestDTO {
     private Long clienteId;
     private Long veiculoId;
     private Long tipoServicoId;

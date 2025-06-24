@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TipoServicoResponseDTO {
+public class TipoServicoMecanicoResponseDTO {
     private Long id;
     private String nome;
     private String descricao;

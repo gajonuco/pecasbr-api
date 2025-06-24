@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServicoMecanicoResponseDTO {
+public class ServicoMecanicoAgendadoResponseDTO {
     private Long id;
     private StatusServico status;
     private BigDecimal valorTotal;

@@ -32,8 +32,8 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "servicos_mecanicos")
-public class ServicoMecanico {
+@Table(name = "servico_mecanico_agendado")
+public class ServicoMecanicoAgendado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,5 +75,5 @@ public class ServicoMecanico {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_servico_id")
-    private TipoServico tipoServico;
+    private TipoServicoMecanico tipoServico;
 }

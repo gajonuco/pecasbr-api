@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+li {
+    margin-bottom: 10px;
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#lista-notificacoes {
+    list-style-type: none;
+    padding: 0;
+    max-width: 600px;
+    margin: auto;
+}
+
+#lista-notificacoes li {
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: background-color 0.2s;
+}
+
+#lista-notificacoes li:hover {
+    background-color: #f5faff;
+}
+
+#lista-notificacoes button {
+    margin-left: 8px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+#lista-notificacoes button:hover {
+    background-color: #0056b3;
+}
+
+.oferta-recebida {
+    background-color: #e6fff2 !important;
+    border-left: 4px solid #28a745;
+}
