@@ -9,7 +9,7 @@ import com.gabriel_nunez.oficina_mecanica.dao.CategoriaPecaDAO;
 import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 
 @Component
-public class CategoriaPecaServiceImple implements ICategoriaPecaService {
+public class CategoriaPecaServiceImpl implements ICategoriaPecaService {
 
     @Autowired
     private CategoriaPecaDAO dao;
