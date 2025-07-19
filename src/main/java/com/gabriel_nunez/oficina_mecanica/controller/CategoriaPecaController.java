@@ -20,13 +20,13 @@ public class CategoriaPecaController{
     @Autowired
     ICategoriaPecaService service;
 
-    @GetMapping("/categorias_pecas")
+    @GetMapping("/categoria_peca")
     public ResponseEntity<ArrayList<CategoriaPeca>> listarTodas(){
         return ResponseEntity.ok().body(service.recuperarTodasCategoriasPecas());
 
     }
 
-    @GetMapping("categorias_pecas/search")
+    @GetMapping("categoria_peca/search")
     public ResponseEntity<ArrayList<CategoriaPeca>> recuperarPorPalavraChave(@RequestParam(name = "key") String palavraChave){
         if(palavraChave != null){
             return ResponseEntity.ok().body(service.recuperarPorPalavraChave(palavraChave));
