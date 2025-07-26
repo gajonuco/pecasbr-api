@@ -47,7 +47,12 @@ public class PecaController {
         return ResponseEntity.ok(service.listarPorCategoria(categoria));
     }
 
-    @GetMapping("peca/{id}")
+    @GetMapping("/peca")
+    public ResponseEntity<ArrayList<Peca>> recuperarTodos(){
+        return ResponseEntity.ok(service.listarDisponiveis());
+    }
+
+    @GetMapping("/peca/{id}")
     public ResponseEntity <Peca> recuperarPorId(@PathVariable(name = "id") int idPeca) {
         Peca peca = service.recuperarPorId(idPeca);
         if(peca != null){
