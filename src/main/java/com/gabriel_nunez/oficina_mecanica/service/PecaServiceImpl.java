@@ -11,7 +11,7 @@ import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 
 @Component
-public class PecaServiceimpl implements IPecaService {
+public class PecaServiceImpl implements IPecaService {
     
     @Autowired
     private PecaDAO dao;
