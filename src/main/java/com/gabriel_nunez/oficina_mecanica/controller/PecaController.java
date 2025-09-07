@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +19,7 @@ import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 import com.gabriel_nunez.oficina_mecanica.service.IPecaService;
 
-
+@CrossOrigin("*")
 @RestController
 public class PecaController {
 
@@ -62,7 +64,14 @@ public class PecaController {
         return ResponseEntity.notFound().build();
 
     }
-
+    
+    @GetMapping("/peca/busca")
+    public ResponseEntity<ArrayList<Peca>> buscarPorPalavraChave(@RequestParam(name = "key") String key){
+        if(key != null){
+         return ResponseEntity.ok(service.listarPecaPorPalavraChave(key));
+        }
+        return ResponseEntity.badRequest().build();
+    }
     
 
 

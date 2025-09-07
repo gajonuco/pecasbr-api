@@ -75,4 +75,10 @@ public class PecaServiceImpl implements IPecaService {
         return dao.findById(idPeca).orElse(null);
     }
 
+    @Override
+    public ArrayList<Peca> listarPecaPorPalavraChave(String palavraChave) {
+        // TODO Auto-generated method stub
+        return dao.findByNomeContainingOrDetalheContaining(palavraChave, palavraChave);
+    }
+
 }

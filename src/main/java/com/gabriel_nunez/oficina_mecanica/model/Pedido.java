@@ -2,6 +2,7 @@ package com.gabriel_nunez.oficina_mecanica.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

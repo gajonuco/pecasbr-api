@@ -15,6 +15,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public Usuario recuperarUsuario(Usuario original) {
-        return dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
+       
+        Usuario user = dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
+        if(user != null){
+            if(user.getSenha().equals(original.getSenha())){
+                user.setSenha(null);
+            }
+            return user;
+        }
+        return null;
     }
 }
