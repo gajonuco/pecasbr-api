@@ -1,5 +1,7 @@
 package com.gabriel_nunez.oficina_mecanica.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +27,14 @@ public class Cliente {
 
     @Column(name = "telefone_cliente", length = 20, nullable = false, unique = true)
     private String telefone;
+
+    @Column(name = "data_nasc")
+    private LocalDate dataNasc;
+    
+
+    @Column(name = "cpf_cliente", length = 14, nullable = false, unique = true)
+    private String cpf;
+
 
     @Column(name = "cep_cliente", length = 10, nullable =  false)
     private String cep;
@@ -73,6 +83,14 @@ public class Cliente {
 
     public String getTelefone() {
         return telefone;
+    }
+
+        public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public void setTelefone(String telefone) {
@@ -133,6 +151,14 @@ public class Cliente {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public LocalDate getDataNasc() {
+        return dataNasc;
+    }
+
+    public void setDataNasc(LocalDate dataNasc) {
+        this.dataNasc = dataNasc;
     }
 
     

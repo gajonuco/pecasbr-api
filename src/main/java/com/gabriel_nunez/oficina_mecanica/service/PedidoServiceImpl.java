@@ -20,12 +20,12 @@ public class PedidoServiceImpl implements IPedidoService {
             double total = 0.0;
             for (ItemPedido item: novo.getItensPedido()) {
                 item.setPrecoUnitario(item.getPeca().getPreco());
-
-                if(item.getQtdtItem() >= 5) { // vou dar 20% de desconto
+                item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
+                /*if(item.getQtdtItem() >= 5) { // vou dar 20% de desconto
                     item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem() * 0.8);
                 } else {
                     item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
-                }
+                }*/
 
                 total += item.getPrecoTotal();
             }

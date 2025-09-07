@@ -15,6 +15,7 @@ public interface IPecaService {
     public ArrayList<Peca> listarDisponiveis();
     public ArrayList<Peca> listarIndisponiveis();
     public ArrayList<Peca> listarPorCategoria(CategoriaPeca categoriaPeca);
+    public ArrayList<Peca> listarPecaPorPalavraChave(String palavraChave);
 
     
 }
