@@ -59,5 +59,13 @@ public class CategoriaPecaServiceImpl implements ICategoriaPecaService {
         return null;
     }
 
+
+
+    @Override
+    public CategoriaPeca recuperaPorID(int id) {
+        // TODO Auto-generated method stub
+        return dao.findById(id).orElse(null);
+    }
+
     
 }
