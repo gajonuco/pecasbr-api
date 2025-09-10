@@ -18,4 +18,6 @@ public interface ICategoriaPecaService {
 
     //Este método vai recuperar todas as categorias por palvra chave
     public ArrayList<CategoriaPeca> recuperarPorPalavraChave(String palavraChave);
+
+    public CategoriaPeca recuperaPorID(int id);
 } 
