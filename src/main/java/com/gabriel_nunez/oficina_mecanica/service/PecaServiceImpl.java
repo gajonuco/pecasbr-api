@@ -81,4 +81,10 @@ public class PecaServiceImpl implements IPecaService {
         return dao.findByNomeContainingOrDetalheContaining(palavraChave, palavraChave);
     }
 
+    @Override
+    public ArrayList<Peca> listarDestaques() {
+        // TODO Auto-generated method stub
+     return dao.findAllByDestaque(1);
+    }
+
 }

@@ -9,32 +9,38 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-
-
 @Component
 public class UploadServiceImpl implements IUploadService {
 
+    private static final String UPLOAD_DIR = "/home/user/Área de trabalho/projeto/images"; 
+    // pasta pública para imagens (fora do Angular)
 
     @Override
     public String uploadFile(MultipartFile arquivo) {
-        // TODO Auto-generated method stub
         try {
-            /*
-             * copiar o arquivo via requisição para uma pasta definida
-             * e retornar o caminho dele. Se der qualquer erro, retornar NULL
-             */
-            System.out.println("DEBUG: "+ arquivo.getOriginalFilename());
-            String caminho = "//home//user//imagens-pecas";
-            Path path  = Paths.get(caminho + File.separator + arquivo.getOriginalFilename());
+            System.out.println("DEBUG: " + arquivo.getOriginalFilename());
+
+            // cria diretório se não existir
+            Path diretorio = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(diretorio)) {
+                Files.createDirectories(diretorio);
+            }
+
+            // define o destino do arquivo
+            Path path = diretorio.resolve(arquivo.getOriginalFilename());
+
+            // copia o arquivo para a pasta de images
             Files.copy(arquivo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("DEBUG - Arquivo copiado...");
+
+            System.out.println("DEBUG - Arquivo copiado em: " + path);
+
+            // retorna só o nome do arquivo, não o caminho físico
             return arquivo.getOriginalFilename();
-            
+
         } catch (Exception ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
-        
+
         return null;
     }
-    
 }

@@ -25,8 +25,10 @@ public class MyWebApplicationSecurityConfig {
             .csrf(csrf -> csrf.disable()) // desabilita CSRF
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET,"/categoria_peca").permitAll()
-               
-                .requestMatchers(HttpMethod.GET,"/cliente/*").permitAll() 
+                .requestMatchers(HttpMethod.GET,"/categoria_by_id").permitAll()
+                .requestMatchers(HttpMethod.GET,"/cliente/*").permitAll()
+                .requestMatchers(HttpMethod.GET,"/images/**").permitAll() // libera imagens 
+                .requestMatchers(HttpMethod.GET,"/peca/todos").permitAll() 
                 .requestMatchers(HttpMethod.POST,"/pedido").permitAll()
                 .requestMatchers(HttpMethod.GET,"/peca/categoria/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/peca/*").permitAll()

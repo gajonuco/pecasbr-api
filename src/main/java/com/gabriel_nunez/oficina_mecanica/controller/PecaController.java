@@ -8,13 +8,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gabriel_nunez.oficina_mecanica.service.IUploadService;
+import com.gabriel_nunez.oficina_mecanica.dto.PathDTO;
 import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 import com.gabriel_nunez.oficina_mecanica.service.IPecaService;
@@ -41,6 +43,23 @@ public class PecaController {
         return ResponseEntity.badRequest().build();
     }
 
+    @PutMapping("/peca/{idPeca}")
+    public ResponseEntity<Peca> atualizarProduto(@RequestBody Peca pecaAtual, @PathVariable int idPeca){
+
+    try {
+        if(idPeca != pecaAtual.getId()){
+            return ResponseEntity.badRequest().build();
+        }
+        Peca res = this.service.alterarPeca(pecaAtual);
+        return ResponseEntity.ok(res);
+    } catch (Exception e) {
+        // TODO: handle exception
+        e.printStackTrace();
+    }
+    return ResponseEntity.badRequest().build();
+        
+    }
+
 
     @GetMapping("/peca/categoria/{id}")
     public ResponseEntity<ArrayList<Peca>> recuperarPorCategoria(@PathVariable(name = "id") int idCategoriaPeca ){
@@ -51,7 +70,12 @@ public class PecaController {
 
     @GetMapping("/peca")
     public ResponseEntity<ArrayList<Peca>> recuperarTodos(){
-        return ResponseEntity.ok(service.listarDisponiveis());
+        return ResponseEntity.ok(service.listarDestaques());
+    }
+
+    @GetMapping("/peca/todos")
+    public ResponseEntity<ArrayList<Peca>> buscarTodos(){
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/peca/{id}")
@@ -76,13 +100,13 @@ public class PecaController {
 
 
     @PostMapping("/peca/upload")
-    public ResponseEntity<String> uploadFoto(@RequestParam("arquivo") MultipartFile arquivo){
+    public ResponseEntity<PathDTO> uploadFoto(@RequestParam("arquivo") MultipartFile arquivo){
         String path = upload.uploadFile(arquivo);
-        
         if(path == null){
-            return ResponseEntity.badRequest().body("Erro ao fazer upload do arquivo.");
+            return ResponseEntity.badRequest().build();
         }
-
-        return ResponseEntity.status(201).body("Arquivo salvo com sucesso: " + path);
+        PathDTO pathDTO = new PathDTO();
+        pathDTO.setPathToFile(path);
+        return ResponseEntity.status(201).body(pathDTO);
     }
 }

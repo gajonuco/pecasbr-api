@@ -19,7 +19,7 @@ import org.springframework.security.core.Authentication;
 public class JWTTokenUtil {
 
     private static final String SECRET_KEY = "OficianMecacniaWebToken2025XXA1B2C3";
-    private static final int EXPIRATION = 2*60*1000;
+    private static final int EXPIRATION = 120*60*1000;
     private static final String TK_PREFIX = "Bearer ";
     private static final String HEADER_AUTH = "Authorization";
 

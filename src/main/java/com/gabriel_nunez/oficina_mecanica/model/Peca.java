@@ -36,6 +36,17 @@ public class Peca {
     @Column(name = "disponivel")
     private int disponivel;
 
+    @Column(name ="destaque")
+    private Integer destaque;
+
+    public Integer getDestaque() {
+        return destaque;
+    }
+
+    public void setDestaque(Integer destaque) {
+        this.destaque = destaque;
+    }
+
     public int getDisponivel() {
         return disponivel;
     }

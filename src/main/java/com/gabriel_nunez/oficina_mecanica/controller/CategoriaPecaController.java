@@ -28,6 +28,10 @@ public class CategoriaPecaController{
         return ResponseEntity.ok().body(service.recuperarTodasCategoriasPecas());
 
     }
+    @GetMapping("/categoria_by_id")
+    public ResponseEntity<ArrayList<CategoriaPeca>> recuperarTodasOrdenadasPeloId(){
+        return ResponseEntity.ok(service.recuperarTodasPeloId());
+    }
 
     @GetMapping("categoria_peca/search")
     public ResponseEntity<ArrayList<CategoriaPeca>> recuperarPorPalavraChave(@RequestParam(name = "key") String palavraChave){
@@ -50,7 +54,7 @@ public class CategoriaPecaController{
         }
     }
 
-    @PostMapping("/categroria_peca")
+    @PostMapping("/categoria_peca")
     public ResponseEntity<CategoriaPeca> adicionarNovaCategoriaPeca(@RequestBody CategoriaPeca categoriaPeca){
         if(categoriaPeca.getId() != null){
             categoriaPeca.setId(null);
@@ -67,7 +71,7 @@ public class CategoriaPecaController{
     public ResponseEntity<CategoriaPeca> alterarCategoriaPeca(@RequestBody CategoriaPeca categoriaPeca){
         CategoriaPeca resultado = service.alterarCategoriaPeca(categoriaPeca);
         if(resultado != null){
-
+            return ResponseEntity.ok(resultado);
         }
         return ResponseEntity.badRequest().build();
 

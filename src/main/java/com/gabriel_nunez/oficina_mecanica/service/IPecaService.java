@@ -13,6 +13,7 @@ public interface IPecaService {
     public Peca            recuperarPorId(int idPeca);
     public ArrayList<Peca> listarTodos();
     public ArrayList<Peca> listarDisponiveis();
+    public ArrayList<Peca> listarDestaques();
     public ArrayList<Peca> listarIndisponiveis();
     public ArrayList<Peca> listarPorCategoria(CategoriaPeca categoriaPeca);
     public ArrayList<Peca> listarPecaPorPalavraChave(String palavraChave);
