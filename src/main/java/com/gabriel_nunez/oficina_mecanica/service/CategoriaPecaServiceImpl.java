@@ -37,7 +37,7 @@ public class CategoriaPecaServiceImpl implements ICategoriaPecaService {
         // TODO Auto-generated method stub
         try {
             if(categoriaPeca.getId() != null && categoriaPeca.getNome().trim().length() > 0){
-                dao.save(categoriaPeca);
+                return dao.save(categoriaPeca);
             }
         } catch (Exception ex) {
             System.out.println("DEBUG = " + ex);
@@ -65,6 +65,14 @@ public class CategoriaPecaServiceImpl implements ICategoriaPecaService {
     public CategoriaPeca recuperaPorID(int id) {
         // TODO Auto-generated method stub
         return dao.findById(id).orElse(null);
+    }
+
+
+
+    @Override
+    public ArrayList<CategoriaPeca> recuperarTodasPeloId() {
+        // TODO Auto-generated method stub
+        return dao.findAllByOrderById();
     }
 
     
