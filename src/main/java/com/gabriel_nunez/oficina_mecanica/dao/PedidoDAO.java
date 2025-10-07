@@ -13,4 +13,5 @@ public interface PedidoDAO extends CrudRepository<Pedido, Integer>{
     public ArrayList<Pedido> findAllByCliente(Cliente cliente);
     public ArrayList<Pedido> findAllByDataPedidoBetween(LocalDate inicio, LocalDate fim);
     public ArrayList<Pedido> findAllByStatusOrderByDataPedidoDesc(int status);
+    public ArrayList<Pedido> findAllByOrderByDataPedidoDesc();
 }

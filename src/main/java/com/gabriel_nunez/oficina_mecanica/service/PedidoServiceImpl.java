@@ -49,12 +49,13 @@ public class PedidoServiceImpl implements IPedidoService {
     @Override
     public ArrayList<Pedido> buscarStatus(int status) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarStatus'");
+        return dao.findAllByStatusOrderByDataPedidoDesc(status);
     }
 
     @Override
-    public Pedido mudarStatus(Pedido pedido, int novoStatus) {
+    public Pedido mudarStatus(int idPedido, int novoStatus) {
         try {
+            Pedido pedido = dao.findById(idPedido).get();
             pedido.setStatus(novoStatus);
             dao.save(pedido);
             return pedido;
@@ -66,7 +67,13 @@ public class PedidoServiceImpl implements IPedidoService {
     @Override
     public ArrayList<Pedido> buscarPorPeriodo(LocalDate inicio, LocalDate fim) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarPorPeriodo'");
+       return dao.findAllByDataPedidoBetween(inicio, fim);
+    }
+
+    @Override
+    public ArrayList<Pedido> buscarTodos() {
+        // TODO Auto-generated method stub
+        return dao.findAllByOrderByDataPedidoDesc();
     }
     
 }

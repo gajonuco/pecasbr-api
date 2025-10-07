@@ -1,5 +1,7 @@
 package com.gabriel_nunez.oficina_mecanica.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,24 @@ public class ClienteServiceImpl implements IClienteService{
     @Override
     public Cliente buscarPeloTefone(String telefone) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarPeloTefone'");
+        return dao.findByTelefone(telefone);
+    }
+
+    @Override
+    public ArrayList<Cliente> buscarPorLetra(String letra) {
+        // TODO Auto-generated method stub
+        return dao.findByNomeStartsWith(letra);
+    }
+
+    @Override
+    public ArrayList<Cliente> buscarPorPalavraChave(String palavraChave) {
+        // TODO Auto-generated method stub
+        return dao.findByNomeContaining(palavraChave);
+    }
+
+    @Override
+    public ArrayList<Cliente> buscarTodos() {
+        // TODO Auto-generated method stub
+        return dao.findAllByOrderByNomeAsc();
     }
 }

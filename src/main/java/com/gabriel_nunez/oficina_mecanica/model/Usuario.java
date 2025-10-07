@@ -28,11 +28,22 @@ public class Usuario {
     @Column(name = "nome_usuario", length = 50, nullable = false)
     private String nome_usuario;
 
+    @Column(name = "usuario_ativo")
+    private int ativo;
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+   public int getAtivo() {
+    return ativo;
+}
+
+public void setAtivo(int ativo) {
+    this.ativo = ativo;
+}
+
+ public void setId(int id) {
         this.id = id;
     }
 

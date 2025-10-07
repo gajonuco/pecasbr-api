@@ -9,6 +9,7 @@ public interface IPedidoService {
 
     public Pedido inserirPedido(Pedido novo);
     public ArrayList<Pedido> buscarStatus(int status);    
-    public Pedido mudarStatus(Pedido pedido, int novoStatus);
+    public Pedido mudarStatus(int idPedido, int novoStatus);
     public ArrayList<Pedido> buscarPorPeriodo(LocalDate inicio, LocalDate fim);
+    public ArrayList<Pedido> buscarTodos();
 }
