@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gabriel_nunez.oficina_mecanica.dao.ClienteDAO;
+import com.gabriel_nunez.oficina_mecanica.dto.CompradorDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Cliente;
 
 @Component
@@ -50,5 +51,17 @@ public class ClienteServiceImpl implements IClienteService{
     public ArrayList<Cliente> buscarTodos() {
         // TODO Auto-generated method stub
         return dao.findAllByOrderByNomeAsc();
+    }
+
+    @Override
+    public ArrayList<CompradorDTO> recuperarCompradores(int idPeca) {
+        // TODO Auto-generated method stub
+        return dao.recuperarCompradores(idPeca);
+    }
+
+    @Override
+    public ArrayList<Cliente> buscarAniversariantes(int mes) {
+        // TODO Auto-generated method stub
+        return dao.recuperarAniversariante(mes);
     }
 }

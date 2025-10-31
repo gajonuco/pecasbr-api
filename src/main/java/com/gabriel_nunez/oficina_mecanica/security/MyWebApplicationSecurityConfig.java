@@ -30,6 +30,7 @@ public class MyWebApplicationSecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/images/**").permitAll() // libera imagens 
                 .requestMatchers(HttpMethod.GET,"/peca/todos").permitAll() 
                 .requestMatchers(HttpMethod.POST,"/pedido").permitAll()
+                .requestMatchers(HttpMethod.GET,"/pedido/search/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/peca/categoria/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/peca/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/peca/busca").permitAll()

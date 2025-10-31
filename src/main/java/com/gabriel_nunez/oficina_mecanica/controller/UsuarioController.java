@@ -64,4 +64,15 @@ public class UsuarioController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<Usuario> recuperarPeloId(@PathVariable int id){
+        Usuario res = service.recuerarPeloId(id);
+
+        if(res != null){
+            return ResponseEntity.ok(res);
+        } else{
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

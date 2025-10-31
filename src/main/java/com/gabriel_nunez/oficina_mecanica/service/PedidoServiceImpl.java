@@ -2,11 +2,17 @@ package com.gabriel_nunez.oficina_mecanica.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.gabriel_nunez.oficina_mecanica.dao.ClienteDAO;
 import com.gabriel_nunez.oficina_mecanica.dao.PedidoDAO;
+import com.gabriel_nunez.oficina_mecanica.dto.VendasPorDataDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.FiltroPedidoDTO;
+import com.gabriel_nunez.oficina_mecanica.model.Cliente;
 import com.gabriel_nunez.oficina_mecanica.model.ItemPedido;
 import com.gabriel_nunez.oficina_mecanica.model.Pedido;
 
@@ -15,6 +21,9 @@ public class PedidoServiceImpl implements IPedidoService {
 
     @Autowired
     private PedidoDAO dao;
+
+    @Autowired
+    private ClienteDAO clienteDao;
 
     @Override
     public Pedido inserirPedido(Pedido novo) {
@@ -75,5 +84,85 @@ public class PedidoServiceImpl implements IPedidoService {
         // TODO Auto-generated method stub
         return dao.findAllByOrderByDataPedidoDesc();
     }
+
+    @Override
+    public List<VendasPorDataDTO> recuperarTotaisUltimaSemana(LocalDate inicio, LocalDate fim) {
+        ArrayList<VendasPorDataDTO> lista = dao.recuperarVendasPorData(inicio, fim);
+        return lista;
+    } 
+
+
+    @Override
+    public ArrayList<Pedido> filtrarPorVariosCriterios(FiltroPedidoDTO filtro) {
+        // TODO Auto-generated method stub
+        boolean temData = filtro.getDataInicio() != null && filtro.getDataFim() != null;
+        boolean temNome = filtro.getNome() != null && !filtro.getNome().trim().isEmpty();
+        boolean temStatus = filtro.getCancelado() != 0 || filtro.getEntregue() != 0 || filtro.getPago() != 0;
+
+        System.out.println("cancelado = " + filtro.getCancelado());
+        if(!temData && !temNome && !temStatus){
+            System.out.println("primeira condição");
+            return dao.findAllByOrderByDataPedidoDesc();
+        }
+        
+        else if(!temData && temNome && !temStatus){
+
+            ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());
+            return dao.findAllByClienteIn(clientes);
+        }
+
+        else if(!temData && !temNome && temStatus){
+
+            System.out.println("segunda condição");
+            return dao.findAllByStatusInOrderByIdDesc(this.getStatus(filtro));
+        }
+        else if(!temData && temNome && temStatus){
+
+            System.out.println("terceira condição");
+            ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());
+            return dao.findAllByClienteInAndStatusIn(clientes, this.getStatus(filtro));
+        }
+        else if(temData && !temNome && !temStatus){
+
+            System.out.println("quarta condição");
+            return dao.findAllByDataPedidoBetweenOrderByIdDesc(filtro.getDataInicio(),filtro.getDataFim());
+        }
+        else if(temData && !temNome && temStatus){
+
+            System.out.println("quinta condição");
+            return dao.findAllByDataPedidoBetweenAndStatusInOrderByIdDesc(filtro.getDataInicio(), filtro.getDataFim(), this.getStatus(filtro));
+        }
+        else if(temData && temNome && !temStatus){
+
+            System.out.println("sexta condição");
+            ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());
+            return dao.findAllByDataPedidoBetweenAndClienteInOrderByIdDesc(filtro.getDataInicio(), filtro.getDataFim(),  clientes);
+        }
+
+        else if(temData && temNome && temStatus){
+
+            System.out.println("séptima condição");
+            ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());
+            return dao.findAllByDataPedidoBetweenAndClienteInAndStatusInOrderByIdDesc(filtro.getDataInicio(), filtro.getDataFim(), clientes, this.getStatus(filtro));
+        }
+
+        return null;
+    }
+
+
+    private Collection<Integer> getStatus(FiltroPedidoDTO filtro){
+        Collection<Integer> status = new ArrayList<Integer>();
+        if(filtro.getEntregue() != 0) status.add(filtro.getEntregue());
+        if(filtro.getCancelado() != 0) status.add(filtro.getCancelado());
+        if(filtro.getPago() != 0) status.add(filtro.getPago());
+
+        return status;
+    }
+
+    @Override
+    public Pedido buscarPeloId(int id) {
+        // TODO Auto-generated method stub
+        return dao.findById(id).get();
+    }  
     
 }

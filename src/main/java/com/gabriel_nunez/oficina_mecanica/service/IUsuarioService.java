@@ -10,4 +10,5 @@ public interface IUsuarioService {
     public ArrayList<Usuario> recuperarTodos();
     public Usuario adicionarNovo(Usuario novo);
     public Usuario atualizarUsuario(Usuario user);
+    public Usuario recuerarPeloId(int id);
 }
