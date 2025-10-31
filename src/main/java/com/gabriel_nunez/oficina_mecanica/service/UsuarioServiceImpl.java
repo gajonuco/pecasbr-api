@@ -40,8 +40,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
         if(novo.getUsername().length() > 0 && novo.getEmail().length() > 0 && novo.getNome_usuario().length() > 0 && novo.getEmail().length() > 0){
             novo.setAtivo(1);
             try {
-
                 dao.save(novo);
+                return novo;
             } catch (Exception ex) {
                 ex.printStackTrace();
                 return null;
@@ -62,5 +62,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
             return null;
         }
         
+    }
+
+    @Override
+    public Usuario recuerarPeloId(int id) {
+        // TODO Auto-generated method stub
+        return dao.findById(id).orElse(null);
     }
 }

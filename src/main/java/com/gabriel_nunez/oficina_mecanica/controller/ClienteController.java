@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gabriel_nunez.oficina_mecanica.dto.CompradorDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Cliente;
 import com.gabriel_nunez.oficina_mecanica.service.IClienteService;
 
@@ -39,8 +40,18 @@ public class ClienteController {
         return ResponseEntity.ok(service.buscarTodos());
     }
 
-    @GetMapping("/cliente/{keyword}")
+    @GetMapping("/cliente/compras/{id}")
+    public ResponseEntity <ArrayList<CompradorDTO>> recuperarCompradores (@PathVariable("id") int idPeca) {
+        return ResponseEntity.ok(service.recuperarCompradores(idPeca));
+    }
+
+    @GetMapping("/cliente//busca/{keyword}")
     public ResponseEntity <ArrayList<Cliente>> buscarPorPalavraChave (@PathVariable String keyword) {
         return ResponseEntity.ok(service.buscarPorPalavraChave(keyword));
+    }
+
+    @GetMapping("/cliente/aniversario/{mes}")
+    public ResponseEntity<ArrayList<Cliente>> recuperarAniversariante(@PathVariable int mes) {
+        return ResponseEntity.ok(service.buscarAniversariantes(mes));
     }
 }

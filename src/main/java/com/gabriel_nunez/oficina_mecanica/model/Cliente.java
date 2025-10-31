@@ -57,6 +57,20 @@ public class Cliente {
     @Column(name = "estado", length = 2)
     private String estado;
 
+
+    
+
+    public Cliente() {
+    }
+
+    public Cliente(String nome, LocalDate dataNasc, String telefone) {
+        this.nome = nome;
+        this.dataNasc = dataNasc;
+        this.telefone = telefone;
+    }
+
+
+
     public int getId() {
         return id;
     }
