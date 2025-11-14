@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,7 +56,7 @@ public class PedidoController {
         return ResponseEntity.ok(service.filtrarPorVariosCriterios(parametros)); 
     }
     
-    @PutMapping("/pedido/{id}")
+    @PatchMapping("/pedido/{id}")
     public ResponseEntity<Pedido> mudarStatus(@PathVariable(name = "id") int id, @RequestParam(name = "status") int status ){
         try {
             Pedido pedido = service.mudarStatus(id, status);

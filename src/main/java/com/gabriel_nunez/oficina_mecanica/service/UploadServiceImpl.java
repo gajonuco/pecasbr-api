@@ -12,7 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class UploadServiceImpl implements IUploadService {
 
-    private static final String UPLOAD_DIR = "/home/user/Área de trabalho/projeto/images"; 
+    //private static final String UPLOAD_DIR = "/home/user/Área de trabalho/projeto/images"; 
+    private static final String UPLOAD_DIR = "/var/www/projetoreal.dev.br/browser/assets/img/";
+
     // pasta pública para imagens (fora do Angular)
 
     @Override

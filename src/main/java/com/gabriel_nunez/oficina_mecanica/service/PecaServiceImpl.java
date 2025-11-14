@@ -84,7 +84,7 @@ public class PecaServiceImpl implements IPecaService {
     @Override
     public ArrayList<Peca> listarDestaques() {
         // TODO Auto-generated method stub
-     return dao.findAllByDestaque(1);
+     return dao.findAllByDestaqueAndDisponivel(1,1);
     }
 
 }

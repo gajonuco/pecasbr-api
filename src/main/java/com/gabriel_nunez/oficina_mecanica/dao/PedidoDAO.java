@@ -44,7 +44,8 @@ public interface PedidoDAO extends CrudRepository<Pedido, Integer>{
 
   @Query("SELECT new com.gabriel_nunez.oficina_mecanica.dto.VendasPorDataDTO(SUM(p.valorTotal), p.dataPedido) " +
        "FROM Pedido p WHERE p.dataPedido BETWEEN :inicio AND :fim " +
-       "GROUP BY p.dataPedido ORDER BY p.dataPedido DESC")
+       "GROUP BY p.dataPedido"+ 
+       " ORDER BY p.dataPedido ASC")
     ArrayList<VendasPorDataDTO> recuperarVendasPorData(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
 
 

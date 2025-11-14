@@ -97,8 +97,7 @@ public class PedidoServiceImpl implements IPedidoService {
         // TODO Auto-generated method stub
         boolean temData = filtro.getDataInicio() != null && filtro.getDataFim() != null;
         boolean temNome = filtro.getNome() != null && !filtro.getNome().trim().isEmpty();
-        boolean temStatus = filtro.getCancelado() != 0 || filtro.getEntregue() != 0 || filtro.getPago() != 0;
-
+        boolean temStatus = filtro.getCancelado() != 0 || filtro.getEntregue() != 0 || filtro.getPago() != 0 || filtro.getNovo() != 0 || filtro.getTransporte() != 0 || filtro.getPosVenda() != 0 || filtro.getFinalizado() != 0;
         System.out.println("cancelado = " + filtro.getCancelado());
         if(!temData && !temNome && !temStatus){
             System.out.println("primeira condição");
@@ -152,9 +151,13 @@ public class PedidoServiceImpl implements IPedidoService {
 
     private Collection<Integer> getStatus(FiltroPedidoDTO filtro){
         Collection<Integer> status = new ArrayList<Integer>();
-        if(filtro.getEntregue() != 0) status.add(filtro.getEntregue());
-        if(filtro.getCancelado() != 0) status.add(filtro.getCancelado());
-        if(filtro.getPago() != 0) status.add(filtro.getPago());
+		if (filtro.getPago() != 0) status.add(Pedido.PAGO);
+		if (filtro.getCancelado() != 0) status.add(Pedido.CANCELADO);
+		if (filtro.getEntregue() != 0) status.add(Pedido.ENTREGUE);
+		if (filtro.getNovo() != 0) status.add(Pedido.NOVO_PEDIDO);
+		if (filtro.getTransporte() != 0) status.add(Pedido.EM_TRANSPORTE);
+		if (filtro.getPosVenda() != 0 )status.add(Pedido.POS_VENDA);
+		if (filtro.getFinalizado() != 0) status.add(Pedido.FINALIZADO);
 
         return status;
     }
