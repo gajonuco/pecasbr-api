@@ -15,5 +15,5 @@ public interface PecaDAO extends CrudRepository <Peca, Integer>{
     public ArrayList<Peca> findAllByCategoriaPecaAndDisponivel(CategoriaPeca categoriaPeca, int disponivel);
     public  ArrayList<Peca> findAllByCategoriaPeca(CategoriaPeca categoriaPeca);
     public ArrayList<Peca> findByNomeContainingOrDetalheContaining(String keyNome, String keyDetalhe);
-    public ArrayList<Peca> findAllByDestaque(int destaque);
+    public ArrayList<Peca> findAllByDestaqueAndDisponivel(int destaque, int disponivel);
 }

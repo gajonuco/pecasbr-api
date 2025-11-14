@@ -11,10 +11,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "tbl_pedido")
 public class Pedido {
 
-    public static final int NOVO_PEDIDO = 0;
-    public static final int PAGO =        1;
-    public static final int ENTREGUE =    2;
-    public static final int CANCELADO =   3;
+	public static final int NOVO_PEDIDO   = 1;
+	public static final int PAGO          = 2;
+	public static final int EM_TRANSPORTE = 3;
+	public static final int ENTREGUE      = 4;
+	public static final int POS_VENDA     = 5;
+	public static final int FINALIZADO    = 6;
+    public static final int CANCELADO     = 7;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
