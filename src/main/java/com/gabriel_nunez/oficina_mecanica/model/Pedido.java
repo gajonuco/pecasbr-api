@@ -36,6 +36,12 @@ public class Pedido {
     @Column(name = "status", nullable = false)
     private int status;
 
+    	@Column(name = "valor_frete")
+	private double valorFrete;
+	
+	@Column(name = "retirar")
+	private int    retirar;
+
     @ManyToOne
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
@@ -43,6 +49,23 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("pedido")
     private List<ItemPedido> itensPedido;
+
+    	public Pedido() {
+		super();
+	}
+	
+	public Pedido(int id, LocalDate data, String nomeCliente, double valorTotal, double frete, int retirar, String observacao, int status) {
+		this.id = id;
+		this.dataPedido = data;
+		Cliente cliente = new Cliente();
+		cliente.setNome(nomeCliente);
+		this.cliente = cliente;
+		this.valorTotal = valorTotal;
+		this.valorFrete = frete;
+		this.retirar = retirar;
+		this.observacoes = observacao;
+		this.status = status;
+	}
 
     public Integer getId() {
         return id;
@@ -99,6 +122,24 @@ public class Pedido {
     public void setItensPedido(List<ItemPedido> itensPedido) {
         this.itensPedido = itensPedido;
     }
+
+    public double getValorFrete() {
+        return valorFrete;
+    }
+
+    public void setValorFrete(double valorFrete) {
+        this.valorFrete = valorFrete;
+    }
+
+    public int getRetirar() {
+        return retirar;
+    }
+
+    public void setRetirar(int retirar) {
+        this.retirar = retirar;
+    }
+
+    
 
     
 }

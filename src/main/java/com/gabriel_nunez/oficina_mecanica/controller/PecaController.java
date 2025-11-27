@@ -3,6 +3,7 @@ package com.gabriel_nunez.oficina_mecanica.controller;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,10 +69,11 @@ public class PecaController {
         return ResponseEntity.ok(service.listarPorCategoria(categoria));
     }
 
-    @GetMapping("/peca")
-    public ResponseEntity<ArrayList<Peca>> recuperarTodos(){
-        return ResponseEntity.ok(service.listarDestaques());
-    }
+	@GetMapping("/peca")
+	public ResponseEntity<Page<Peca>> recuperarTodos(@RequestParam(defaultValue = "1") int pageNumber){
+		return ResponseEntity.ok(service.listarDestaques(pageNumber));
+		
+	}
 
     @GetMapping("/peca/todos")
     public ResponseEntity<ArrayList<Peca>> buscarTodos(){
@@ -89,15 +91,16 @@ public class PecaController {
 
     }
     
-    @GetMapping("/peca/busca")
-    public ResponseEntity<ArrayList<Peca>> buscarPorPalavraChave(@RequestParam(name = "key") String key){
-        if(key != null){
-         return ResponseEntity.ok(service.listarPecaPorPalavraChave(key));
-        }
-        return ResponseEntity.badRequest().build();
-    }
+	@GetMapping("/peca/busca")
+	public ResponseEntity<Page<Peca>> buscarPorPalavraChave(@RequestParam (name="key") String key, @RequestParam(name="pageNumber", defaultValue = "0") int pagina){
+		System.out.println("key = " + key);
+		if (key != null) {
+			return ResponseEntity.ok(service.listarPorPalavraChave(key, pagina));
+		}
+		return ResponseEntity.badRequest().build();
+	
     
-
+    }
 
     @PostMapping("/peca/upload")
     public ResponseEntity<PathDTO> uploadFoto(@RequestParam("arquivo") MultipartFile arquivo){

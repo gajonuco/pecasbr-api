@@ -21,23 +21,28 @@ public class MyWebApplicationSecurityConfig {
         System.out.println("Configurando primeiro acesso.");
 
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 👈 habilita CORS
-            .csrf(csrf -> csrf.disable()) // desabilita CSRF
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET,"/categoria_peca").permitAll()
-                .requestMatchers(HttpMethod.GET,"/categoria_by_id").permitAll()
-                .requestMatchers(HttpMethod.GET,"/cliente/*").permitAll()
-                .requestMatchers(HttpMethod.GET,"/images/**").permitAll() // libera imagens 
-                .requestMatchers(HttpMethod.GET,"/peca/todos").permitAll() 
-                .requestMatchers(HttpMethod.POST,"/pedido").permitAll()
-                .requestMatchers(HttpMethod.GET,"/pedido/search/*").permitAll()
-                .requestMatchers(HttpMethod.GET,"/peca/categoria/*").permitAll()
-                .requestMatchers(HttpMethod.GET,"/peca/*").permitAll()
-                .requestMatchers(HttpMethod.GET,"/peca/busca").permitAll()
-                .requestMatchers(HttpMethod.GET,"/peca").permitAll()
-                .requestMatchers(HttpMethod.POST,"/login").permitAll()
-                .anyRequest().authenticated()
-            );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 👈 habilita CORS
+                .csrf(csrf -> csrf.disable()) // desabilita CSRF
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/categoria_peca").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categoria_by_id").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cliente/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // libera imagens
+                        .requestMatchers(HttpMethod.GET, "/peca/todos").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/pedido").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/pedido/search/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/peca/categoria/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/peca/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/peca/busca").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/peca").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/fretes/prefixo/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/*").permitAll()
+
+                        .anyRequest().authenticated());
 
         http.addFilterBefore(new TokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -50,13 +55,12 @@ public class MyWebApplicationSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:4200",
-            "http://localhost:4222",
-            "https://projetoreal.dev.br",
-            "https://www.projetoreal.dev.br"
-        ));
+                "http://localhost:4200",
+                "http://localhost:4222",
+                "https://projetoreal.dev.br",
+                "https://www.projetoreal.dev.br"));
 
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 

@@ -26,6 +26,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<JWTToken> fazerLogin(@RequestBody Usuario dadosLogin){
+        System.out.println("dados login: " + dadosLogin);
         Usuario user = service.recuperarUsuario(dadosLogin);
         if (user != null){
 
