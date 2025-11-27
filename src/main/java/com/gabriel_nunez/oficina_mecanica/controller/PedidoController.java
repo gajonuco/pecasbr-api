@@ -83,4 +83,20 @@ public class PedidoController {
         return ResponseEntity.ok(service.recuperarTotaisUltimaSemana(inicio, fim));
     }
 
+    	@PutMapping("/pedido")
+	public ResponseEntity<Pedido> atualizarPedido(@RequestBody Pedido pedido){
+		try {
+			Pedido atualizado = service.atualizarPedido(pedido);
+			if (atualizado == null) {
+				return ResponseEntity.badRequest().build();
+			}
+			return ResponseEntity.ok(atualizado);
+		}
+		catch (Exception ex) {
+			System.out.println("Erro ao atualizar ");
+			ex.printStackTrace();
+		}
+		return ResponseEntity.badRequest().build();
+	}
+
 }

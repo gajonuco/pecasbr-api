@@ -25,29 +25,32 @@ public class PedidoServiceImpl implements IPedidoService {
     @Autowired
     private ClienteDAO clienteDao;
 
+    	@Autowired
+	private IBotService botService;
+
     @Override
     public Pedido inserirPedido(Pedido novo) {
         // TODO Auto-generated method stub
         try {
-            double total = 0.0;
-            for (ItemPedido item: novo.getItensPedido()) {
-                item.setPrecoUnitario(item.getPeca().getPreco());
-                item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
-                /*if(item.getQtdtItem() >= 5) { // vou dar 20% de desconto
-                    item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem() * 0.8);
-                } else {
-                    item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
-                }*/
+			//double total = 0.0;
+			/* aqui em tese vem a regra de negócios */
+			for (ItemPedido item: novo.getItensPedido()) {				
+				item.setPrecoUnitario(item.getPeca().getPrecoPromo());
+				item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
+				//total += item.getPrecoTotal();
+			}
+			/* ---- */
+			for (ItemPedido item: novo.getItensPedido()) {
+				item.setPedido(novo);
+			}
+			novo.setStatus(Pedido.NOVO_PEDIDO);
+			//novo.setValorTotal(total);
+			dao.save(novo);
+            /* enviando a mensagem do telegram */
+			if (!botService.sendBotMessage(String.valueOf(novo.getId()))) {
+				System.out.println("DEBUG ---> Erro ao enviar mensagem!!!");
+			}
 
-                total += item.getPrecoTotal();
-            }
-
-            for(ItemPedido item: novo.getItensPedido()){
-                item.setPedido(novo);
-            }
-            novo.setStatus(Pedido.NOVO_PEDIDO);
-            novo.setValorTotal(total);
-            dao.save(novo);
             return novo;
         } catch (Exception ex) {
             // TODO: handle exception
@@ -101,7 +104,8 @@ public class PedidoServiceImpl implements IPedidoService {
         System.out.println("cancelado = " + filtro.getCancelado());
         if(!temData && !temNome && !temStatus){
             System.out.println("primeira condição");
-            return dao.findAllByOrderByDataPedidoDesc();
+            //  return dao.findAllByOrderByDataPedidoDesc();
+            return dao.findAllByStatusNotOrderByDataPedidoDesc();
         }
         
         else if(!temData && temNome && !temStatus){
@@ -167,5 +171,21 @@ public class PedidoServiceImpl implements IPedidoService {
         // TODO Auto-generated method stub
         return dao.findById(id).get();
     }  
+
+
+	@Override
+	public ArrayList<Pedido> buscarNaoCancelados() {
+		// TODO Auto-generated method stub
+		return dao.findAllByStatusNotOrderByDataPedidoDesc();
+	}
+
+    	@Override
+	public Pedido atualizarPedido(Pedido pedido) {
+		// TODO Auto-generated method stub
+		for (ItemPedido item: pedido.getItensPedido()) {
+			item.setPedido(pedido);
+		}
+		return dao.save(pedido);
+	}
     
 }

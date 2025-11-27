@@ -2,7 +2,7 @@ package com.gabriel_nunez.oficina_mecanica.service;
 
 
 import java.util.ArrayList;
-
+import org.springframework.data.domain.Page;
 import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 
@@ -12,11 +12,12 @@ public interface IPecaService {
     public Peca            alterarPeca(Peca peca);
     public Peca            recuperarPorId(int idPeca);
     public ArrayList<Peca> listarTodos();
-    public ArrayList<Peca> listarDisponiveis();
-    public ArrayList<Peca> listarDestaques();
+	public Page<Peca> 	  listarDisponiveis(int pagina);
+	public Page<Peca> 	  listarDestaques(int pagina);
     public ArrayList<Peca> listarIndisponiveis();
     public ArrayList<Peca> listarPorCategoria(CategoriaPeca categoriaPeca);
-    public ArrayList<Peca> listarPecaPorPalavraChave(String palavraChave);
+    public Page<Peca>      listarPorPalavraChave(String palavraChave, int pagina);
+
 
     
 }

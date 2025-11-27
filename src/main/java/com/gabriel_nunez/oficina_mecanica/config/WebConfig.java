@@ -9,6 +9,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:/home//user/Área de trabalho/projeto/images/");
+                // Acesso para uso local
+                .addResourceLocations("file:/Users/gajonuco/Downloads/projeto/images/");
+
+
+                // Acesso para producao 
+                // .addResourceLocations("file:/var/www/projetoreal.dev.br/browser/assets/img/");
     }
 }
