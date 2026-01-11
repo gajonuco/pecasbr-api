@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gabriel_nunez.oficina_mecanica.service.IUploadService;
+import com.gabriel_nunez.oficina_mecanica.dto.FiltroRankingProdutosDTO;
 import com.gabriel_nunez.oficina_mecanica.dto.PathDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.ProdutoMaisPedidoDTO;
 import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 import com.gabriel_nunez.oficina_mecanica.service.IPecaService;
@@ -32,84 +34,113 @@ public class PecaController {
     @Autowired
     private IUploadService upload;
 
-    @PostMapping("/peca")
-    public ResponseEntity<Peca> novaPeca(@RequestBody Peca pecaNova){
-        try {
-            service.inserirNovaPeca(pecaNova);
-            return ResponseEntity.status(201).body(pecaNova);
-            
-        } catch (Exception ex) {
-            // TODO: handle exception
-        }
+
+
+@PostMapping("/peca")
+public ResponseEntity<Peca> novaPeca(@RequestBody Peca pecaNova) {
+    try {
+
+        //     //   System.out.println("========== DADOS RECEBIDOS NO BACKEND ==========");
+        // System.out.println("Nome: " + pecaNova.getNome());
+        // System.out.println("Detalhe: " + pecaNova.getDetalhe());
+        // System.out.println("Preço: " + pecaNova.getPreco());
+        // System.out.println("Preço Promo: " + pecaNova.getPrecoPromo());
+        // System.out.println("Disponível: " + pecaNova.getDisponivel());
+        // System.out.println("Destaque: " + pecaNova.getDestaque());
+        // System.out.println("Pronta Entrega: " + pecaNova.getProntaEntrega());
+        // System.out.println("--- CAMPOS DE ESTOQUE ---");
+        // System.out.println("Quantidade Estoque: " + pecaNova.getQuantidadeEstoque());
+        // System.out.println("Estoque Mínimo: " + pecaNova.getEstoqueMinimo());
+        // System.out.println("Estoque Crítico: " + pecaNova.getEstoqueCritico());
+        Peca peca = service.inserirNovaPeca(pecaNova);
+        return ResponseEntity.status(201).body(peca);
+    } catch (Exception ex) {
+        ex.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
+}
 
     @PutMapping("/peca/{idPeca}")
-    public ResponseEntity<Peca> atualizarProduto(@RequestBody Peca pecaAtual, @PathVariable int idPeca){
+    public ResponseEntity<Peca> atualizarProduto(@RequestBody Peca pecaAtual, @PathVariable int idPeca) {
 
-    try {
-        if(idPeca != pecaAtual.getId()){
-            return ResponseEntity.badRequest().build();
+        try {
+            if (idPeca != pecaAtual.getId()) {
+               
+                return ResponseEntity.badRequest().build();
+            }
+
+            Peca res = this.service.alterarPeca(pecaAtual);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
         }
-        Peca res = this.service.alterarPeca(pecaAtual);
-        return ResponseEntity.ok(res);
-    } catch (Exception e) {
-        // TODO: handle exception
-        e.printStackTrace();
-    }
-    return ResponseEntity.badRequest().build();
-        
-    }
+        return ResponseEntity.badRequest().build();
 
+    }
 
     @GetMapping("/peca/categoria/{id}")
-    public ResponseEntity<ArrayList<Peca>> recuperarPorCategoria(@PathVariable(name = "id") int idCategoriaPeca ){
+    public ResponseEntity<ArrayList<Peca>> recuperarPorCategoria(@PathVariable(name = "id") int idCategoriaPeca) {
         CategoriaPeca categoria = new CategoriaPeca();
         categoria.setId(idCategoriaPeca);
         return ResponseEntity.ok(service.listarPorCategoria(categoria));
     }
 
-	@GetMapping("/peca")
-	public ResponseEntity<Page<Peca>> recuperarTodos(@RequestParam(defaultValue = "1") int pageNumber){
-		return ResponseEntity.ok(service.listarDestaques(pageNumber));
-		
-	}
+    @GetMapping("/peca")
+    public ResponseEntity<Page<Peca>> recuperarTodos(@RequestParam(defaultValue = "1") int pageNumber) {
+        return ResponseEntity.ok(service.listarDestaques(pageNumber));
+
+    }
 
     @GetMapping("/peca/todos")
-    public ResponseEntity<ArrayList<Peca>> buscarTodos(){
+    public ResponseEntity<ArrayList<Peca>> buscarTodos() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/peca/{id}")
-    public ResponseEntity <Peca> recuperarPorId(@PathVariable(name = "id") int idPeca) {
+    public ResponseEntity<Peca> recuperarPorId(@PathVariable(name = "id") int idPeca) {
         Peca peca = service.recuperarPorId(idPeca);
-        if(peca != null){
+        if (peca != null) {
             return ResponseEntity.ok(peca);
 
         }
         return ResponseEntity.notFound().build();
 
     }
-    
-	@GetMapping("/peca/busca")
-	public ResponseEntity<Page<Peca>> buscarPorPalavraChave(@RequestParam (name="key") String key, @RequestParam(name="pageNumber", defaultValue = "0") int pagina){
-		System.out.println("key = " + key);
-		if (key != null) {
-			return ResponseEntity.ok(service.listarPorPalavraChave(key, pagina));
-		}
-		return ResponseEntity.badRequest().build();
-	
-    
+
+    @GetMapping("/peca/busca")
+    public ResponseEntity<Page<Peca>> buscarPorPalavraChave(@RequestParam(name = "key") String key,
+            @RequestParam(name = "pageNumber", defaultValue = "0") int pagina) {
+        System.out.println("key = " + key);
+        if (key != null) {
+            return ResponseEntity.ok(service.listarPorPalavraChave(key, pagina));
+        }
+        return ResponseEntity.badRequest().build();
+
     }
 
     @PostMapping("/peca/upload")
-    public ResponseEntity<PathDTO> uploadFoto(@RequestParam("arquivo") MultipartFile arquivo){
+    public ResponseEntity<PathDTO> uploadFoto(@RequestParam("arquivo") MultipartFile arquivo) {
         String path = upload.uploadFile(arquivo);
-        if(path == null){
+        if (path == null) {
             return ResponseEntity.badRequest().build();
         }
         PathDTO pathDTO = new PathDTO();
         pathDTO.setPathToFile(path);
         return ResponseEntity.status(201).body(pathDTO);
     }
+
+    @PostMapping("/produtos_mais_pedidos")
+    public ResponseEntity<ArrayList<ProdutoMaisPedidoDTO>> obterProdutosMaisPedidos(@RequestBody FiltroRankingProdutosDTO filtro) {
+        try {
+            ArrayList<ProdutoMaisPedidoDTO> produtos = service.listarProdutosMaisPedidos(filtro);
+            return ResponseEntity.ok(produtos);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+
+    
 }

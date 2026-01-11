@@ -69,4 +69,5 @@ public interface PedidoDAO extends CrudRepository<Pedido, Integer> {
             " ORDER BY p.dataPedido ASC")
     ArrayList<VendasPorDataDTO> recuperarVendasPorData(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
 
+
 }

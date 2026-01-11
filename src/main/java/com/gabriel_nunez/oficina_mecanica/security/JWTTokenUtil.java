@@ -19,7 +19,15 @@ import org.springframework.security.core.Authentication;
 public class JWTTokenUtil {
 
     private static final String SECRET_KEY = "OficianMecacniaWebToken2025XXA1B2C3";
-    private static final int EXPIRATION = 120*60*1000;
+
+    // Token de uma semana
+    private static final int EXPIRATION = 7 * 24 * 60 * 60 * 1000;
+
+    // Token de duas horas
+    // private static final int EXPIRATION = 120*60*1000;
+    
+    // Token de 15 segundos
+    // private static final int EXPIRATION = 15*1000;
     private static final String TK_PREFIX = "Bearer ";
     private static final String HEADER_AUTH = "Authorization";
 

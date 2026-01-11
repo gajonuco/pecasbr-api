@@ -13,9 +13,16 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class TokenFilter extends OncePerRequestFilter {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+
+		String path = request.getRequestURI();
+
+		if (path.startsWith("/api/notifications")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		if (request.getHeader("Authorization") != null) {
 			// se eu tiver um cabeçalho com token, precioso decodificar este token
@@ -28,6 +35,7 @@ public class TokenFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
-    }
-    
+	}
+
 }
+

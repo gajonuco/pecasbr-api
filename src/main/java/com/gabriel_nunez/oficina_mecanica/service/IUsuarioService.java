@@ -11,4 +11,5 @@ public interface IUsuarioService {
     public Usuario adicionarNovo(Usuario novo);
     public Usuario atualizarUsuario(Usuario user);
     public Usuario recuerarPeloId(int id);
+    public Usuario buscarUsuarioPorCredenciais(Usuario usurio);
 }

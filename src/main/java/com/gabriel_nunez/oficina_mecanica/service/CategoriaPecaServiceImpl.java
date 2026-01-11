@@ -53,10 +53,11 @@ public class CategoriaPecaServiceImpl implements ICategoriaPecaService {
 
     @Override
     public ArrayList<CategoriaPeca> recuperarPorPalavraChave(String palavraChave) {
-        if(palavraChave != null){
-            dao.findByNomeContaining(palavraChave);
+        if(palavraChave != null && !palavraChave.trim().isEmpty()){
+            return dao.findByNomeContaining(palavraChave);
+            
         }
-        return null;
+        return new ArrayList<>();
     }
 
 

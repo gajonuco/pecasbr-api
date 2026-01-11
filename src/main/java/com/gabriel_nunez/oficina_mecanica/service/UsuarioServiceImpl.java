@@ -26,6 +26,18 @@ public class UsuarioServiceImpl implements IUsuarioService {
 		return null;
 	}
 
+        // Novo método para verificar se usuário existe (independente do status ativo)
+    @Override
+    public Usuario buscarUsuarioPorCredenciais(Usuario original) {
+        Usuario user = dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
+        if (user != null && user.getSenha().equals(original.getSenha())) {
+            user.setSenha(null);
+            return user;
+        }
+        return null;
+    }
+
+
     @Override
     public ArrayList<Usuario> recuperarTodos() {
         // TODO Auto-generated method stub

@@ -46,7 +46,7 @@ public class FreteServiceImpl implements IFreteService {
 		//System.out.println(listaFretes);
 		Frete frete = new Frete();
 		for (Frete f: listaFretes) {
-			if (prefixo.startsWith(f.getPrefixo())) {
+			if (prefixo.startsWith(f.getPrefixo().trim())) {
 				return f;
 			}
 		}

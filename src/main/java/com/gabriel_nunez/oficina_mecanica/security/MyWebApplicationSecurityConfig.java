@@ -10,6 +10,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+
 import java.util.Arrays;
 
 @Configuration
@@ -39,6 +43,8 @@ public class MyWebApplicationSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/fretes/prefixo/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/notifications/**").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/v3/api-docs*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v3/api-docs/*").permitAll()
 
@@ -68,5 +74,11 @@ public class MyWebApplicationSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    @Bean
+	public OpenAPI customOpenAPI() {
+		return new OpenAPI().components(new Components().addSecuritySchemes("bearerAuth",
+				new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("Bearer").bearerFormat("JWT")));
+	}
 
 }

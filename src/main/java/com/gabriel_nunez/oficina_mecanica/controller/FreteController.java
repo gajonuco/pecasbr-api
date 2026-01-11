@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gabriel_nunez.oficina_mecanica.model.Frete;
 import com.gabriel_nunez.oficina_mecanica.service.IFreteService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @CrossOrigin("*")
 public class FreteController {
@@ -46,6 +49,7 @@ public class FreteController {
 	}
 
  	@GetMapping("/fretes")
+	@Operation(summary = "fretes", security = @SecurityRequirement(name = "bearerAuth"))
 	public ResponseEntity<ArrayList<Frete>> buscarTodos() {
 		return ResponseEntity.ok(service.recuperarTodos());
 	}

@@ -3,6 +3,9 @@ package com.gabriel_nunez.oficina_mecanica.service;
 
 import java.util.ArrayList;
 import org.springframework.data.domain.Page;
+
+import com.gabriel_nunez.oficina_mecanica.dto.FiltroRankingProdutosDTO;
+import com.gabriel_nunez.oficina_mecanica.dto.ProdutoMaisPedidoDTO;
 import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import com.gabriel_nunez.oficina_mecanica.model.Peca;
 
@@ -17,6 +20,11 @@ public interface IPecaService {
     public ArrayList<Peca> listarIndisponiveis();
     public ArrayList<Peca> listarPorCategoria(CategoriaPeca categoriaPeca);
     public Page<Peca>      listarPorPalavraChave(String palavraChave, int pagina);
+
+    public ArrayList<ProdutoMaisPedidoDTO> listarProdutosMaisPedidos(FiltroRankingProdutosDTO filtro);
+
+    
+
 
 
     

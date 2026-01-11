@@ -20,34 +20,41 @@ import com.gabriel_nunez.oficina_mecanica.service.IUsuarioService;
 @CrossOrigin("*")
 @RestController
 public class UsuarioController {
-    
+
     @Autowired
     private IUsuarioService service;
 
     @PostMapping("/login")
-    public ResponseEntity<JWTToken> fazerLogin(@RequestBody Usuario dadosLogin){
+    public ResponseEntity<JWTToken> fazerLogin(@RequestBody Usuario dadosLogin) {
         System.out.println("dados login: " + dadosLogin);
         Usuario user = service.recuperarUsuario(dadosLogin);
-        if (user != null){
+        if (user != null) {
 
-                JWTToken jwtToken = new JWTToken();
+            JWTToken jwtToken = new JWTToken();
 
-                jwtToken.setToken(JWTTokenUtil.generateToken(user));
+            jwtToken.setToken(JWTTokenUtil.generateToken(user));
 
-                return ResponseEntity.ok(jwtToken);
+            return ResponseEntity.ok(jwtToken);
         }
-        return ResponseEntity.status(403).build();
+        // Verifica se o usuário existe mas está inativo
+        Usuario userInativo = service.buscarUsuarioPorCredenciais(dadosLogin);
+        if (userInativo != null && userInativo.getAtivo() == 0) {
+            return ResponseEntity.status(403).build(); // Forbidden - usuário inativo
+        }
+
+        // Credenciais inválidas
+        return ResponseEntity.status(401).build(); // Unauthorized - usuário/senha incorretos
     }
 
     @GetMapping("/usuario")
-    public ResponseEntity<ArrayList<Usuario>> recuperarTodos(){
+    public ResponseEntity<ArrayList<Usuario>> recuperarTodos() {
         return ResponseEntity.ok(service.recuperarTodos());
     }
 
     @PostMapping("/usuario")
     public ResponseEntity<Usuario> adicionarNovo(@RequestBody Usuario novo) {
         Usuario res = service.adicionarNovo(novo);
-        if(res != null){
+        if (res != null) {
             return ResponseEntity.status(201).body(res);
         }
         return ResponseEntity.badRequest().build();
@@ -58,21 +65,20 @@ public class UsuarioController {
         usuario.setId(id);
         Usuario res = service.atualizarUsuario(usuario);
 
-        if(res != null){
+        if (res != null) {
             return ResponseEntity.ok(res);
-        }
-        else{
+        } else {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/usuario/{id}")
-    public ResponseEntity<Usuario> recuperarPeloId(@PathVariable int id){
+    public ResponseEntity<Usuario> recuperarPeloId(@PathVariable int id) {
         Usuario res = service.recuerarPeloId(id);
 
-        if(res != null){
+        if (res != null) {
             return ResponseEntity.ok(res);
-        } else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
