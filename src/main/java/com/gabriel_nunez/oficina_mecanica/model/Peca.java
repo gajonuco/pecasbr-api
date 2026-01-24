@@ -63,7 +63,7 @@ public class Peca {
     private Integer estoqueMinimo;
 
     @Column(name = "estoque_critico", nullable = false)
-    @JsonProperty("estoqueCritico")  // ← ADICIONE ESTA ANOTAÇÃO
+    @JsonProperty("estoqueCritico") 
     private Integer estoqueCritico;
 
     @ManyToOne(fetch = FetchType.EAGER)
