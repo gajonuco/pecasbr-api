@@ -1,80 +1,74 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.dao.CategoriaPecaDAO
+ *  com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca
+ *  com.gabriel_nunez.oficina_mecanica.service.CategoriaPecaServiceImpl
+ *  com.gabriel_nunez.oficina_mecanica.service.ICategoriaPecaService
+ *  org.springframework.beans.factory.annotation.Autowired
+ *  org.springframework.stereotype.Component
+ */
 package com.gabriel_nunez.oficina_mecanica.service;
-
-import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.gabriel_nunez.oficina_mecanica.dao.CategoriaPecaDAO;
 import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
+import com.gabriel_nunez.oficina_mecanica.service.ICategoriaPecaService;
+import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
-public class CategoriaPecaServiceImpl implements ICategoriaPecaService {
-
+public class CategoriaPecaServiceImpl
+implements ICategoriaPecaService {
     @Autowired
     private CategoriaPecaDAO dao;
 
-    @Override
     public CategoriaPeca adicionarNovaCategoriaPeca(CategoriaPeca categoriaPeca) {
         try {
-            if(categoriaPeca.getNome() != null && categoriaPeca.getNome().trim().length() > 0){
-                dao.save(categoriaPeca);
+            if (categoriaPeca.getNome() != null && categoriaPeca.getNome().trim().length() > 0) {
+                this.dao.save(categoriaPeca);
                 return categoriaPeca;
             }
-        } catch (IllegalArgumentException ex) {
+        }
+        catch (IllegalArgumentException ex) {
             System.out.println("DEBUG =" + ex.getMessage());
-        } catch (Exception ex){
-            System.out.println("DEBUG = " + ex.getMessage() );
         }
-
+        catch (Exception ex) {
+            System.out.println("DEBUG = " + ex.getMessage());
+        }
         return null;
     }
-    
 
-
-    @Override
     public CategoriaPeca alterarCategoriaPeca(CategoriaPeca categoriaPeca) {
-        // TODO Auto-generated method stub
         try {
-            if(categoriaPeca.getId() != null && categoriaPeca.getNome().trim().length() > 0){
-                return dao.save(categoriaPeca);
+            if (categoriaPeca.getId() != null && categoriaPeca.getNome().trim().length() > 0) {
+                return (CategoriaPeca)this.dao.save(categoriaPeca);
             }
-        } catch (Exception ex) {
-            System.out.println("DEBUG = " + ex);
         }
-
+        catch (Exception ex) {
+            System.out.println("DEBUG = " + String.valueOf(ex));
+        }
         return null;
     }
 
-    @Override
     public ArrayList<CategoriaPeca> recuperarTodasCategoriasPecas() {
-        return (ArrayList<CategoriaPeca>)dao.findAll();
+        return (ArrayList)this.dao.findAll();
     }
 
-    @Override
     public ArrayList<CategoriaPeca> recuperarPorPalavraChave(String palavraChave) {
-        if(palavraChave != null && !palavraChave.trim().isEmpty()){
-            return dao.findByNomeContaining(palavraChave);
-            
+        if (palavraChave != null && !palavraChave.trim().isEmpty()) {
+            return this.dao.findByNomeContaining(palavraChave);
         }
-        return new ArrayList<>();
+        return new ArrayList<CategoriaPeca>();
     }
 
-
-
-    @Override
     public CategoriaPeca recuperaPorID(int id) {
-        // TODO Auto-generated method stub
-        return dao.findById(id).orElse(null);
+        return this.dao.findById(id).orElse(null);
     }
 
-
-
-    @Override
     public ArrayList<CategoriaPeca> recuperarTodasPeloId() {
-        // TODO Auto-generated method stub
-        return dao.findAllByOrderById();
+        return this.dao.findAllByOrderById();
     }
-
-    
 }
+

@@ -2,6 +2,8 @@ package com.gabriel_nunez.oficina_mecanica.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,10 +31,11 @@ public class Cliente {
     private String telefone;
 
     @Column(name = "data_nasc")
+    @JsonFormat(pattern = "yyyy-MM-dd")  
     private LocalDate dataNasc;
     
 
-    @Column(name = "cpf_cliente", length = 14, nullable = false, unique = true)
+    @Column(name = "cpf_cliente", nullable = false, unique = true)
     private String cpf;
 
 

@@ -1,8 +1,28 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.fasterxml.jackson.annotation.JsonIgnoreProperties
+ *  com.gabriel_nunez.oficina_mecanica.model.ItemPedido
+ *  com.gabriel_nunez.oficina_mecanica.model.Peca
+ *  com.gabriel_nunez.oficina_mecanica.model.PecaVariacao
+ *  com.gabriel_nunez.oficina_mecanica.model.Pedido
+ *  jakarta.persistence.Column
+ *  jakarta.persistence.Entity
+ *  jakarta.persistence.FetchType
+ *  jakarta.persistence.GeneratedValue
+ *  jakarta.persistence.GenerationType
+ *  jakarta.persistence.Id
+ *  jakarta.persistence.JoinColumn
+ *  jakarta.persistence.ManyToOne
+ *  jakarta.persistence.Table
+ */
 package com.gabriel_nunez.oficina_mecanica.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.gabriel_nunez.oficina_mecanica.model.Peca;
+import com.gabriel_nunez.oficina_mecanica.model.PecaVariacao;
+import com.gabriel_nunez.oficina_mecanica.model.Pedido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,33 +34,35 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tbl_itempedido")
+@Table(name="tbl_itempedido")
 public class ItemPedido {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int num_seq;
-
-    @Column(name = "qtdt_item", unique = true)
+    @Column(name="qtdt_item", unique=true)
     private int qtdtItem;
-
-    @Column(name = "preco_unitario")
+    @Column(name="preco_unitario")
     private double precoUnitario;
-    
-    @Column(name = "preco_total")
-    private double precoTotal; 
-
+    @Column(name="preco_total")
+    private double precoTotal;
+    @Column(name="cor_escolhida", length=50)
+    private String corEscolhida;
+    @Column(name="tamanho_escolhido", length=20)
+    private String tamanhoEscolhido;
     @ManyToOne
-    @JoinColumn(name = "id_pedido")
-    @JsonIgnoreProperties("itensPedido")
+    @JoinColumn(name="id_pedido")
+    @JsonIgnoreProperties(value={"itensPedido"})
     private Pedido pedido;
-
-    @ManyToOne(fetch = FetchType.EAGER) // ← Força carregar tudo
-    @JoinColumn(name = "id_peca")
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="id_peca")
     private Peca peca;
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="id_variacao")
+    @JsonIgnoreProperties(value={"peca"})
+    private PecaVariacao variacao;
 
     public int getNum_seq() {
-        return num_seq;
+        return this.num_seq;
     }
 
     public void setNum_seq(int num_seq) {
@@ -48,7 +70,7 @@ public class ItemPedido {
     }
 
     public int getQtdtItem() {
-        return qtdtItem;
+        return this.qtdtItem;
     }
 
     public void setQtdtItem(int qtdtItem) {
@@ -56,7 +78,7 @@ public class ItemPedido {
     }
 
     public double getPrecoUnitario() {
-        return precoUnitario;
+        return this.precoUnitario;
     }
 
     public void setPrecoUnitario(double precoUnitario) {
@@ -64,7 +86,7 @@ public class ItemPedido {
     }
 
     public double getPrecoTotal() {
-        return precoTotal;
+        return this.precoTotal;
     }
 
     public void setPrecoTotal(double precoTotal) {
@@ -72,7 +94,7 @@ public class ItemPedido {
     }
 
     public Pedido getPedido() {
-        return pedido;
+        return this.pedido;
     }
 
     public void setPedido(Pedido pedido) {
@@ -80,12 +102,35 @@ public class ItemPedido {
     }
 
     public Peca getPeca() {
-        return peca;
+        return this.peca;
     }
 
     public void setPeca(Peca peca) {
         this.peca = peca;
     }
 
-    
+    public String getCorEscolhida() {
+        return this.corEscolhida;
+    }
+
+    public void setCorEscolhida(String corEscolhida) {
+        this.corEscolhida = corEscolhida;
+    }
+
+    public String getTamanhoEscolhido() {
+        return this.tamanhoEscolhido;
+    }
+
+    public void setTamanhoEscolhido(String tamanhoEscolhido) {
+        this.tamanhoEscolhido = tamanhoEscolhido;
+    }
+
+    public PecaVariacao getVariacao() {
+        return this.variacao;
+    }
+
+    public void setVariacao(PecaVariacao variacao) {
+        this.variacao = variacao;
+    }
 }
+

@@ -1,35 +1,40 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.dao.UsuarioDAO
+ *  com.gabriel_nunez.oficina_mecanica.model.Usuario
+ *  com.gabriel_nunez.oficina_mecanica.service.IUsuarioService
+ *  com.gabriel_nunez.oficina_mecanica.service.UsuarioServiceImpl
+ *  org.springframework.beans.factory.annotation.Autowired
+ *  org.springframework.stereotype.Component
+ */
 package com.gabriel_nunez.oficina_mecanica.service;
-
-import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.gabriel_nunez.oficina_mecanica.dao.UsuarioDAO;
 import com.gabriel_nunez.oficina_mecanica.model.Usuario;
+import com.gabriel_nunez.oficina_mecanica.service.IUsuarioService;
+import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
-public class UsuarioServiceImpl implements IUsuarioService {
-
+public class UsuarioServiceImpl
+implements IUsuarioService {
     @Autowired
     private UsuarioDAO dao;
 
-	@Override
-	public Usuario recuperarUsuario(Usuario original) {
+    public Usuario recuperarUsuario(Usuario original) {
+        Usuario user = this.dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
+        if (user != null && user.getSenha().equals(original.getSenha()) && user.getAtivo() == 1) {
+            user.setSenha(null);
+            return user;
+        }
+        return null;
+    }
 
-		Usuario user = dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
-		if (user != null)
-			if (user.getSenha().equals(original.getSenha()) && user.getAtivo() == 1) {
-				user.setSenha(null);
-				return user;
-			}
-		return null;
-	}
-
-        // Novo método para verificar se usuário existe (independente do status ativo)
-    @Override
     public Usuario buscarUsuarioPorCredenciais(Usuario original) {
-        Usuario user = dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
+        Usuario user = this.dao.findByUsernameOrEmail(original.getUsername(), original.getEmail());
         if (user != null && user.getSenha().equals(original.getSenha())) {
             user.setSenha(null);
             return user;
@@ -37,47 +42,38 @@ public class UsuarioServiceImpl implements IUsuarioService {
         return null;
     }
 
-
-    @Override
     public ArrayList<Usuario> recuperarTodos() {
-        // TODO Auto-generated method stub
-        return (ArrayList<Usuario>) dao.findAll();
+        return (ArrayList)this.dao.findAll();
     }
 
-    @Override
     public Usuario adicionarNovo(Usuario novo) {
-        // TODO Auto-generated method stub
-        if (novo.getUsername().length() > 0 && novo.getEmail().length() > 0 && novo.getNome_usuario().length() > 0
-                && novo.getEmail().length() > 0) {
+        if (novo.getUsername().length() > 0 && novo.getEmail().length() > 0 && novo.getNome_usuario().length() > 0 && novo.getEmail().length() > 0) {
             novo.setAtivo(1);
             try {
-                dao.save(novo);
+                this.dao.save(novo);
                 return novo;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 ex.printStackTrace();
                 return null;
             }
-
         }
         return null;
     }
 
-    @Override
     public Usuario atualizarUsuario(Usuario user) {
-        // TODO Auto-generated method stub
         try {
-            dao.save(user);
+            this.dao.save(user);
             return user;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
-
     }
 
-    @Override
     public Usuario recuerarPeloId(int id) {
-        // TODO Auto-generated method stub
-        return dao.findById(id).orElse(null);
+        return this.dao.findById(id).orElse(null);
     }
 }
+

@@ -1,3 +1,15 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.model.Frete
+ *  jakarta.persistence.Column
+ *  jakarta.persistence.Entity
+ *  jakarta.persistence.GeneratedValue
+ *  jakarta.persistence.GenerationType
+ *  jakarta.persistence.Id
+ *  jakarta.persistence.Table
+ */
 package com.gabriel_nunez.oficina_mecanica.model;
 
 import jakarta.persistence.Column;
@@ -8,70 +20,63 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tbl_frete")
+@Table(name="tbl_frete")
 public class Frete {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private int id;
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="id")
+    private int id;
+    @Column(name="prefixo", length=10, nullable=false, unique=true)
+    private String prefixo;
+    @Column(name="descricao", length=100)
+    private String descricao;
+    @Column(name="valor")
+    private double valor;
+    @Column(name="disponivel")
+    private int disponivel;
 
-	@Column(name = "prefixo", length = 10, nullable = false, unique = true)
-	private String prefixo;
+    public String toString() {
+        return this.prefixo;
+    }
 
-	@Column(name = "descricao", length = 100)
-	private String descricao;
-	
-	@Column(name = "valor")
-	private double valor;
-	
-	@Column(name = "disponivel")
-	private int disponivel;
+    public int getId() {
+        return this.id;
+    }
 
-	
-	public String toString() {
-		return this.prefixo;
-	}
-	public int getId() {
-		return id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public String getPrefixo() {
+        return this.prefixo;
+    }
 
-	public String getPrefixo() {
-		return prefixo;
-	}
+    public void setPrefixo(String prefixo) {
+        this.prefixo = prefixo;
+    }
 
-	public void setPrefixo(String prefixo) {
-		this.prefixo = prefixo;
-	}
+    public String getDescricao() {
+        return this.descricao;
+    }
 
-	public String getDescricao() {
-		return descricao;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public double getValor() {
+        return this.valor;
+    }
 
-	public double getValor() {
-		return valor;
-	}
+    public void setValor(double valor) {
+        this.valor = valor;
+    }
 
-	public void setValor(double valor) {
-		this.valor = valor;
-	}
+    public int getDisponivel() {
+        return this.disponivel;
+    }
 
-	public int getDisponivel() {
-		return disponivel;
-	}
-
-	public void setDisponivel(int disponivel) {
-		this.disponivel = disponivel;
-	}
-	
-	
-
-
+    public void setDisponivel(int disponivel) {
+        this.disponivel = disponivel;
+    }
 }
+

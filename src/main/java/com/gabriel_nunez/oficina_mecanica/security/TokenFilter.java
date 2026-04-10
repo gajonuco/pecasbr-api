@@ -1,41 +1,46 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.security.JWTTokenUtil
+ *  com.gabriel_nunez.oficina_mecanica.security.TokenFilter
+ *  jakarta.servlet.FilterChain
+ *  jakarta.servlet.ServletException
+ *  jakarta.servlet.ServletRequest
+ *  jakarta.servlet.ServletResponse
+ *  jakarta.servlet.http.HttpServletRequest
+ *  jakarta.servlet.http.HttpServletResponse
+ *  org.springframework.security.core.Authentication
+ *  org.springframework.security.core.context.SecurityContextHolder
+ *  org.springframework.web.filter.OncePerRequestFilter
+ */
 package com.gabriel_nunez.oficina_mecanica.security;
 
+import com.gabriel_nunez.oficina_mecanica.security.JWTTokenUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-public class TokenFilter extends OncePerRequestFilter {
-
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-
-		String path = request.getRequestURI();
-
-		if (path.startsWith("/api/notifications")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
-		if (request.getHeader("Authorization") != null) {
-			// se eu tiver um cabeçalho com token, precioso decodificar este token
-			Authentication auth = JWTTokenUtil.decodeToken(request);
-
-			// se for válido, vai para o contexto da requisição um objeto que representa o
-			// token
-			// senão vai null
-			SecurityContextHolder.getContext().setAuthentication(auth);
-		}
-
-		filterChain.doFilter(request, response);
-	}
-
+public class TokenFilter
+extends OncePerRequestFilter {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/notifications")) {
+            filterChain.doFilter((ServletRequest)request, (ServletResponse)response);
+            return;
+        }
+        if (request.getHeader("Authorization") != null) {
+            Authentication auth = JWTTokenUtil.decodeToken((HttpServletRequest)request);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+        filterChain.doFilter((ServletRequest)request, (ServletResponse)response);
+    }
 }
 

@@ -1,7 +1,29 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.controller.UsuarioController
+ *  com.gabriel_nunez.oficina_mecanica.model.Usuario
+ *  com.gabriel_nunez.oficina_mecanica.security.JWTToken
+ *  com.gabriel_nunez.oficina_mecanica.security.JWTTokenUtil
+ *  com.gabriel_nunez.oficina_mecanica.service.IUsuarioService
+ *  org.springframework.beans.factory.annotation.Autowired
+ *  org.springframework.http.ResponseEntity
+ *  org.springframework.web.bind.annotation.CrossOrigin
+ *  org.springframework.web.bind.annotation.GetMapping
+ *  org.springframework.web.bind.annotation.PathVariable
+ *  org.springframework.web.bind.annotation.PostMapping
+ *  org.springframework.web.bind.annotation.PutMapping
+ *  org.springframework.web.bind.annotation.RequestBody
+ *  org.springframework.web.bind.annotation.RestController
+ */
 package com.gabriel_nunez.oficina_mecanica.controller;
 
+import com.gabriel_nunez.oficina_mecanica.model.Usuario;
+import com.gabriel_nunez.oficina_mecanica.security.JWTToken;
+import com.gabriel_nunez.oficina_mecanica.security.JWTTokenUtil;
+import com.gabriel_nunez.oficina_mecanica.service.IUsuarioService;
 import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,74 +34,59 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gabriel_nunez.oficina_mecanica.model.Usuario;
-import com.gabriel_nunez.oficina_mecanica.security.JWTTokenUtil;
-import com.gabriel_nunez.oficina_mecanica.security.JWTToken;
-import com.gabriel_nunez.oficina_mecanica.service.IUsuarioService;
-
-@CrossOrigin("*")
+@CrossOrigin(value={"*"})
 @RestController
 public class UsuarioController {
-
     @Autowired
     private IUsuarioService service;
 
-    @PostMapping("/login")
+    @PostMapping(value={"/login"})
     public ResponseEntity<JWTToken> fazerLogin(@RequestBody Usuario dadosLogin) {
-        System.out.println("dados login: " + dadosLogin);
-        Usuario user = service.recuperarUsuario(dadosLogin);
+        System.out.println("dados login: " + String.valueOf(dadosLogin));
+        Usuario user = this.service.recuperarUsuario(dadosLogin);
         if (user != null) {
-
             JWTToken jwtToken = new JWTToken();
-
-            jwtToken.setToken(JWTTokenUtil.generateToken(user));
-
+            jwtToken.setToken(JWTTokenUtil.generateToken((Usuario)user));
             return ResponseEntity.ok(jwtToken);
         }
-        // Verifica se o usuário existe mas está inativo
-        Usuario userInativo = service.buscarUsuarioPorCredenciais(dadosLogin);
+        Usuario userInativo = this.service.buscarUsuarioPorCredenciais(dadosLogin);
         if (userInativo != null && userInativo.getAtivo() == 0) {
-            return ResponseEntity.status(403).build(); // Forbidden - usuário inativo
+            return ResponseEntity.status((int)403).build();
         }
-
-        // Credenciais inválidas
-        return ResponseEntity.status(401).build(); // Unauthorized - usuário/senha incorretos
+        return ResponseEntity.status((int)401).build();
     }
 
-    @GetMapping("/usuario")
+    @GetMapping(value={"/usuario"})
     public ResponseEntity<ArrayList<Usuario>> recuperarTodos() {
-        return ResponseEntity.ok(service.recuperarTodos());
+        return ResponseEntity.ok(this.service.recuperarTodos());
     }
 
-    @PostMapping("/usuario")
+    @PostMapping(value={"/usuario"})
     public ResponseEntity<Usuario> adicionarNovo(@RequestBody Usuario novo) {
-        Usuario res = service.adicionarNovo(novo);
+        Usuario res = this.service.adicionarNovo(novo);
         if (res != null) {
-            return ResponseEntity.status(201).body(res);
+            return ResponseEntity.status((int)201).body(res);
         }
         return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping("/usuario/{id}")
+    @PutMapping(value={"/usuario/{id}"})
     public ResponseEntity<Usuario> alterarDados(@RequestBody Usuario usuario, @PathVariable int id) {
         usuario.setId(id);
-        Usuario res = service.atualizarUsuario(usuario);
-
+        Usuario res = this.service.atualizarUsuario(usuario);
         if (res != null) {
             return ResponseEntity.ok(res);
-        } else {
-            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/usuario/{id}")
+    @GetMapping(value={"/usuario/{id}"})
     public ResponseEntity<Usuario> recuperarPeloId(@PathVariable int id) {
-        Usuario res = service.recuerarPeloId(id);
-
+        Usuario res = this.service.recuerarPeloId(id);
         if (res != null) {
             return ResponseEntity.ok(res);
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 }
+

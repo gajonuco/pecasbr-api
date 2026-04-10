@@ -3,6 +3,7 @@ package com.gabriel_nunez.oficina_mecanica.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.gabriel_nunez.oficina_mecanica.dto.VendasPorDataDTO;
 import com.gabriel_nunez.oficina_mecanica.dto.FiltroPedidoDTO;
@@ -23,4 +24,6 @@ public interface IPedidoService {
 
     public ArrayList<Pedido> filtrarPorVariosCriterios(FiltroPedidoDTO filtro);
     public List<VendasPorDataDTO> recuperarTotaisUltimaSemana(LocalDate inicio, LocalDate fim);
+
+
 }

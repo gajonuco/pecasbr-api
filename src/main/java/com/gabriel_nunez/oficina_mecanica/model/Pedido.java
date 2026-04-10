@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "tbl_pedido")
 public class Pedido {
 
-	public static final int NOVO_PEDIDO   = 1;
-	public static final int PAGO          = 2;
-	public static final int EM_TRANSPORTE = 3;
-	public static final int ENTREGUE      = 4;
-	public static final int POS_VENDA     = 5;
-	public static final int FINALIZADO    = 6;
-    public static final int CANCELADO     = 7;
+    public static final int NOVO_PEDIDO = 1;
+    public static final int PAGO = 2;
+    public static final int EM_TRANSPORTE = 3;
+    public static final int ENTREGUE = 4;
+    public static final int POS_VENDA = 5;
+    public static final int FINALIZADO = 6;
+    public static final int CANCELADO = 7;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +36,17 @@ public class Pedido {
     @Column(name = "status", nullable = false)
     private int status;
 
-    	@Column(name = "valor_frete")
-	private double valorFrete;
-	
-	@Column(name = "retirar")
-	private int    retirar;
+    @Column(name = "valor_frete")
+    private double valorFrete;
+
+    @Column(name = "retirar")
+    private int retirar;
+
+    @Column(name = "link_pagamento", length = 500)
+    private String linkPagamento;
+
+    @Column(name = "asaas_payment_id")
+    private String asaasPaymentId;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente")
@@ -50,22 +56,23 @@ public class Pedido {
     @JsonIgnoreProperties("pedido")
     private List<ItemPedido> itensPedido;
 
-    	public Pedido() {
-		super();
-	}
-	
-	public Pedido(int id, LocalDate data, String nomeCliente, double valorTotal, double frete, int retirar, String observacao, int status) {
-		this.id = id;
-		this.dataPedido = data;
-		Cliente cliente = new Cliente();
-		cliente.setNome(nomeCliente);
-		this.cliente = cliente;
-		this.valorTotal = valorTotal;
-		this.valorFrete = frete;
-		this.retirar = retirar;
-		this.observacoes = observacao;
-		this.status = status;
-	}
+    public Pedido() {
+        super();
+    }
+
+    public Pedido(int id, LocalDate data, String nomeCliente, double valorTotal, double frete, int retirar,
+            String observacao, int status) {
+        this.id = id;
+        this.dataPedido = data;
+        Cliente cliente = new Cliente();
+        cliente.setNome(nomeCliente);
+        this.cliente = cliente;
+        this.valorTotal = valorTotal;
+        this.valorFrete = frete;
+        this.retirar = retirar;
+        this.observacoes = observacao;
+        this.status = status;
+    }
 
     public Integer getId() {
         return id;
@@ -139,7 +146,17 @@ public class Pedido {
         this.retirar = retirar;
     }
 
-    
+    public String getLinkPagamento() {
+        return linkPagamento;
+    }
 
-    
+    public void setLinkPagamento(String linkPagamento) {
+        this.linkPagamento = linkPagamento;
+    }
+    public String getAsaasPaymentId() {
+        return asaasPaymentId;
+    }
+    public void setAsaasPaymentId(String asaasPaymentId) {
+        this.asaasPaymentId = asaasPaymentId;
+    }
 }
