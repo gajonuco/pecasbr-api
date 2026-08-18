@@ -1,3 +1,9 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.dto.FiltroPedidoDTO
+ */
 package com.gabriel_nunez.oficina_mecanica.dto;
 
 import java.time.LocalDate;
@@ -15,67 +21,83 @@ public class FiltroPedidoDTO {
     private int cancelado;
 
     public LocalDate getDataInicio() {
-        return dataInicio;
+        return this.dataInicio;
     }
+
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
     }
+
     public LocalDate getDataFim() {
-        return dataFim;
+        return this.dataFim;
     }
+
     public void setDataFim(LocalDate dataFim) {
         this.dataFim = dataFim;
     }
+
     public String getNome() {
-        return nome;
+        return this.nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
+
     public int getPago() {
-        return pago;
+        return this.pago;
     }
+
     public void setPago(int pago) {
         this.pago = pago;
     }
+
     public int getEntregue() {
-        return entregue;
+        return this.entregue;
     }
+
     public void setEntregue(int entregue) {
         this.entregue = entregue;
     }
+
     public int getCancelado() {
-        return cancelado;
+        return this.cancelado;
     }
+
     public void setCancelado(int cancelado) {
         this.cancelado = cancelado;
     }
+
     public int getNovo() {
-        return novo;
+        return this.novo;
     }
+
     public void setNovo(int novo) {
         this.novo = novo;
     }
+
     public int getTransporte() {
-        return transporte;
+        return this.transporte;
     }
+
     public void setTransporte(int transporte) {
         this.transporte = transporte;
     }
+
     public int getPosVenda() {
-        return posVenda;
+        return this.posVenda;
     }
+
     public void setPosVenda(int posVenda) {
         this.posVenda = posVenda;
     }
+
     public int getFinalizado() {
-        return finalizado;
+        return this.finalizado;
     }
+
     public void setFinalizado(int finalizado) {
         this.finalizado = finalizado;
     }
-
-    
-
-
 }
+

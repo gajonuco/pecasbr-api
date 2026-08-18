@@ -1,3 +1,15 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.model.Usuario
+ *  jakarta.persistence.Column
+ *  jakarta.persistence.Entity
+ *  jakarta.persistence.GeneratedValue
+ *  jakarta.persistence.GenerationType
+ *  jakarta.persistence.Id
+ *  jakarta.persistence.Table
+ */
 package com.gabriel_nunez.oficina_mecanica.model;
 
 import jakarta.persistence.Column;
@@ -8,47 +20,41 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tbl_usuario")
+@Table(name="tbl_usuario")
 public class Usuario {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="id_usuario")
     private int id;
-
-    @Column(name = "username", length = 45, nullable = false, unique = true)
+    @Column(name="username", length=45, nullable=false, unique=true)
     private String username;
-
-    @Column(name = "email", length = 50 , nullable = false, unique = true)
+    @Column(name="email", length=50, nullable=false, unique=true)
     private String email;
-
-    @Column(name = "senha", length = 100 , nullable = false)
+    @Column(name="senha", length=100, nullable=false)
     private String senha;
-
-    @Column(name = "nome_usuario", length = 50, nullable = false)
+    @Column(name="nome_usuario", length=50, nullable=false)
     private String nome_usuario;
-
-    @Column(name = "usuario_ativo")
+    @Column(name="usuario_ativo")
     private int ativo;
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
-   public int getAtivo() {
-    return ativo;
-}
+    public int getAtivo() {
+        return this.ativo;
+    }
 
-public void setAtivo(int ativo) {
-    this.ativo = ativo;
-}
+    public void setAtivo(int ativo) {
+        this.ativo = ativo;
+    }
 
- public void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public void setUsername(String username) {
@@ -56,7 +62,7 @@ public void setAtivo(int ativo) {
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public void setEmail(String email) {
@@ -64,7 +70,7 @@ public void setAtivo(int ativo) {
     }
 
     public String getSenha() {
-        return senha;
+        return this.senha;
     }
 
     public void setSenha(String senha) {
@@ -72,12 +78,11 @@ public void setAtivo(int ativo) {
     }
 
     public String getNome_usuario() {
-        return nome_usuario;
+        return this.nome_usuario;
     }
 
     public void setNome_usuario(String nome_usuario) {
         this.nome_usuario = nome_usuario;
     }
-
-    
 }
+

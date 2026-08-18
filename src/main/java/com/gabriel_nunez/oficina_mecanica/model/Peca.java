@@ -1,8 +1,34 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.fasterxml.jackson.annotation.JsonIgnore
+ *  com.fasterxml.jackson.annotation.JsonProperty
+ *  com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca
+ *  com.gabriel_nunez.oficina_mecanica.model.Peca
+ *  com.gabriel_nunez.oficina_mecanica.model.PecaImagem
+ *  com.gabriel_nunez.oficina_mecanica.model.PecaVariacao
+ *  jakarta.persistence.CascadeType
+ *  jakarta.persistence.Column
+ *  jakarta.persistence.Entity
+ *  jakarta.persistence.FetchType
+ *  jakarta.persistence.GeneratedValue
+ *  jakarta.persistence.GenerationType
+ *  jakarta.persistence.Id
+ *  jakarta.persistence.JoinColumn
+ *  jakarta.persistence.ManyToOne
+ *  jakarta.persistence.OneToMany
+ *  jakarta.persistence.OrderBy
+ *  jakarta.persistence.Table
+ */
 package com.gabriel_nunez.oficina_mecanica.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
+import com.gabriel_nunez.oficina_mecanica.model.PecaImagem;
+import com.gabriel_nunez.oficina_mecanica.model.PecaVariacao;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,101 +37,129 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_peca")
 public class Peca {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_peca")
     private Integer id;
-
     @Column(name = "nome_peca", length = 100, nullable = false)
-    @JsonProperty("nome")
+    @JsonProperty(value = "nome")
     private String nome;
-
-    @Column(name = "detalhe_peca", length = 500, nullable = false)
-    @JsonProperty("detalhe")
+    @Column(name = "detalhe_peca", columnDefinition = "TEXT", nullable = false)
+    @JsonProperty(value = "detalhe")
     private String detalhe;
-
     @Column(name = "link_foto", length = 255, nullable = false)
-    @JsonProperty("linkFoto")
+    @JsonProperty(value = "linkFoto")
     private String linkFoto;
-
     @Column(name = "preco_peca", nullable = false)
-    @JsonProperty("preco")
+    @JsonProperty(value = "preco")
     private double preco;
-
     @Column(name = "preco_promocional", nullable = false)
-    @JsonProperty("precoPromo")
+    @JsonProperty(value = "precoPromo")
     private double precoPromo;
-
     @Column(name = "disponivel")
-    @JsonProperty("disponivel")
+    @JsonProperty(value = "disponivel")
     private int disponivel;
-
     @Column(name = "destaque")
-    @JsonProperty("destaque")
+    @JsonProperty(value = "destaque")
     private Integer destaque;
-
     @Column(name = "pronta_entrega")
-    @JsonProperty("prontaEntrega")
+    @JsonProperty(value = "prontaEntrega")
     private Integer prontaEntrega;
-
     @Column(name = "quantidade_estoque", nullable = false)
-    @JsonProperty("quantidadeEstoque")
+    @JsonProperty(value = "quantidadeEstoque")
     private Integer quantidadeEstoque;
-
     @Column(name = "estoque_minimo", nullable = false)
-    @JsonProperty("estoqueMinimo")
+    @JsonProperty(value = "estoqueMinimo")
     private Integer estoqueMinimo;
-
     @Column(name = "estoque_critico", nullable = false)
-    @JsonProperty("estoqueCritico") 
+    @JsonProperty(value = "estoqueCritico")
     private Integer estoqueCritico;
-
+    @Column(name = "cor_unica")
+    @JsonProperty(value = "corUnica")
+    private Boolean corUnica = false;
+    @Column(name = "tamanho_unico")
+    @JsonProperty(value = "tamanhoUnico")
+    private Boolean tamanhoUnico = false;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categoria_peca")
-    @JsonProperty("categoriaPeca")
+    @JsonProperty(value = "categoriaPeca")
     private CategoriaPeca categoriaPeca;
+    @OneToMany(mappedBy = "peca", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OrderBy(value = "ordem ASC")
+    @JsonProperty(value = "imagens")
+    private List<PecaImagem> imagens = new ArrayList();
+    @OneToMany(mappedBy = "peca", cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<PecaVariacao> variacoes = new ArrayList();
 
-    // Métodos auxiliares
+    @JsonIgnore
+    public int getEstoqueTotalVariacoes() {
+        if (this.variacoes == null || this.variacoes.isEmpty()) {
+            return this.quantidadeEstoque;
+        }
+        return this.variacoes.stream().mapToInt(v -> v.getQuantidadeEstoque() != null ? v.getQuantidadeEstoque() : 0)
+                .sum();
+    }
+
+    @JsonIgnore
+    public String getImagemPrincipal() {
+        return this.imagens.stream().filter(img -> img.getPrincipal() != null && img.getPrincipal() == 1)
+                .map(PecaImagem::getLinkImagem).findFirst().orElse(this.linkFoto);
+    }
+
+    public List<PecaImagem> getImagens() {
+        return this.imagens;
+    }
+
+    public void setImagens(List<PecaImagem> imagens) {
+        this.imagens = imagens;
+    }
+
     @JsonIgnore
     public boolean isEstoqueBaixo() {
-        return quantidadeEstoque <= estoqueMinimo && quantidadeEstoque > estoqueCritico;
+        return this.quantidadeEstoque <= this.estoqueMinimo && this.quantidadeEstoque > this.estoqueCritico;
     }
 
     @JsonIgnore
     public boolean isEstoqueCritico() {
-        return quantidadeEstoque <= estoqueCritico && quantidadeEstoque > 0;
+        return this.quantidadeEstoque <= this.estoqueCritico && this.quantidadeEstoque > 0;
     }
 
     @JsonIgnore
     public boolean isEstoqueZerado() {
-        return quantidadeEstoque <= 0;
+        return this.quantidadeEstoque <= 0;
     }
 
     @JsonIgnore
     public String getStatusEstoque() {
-        if (isEstoqueZerado())
+        if (this.isEstoqueZerado()) {
             return "ESGOTADO";
-        if (isEstoqueCritico())
+        }
+        if (this.isEstoqueCritico()) {
             return "CRITICO";
-        if (isEstoqueBaixo())
+        }
+        if (this.isEstoqueBaixo()) {
             return "BAIXO";
+        }
         return "NORMAL";
     }
 
     @JsonIgnore
     public boolean podeVender(int quantidade) {
-        return quantidadeEstoque >= quantidade;
+        return this.quantidadeEstoque >= quantidade;
     }
 
-    // Getters e Setters
     public Integer getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Integer id) {
@@ -113,7 +167,7 @@ public class Peca {
     }
 
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public void setNome(String nome) {
@@ -121,7 +175,7 @@ public class Peca {
     }
 
     public String getDetalhe() {
-        return detalhe;
+        return this.detalhe;
     }
 
     public void setDetalhe(String detalhe) {
@@ -129,7 +183,7 @@ public class Peca {
     }
 
     public String getLinkFoto() {
-        return linkFoto;
+        return this.linkFoto;
     }
 
     public void setLinkFoto(String linkFoto) {
@@ -137,7 +191,7 @@ public class Peca {
     }
 
     public double getPreco() {
-        return preco;
+        return this.preco;
     }
 
     public void setPreco(double preco) {
@@ -145,7 +199,7 @@ public class Peca {
     }
 
     public double getPrecoPromo() {
-        return precoPromo;
+        return this.precoPromo;
     }
 
     public void setPrecoPromo(double precoPromo) {
@@ -153,7 +207,7 @@ public class Peca {
     }
 
     public int getDisponivel() {
-        return disponivel;
+        return this.disponivel;
     }
 
     public void setDisponivel(int disponivel) {
@@ -161,7 +215,7 @@ public class Peca {
     }
 
     public Integer getDestaque() {
-        return destaque;
+        return this.destaque;
     }
 
     public void setDestaque(Integer destaque) {
@@ -169,7 +223,7 @@ public class Peca {
     }
 
     public Integer getProntaEntrega() {
-        return prontaEntrega;
+        return this.prontaEntrega;
     }
 
     public void setProntaEntrega(Integer prontaEntrega) {
@@ -177,15 +231,17 @@ public class Peca {
     }
 
     public Integer getQuantidadeEstoque() {
-        return quantidadeEstoque;
+        return this.quantidadeEstoque;
     }
 
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
-        this.quantidadeEstoque = quantidadeEstoque;
+        if (this.variacoes == null || this.variacoes.isEmpty()) {
+            this.quantidadeEstoque = quantidadeEstoque;
+        }
     }
 
     public Integer getEstoqueMinimo() {
-        return estoqueMinimo;
+        return this.estoqueMinimo;
     }
 
     public void setEstoqueMinimo(Integer estoqueMinimo) {
@@ -193,19 +249,50 @@ public class Peca {
     }
 
     public Integer getEstoqueCritico() {
-        return estoqueCritico;
+        return this.estoqueCritico;
     }
 
     public void setEstoqueCritico(Integer estoqueCritico) {
-        System.out.println("🔥 SETTER CHAMADO - setEstoqueCritico: " + estoqueCritico);
+        System.out.println("\ud83d\udd25 SETTER CHAMADO - setEstoqueCritico: " + estoqueCritico);
         this.estoqueCritico = estoqueCritico;
     }
 
     public CategoriaPeca getCategoriaPeca() {
-        return categoriaPeca;
+        return this.categoriaPeca;
     }
 
     public void setCategoriaPeca(CategoriaPeca categoriaPeca) {
         this.categoriaPeca = categoriaPeca;
+    }
+
+    public Boolean getCorUnica() {
+        return this.corUnica;
+    }
+
+    public void setCorUnica(Boolean corUnica) {
+        this.corUnica = corUnica;
+    }
+
+    public Boolean getTamanhoUnico() {
+        return this.tamanhoUnico;
+    }
+
+    public void setTamanhoUnico(Boolean tamanhoUnico) {
+        this.tamanhoUnico = tamanhoUnico;
+    }
+
+    public List<PecaVariacao> getVariacoes() {
+        return this.variacoes;
+    }
+
+    public void setVariacoes(List<PecaVariacao> variacoes) {
+        this.variacoes = variacoes;
+    }
+
+    public void sincronizarEstoqueTotal() {
+        if (this.variacoes != null && !this.variacoes.isEmpty()) {
+            this.quantidadeEstoque = this.variacoes.stream()
+                    .mapToInt(v -> v.getQuantidadeEstoque() != null ? v.getQuantidadeEstoque() : 0).sum();
+        }
     }
 }

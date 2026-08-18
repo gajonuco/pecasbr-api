@@ -1,958 +1,312 @@
-# 🔧 API E-commerce para Loja de Auto Peças
+# Fashion Store API
 
-![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen?style=for-the-badge&logo=spring)
-![MySQL](https://img.shields.io/badge/MySQL-8.x-blue?style=for-the-badge&logo=mysql)
-![JWT](https://img.shields.io/badge/JWT-0.11.5-black?style=for-the-badge&logo=jsonwebtokens)
-![Firebase](https://img.shields.io/badge/Firebase-9.2.0-orange?style=for-the-badge&logo=firebase)
-![Status](https://img.shields.io/badge/Status-Concluído-success?style=for-the-badge)
-
-## 📋 Sobre o Projeto
-
-API RESTful robusta desenvolvida para gerenciar operações de uma loja de autopeças/oficina mecânica, oferecendo controle completo de estoque, pedidos, clientes e notificações em tempo real.
-
-O sistema resolve problemas críticos de negócio como:
-- **Controle de estoque inteligente** com alertas automáticos em múltiplos níveis
-- **Gestão completa de pedidos** desde a criação até a finalização
-- **Notificações multicanal** (Telegram + Firebase Push Notifications)
-- **Relatórios de vendas** com análise temporal
-- **Segurança robusta** com autenticação JWT
+API backend para um e-commerce de moda feminina, com foco em catálogo de roupas, gestão de estoque, vendas por pedido e integrações de pagamento.
+Este projeto entrega uma arquitetura corporativa com autenticação JWT, integração externa com Asaas e Firebase, suporte a upload de mídia e uma camada de serviços bem definida.
 
 ---
 
-## ✨ Funcionalidades Principais
+## Visão geral
 
-### 🎯 Gestão de Pedidos
-- ✅ Criação de pedidos com múltiplos itens
-- ✅ Controle de status com 7 estados (Novo → Pago → Em Transporte → Entregue → Pós-Venda → Finalizado / Cancelado)
-- ✅ Atualização automática de estoque ao confirmar pedido
-- ✅ Cálculo automático de valores (preços promocionais, frete)
-- ✅ Filtros avançados (período, cliente, status combinados)
-- ✅ Busca por ID do pedido (público para rastreamento)
+A `Fashion Store API` foi desenvolvida para ser o núcleo de um sistema de varejo de moda feminina.
+Ela expõe endpoints REST para gestão de produtos, clientes, pedidos e controle financeiro, além de suportar:
 
-### 📦 Controle Inteligente de Estoque
-- ✅ Três níveis de alerta: **Normal** → **Baixo** → **Crítico** → **Esgotado**
-- ✅ Desabilitação automática de produtos sem estoque
-- ✅ Notificações push em tempo real via Firebase
-- ✅ Detecção de mudanças de status com logs detalhados
-- ✅ Proteção contra venda de produtos indisponíveis
-
-### 🔔 Sistema de Notificações
-- ✅ **Telegram Bot**: Alerta instantâneo de novos pedidos com link direto ao dashboard
-- ✅ **Firebase Cloud Messaging**: Push notifications para alertas de estoque
-- ✅ Notificações customizadas por nível de criticidade (⚠️ Baixo, 🚨 Crítico, 🔴 Esgotado)
-- ✅ URLs dinâmicas para acesso direto ao produto
-
-### 🔐 Segurança
-- ✅ Autenticação stateless com **JWT** (tokens válidos por 7 dias)
-- ✅ Proteção de endpoints sensíveis via Spring Security
-- ✅ CORS configurado para múltiplos ambientes (desenvolvimento e produção)
-- ✅ Endpoints públicos estratégicos (catálogo, rastreamento de pedidos)
-
-### 📊 Relatórios e Análises
-- ✅ Total de vendas por período (última semana, mês, customizado)
-- ✅ Análise de vendas agrupadas por data
-- ✅ Filtros combinados para relatórios gerenciais
-
-### 🖼️ Gestão de Mídia
-- ✅ Upload de imagens de produtos
-- ✅ Armazenamento em diretório público
-- ✅ Servir imagens via endpoints públicos
+- catálogo de produtos com categorias, imagens e variações
+- fluxo de pedidos com alteração de status e integração de pagamento
+- upload de fotos de produtos via arquivo ou URL remota
+- notificações push via Firebase e WebSocket para painel de administração
+- webhook Asaas para confirmação automatizada de pagamentos
+- ferramentas de busca, filtro e ranking de vendas
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Principais responsabilidades do backend
 
-### Core
-- **Java 21** - Linguagem principal com LTS
-- **Spring Boot 3.4.3** - Framework base
-- **Spring Data JPA** - Persistência e ORM
-- **Hibernate** - Implementação JPA
-- **MySQL 8.x** - Banco de dados relacional
-
-### Segurança
-- **Spring Security** - Autenticação e autorização
-- **JJWT 0.11.5** - JSON Web Tokens (io.jsonwebtoken)
-- **Auth0 JWT 4.4.0** - Biblioteca adicional JWT
-- **CORS** - Configuração multi-origem
-
-### Integrações
-- **Firebase Admin SDK 9.2.0** - Push notifications (FCM)
-- **Telegram Bot API** - Notificações instantâneas de pedidos
-- **Apache HttpClient 5** - Cliente HTTP para integrações
-
-### Utilitários
-- **Lombok 1.18.34** - Redução de boilerplate
-- **MapStruct 1.5.5** - Mapeamento de objetos
-- **Caelum Stella 2.1.2** - Validação de documentos brasileiros (CPF)
-- **Spring WebFlux** - Cliente reativo para chamadas assíncronas
-
-### Documentação
-- **SpringDoc OpenAPI 2.7.0** - Documentação interativa da API
-- **Swagger UI** - Interface visual de testes
-
-### Ferramentas de Build
-- **Maven 3.8+** - Gerenciamento de dependências
-- **Maven Compiler Plugin 3.13.0** - Compilação Java 21
+- Persistência JPA de domínio relacional (`Pedido`, `Cliente`, `Peca`, `ItemPedido`, `CategoriaPeca`, `PecaImagem`)
+- Validação de autenticação com JWT e filtro de requisição customizado
+- Configuração de CORS segura para frontend Angular / administração
+- Exposição de API documentada com Springdoc OpenAPI
+- Upload e ingestão de imagens de produto via `RestTemplate` ou multipart
+- Notificações reativas: WebSocket + Firebase topics
+- Integração com serviço de pagamento externo (Asaas)
 
 ---
 
-## 🏗️ Arquitetura e Decisões Técnicas
+## Tech stack e dependências relevantes
 
-### Diagrama de Arquitetura
-
-```mermaid
-graph TB
-    subgraph "Cliente"
-        CLIENT[Frontend Angular/PWA]
-        MOBILE[Mobile Browser]
-    end
-
-    subgraph "API Spring Boot"
-        subgraph "Controllers"
-            PC[PedidoController]
-            PRC[PecaController]
-            CC[ClienteController]
-            CAT[CategoriaController]
-            AUTH[AuthController]
-        end
-
-        subgraph "Security Layer"
-            JWT[JWT Token Filter]
-            SEC[Spring Security]
-        end
-
-        subgraph "Services"
-            PS[PedidoService]
-            PRS[PecaService]
-            US[UploadService]
-            NS[NotificationService]
-            BS[BotService]
-        end
-
-        subgraph "Repositories"
-            PDAO[PedidoDAO]
-            PRDAO[PecaDAO]
-            CDAO[ClienteDAO]
-            CATDAO[CategoriaDAO]
-        end
-    end
-
-    subgraph "Banco de Dados"
-        DB[(MySQL 8.x)]
-    end
-
-    subgraph "Serviços Externos"
-        TELEGRAM[Telegram Bot API]
-        FIREBASE[Firebase Cloud Messaging]
-        FS[File System<br/>Imagens]
-    end
-
-    CLIENT -->|HTTP/HTTPS| PC
-    CLIENT -->|HTTP/HTTPS| PRC
-    MOBILE -->|HTTP/HTTPS| PC
-    
-    PC --> JWT
-    PRC --> JWT
-    AUTH -.->|Gera Token| JWT
-    
-    JWT --> SEC
-    SEC --> PS
-    SEC --> PRS
-    
-    PS --> PDAO
-    PS --> PRDAO
-    PS --> NS
-    PS --> BS
-    
-    PRS --> PRDAO
-    PRS --> US
-    
-    PDAO --> DB
-    PRDAO --> DB
-    CDAO --> DB
-    CATDAO --> DB
-    
-    NS -->|Push Notifications| FIREBASE
-    BS -->|Alerta Pedidos| TELEGRAM
-    US -->|Salvar Arquivos| FS
-    
-    FIREBASE -.->|Notifica| CLIENT
-    FIREBASE -.->|Notifica| MOBILE
-
-    style CLIENT fill:#e1f5ff
-    style MOBILE fill:#e1f5ff
-    style DB fill:#fff4e1
-    style TELEGRAM fill:#e8f5e9
-    style FIREBASE fill:#ffe8e8
-    style JWT fill:#ffe8f5
-    style SEC fill:#ffe8f5
-```
-
-### Fluxo de Criação de Pedido
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Cliente
-    participant API as PedidoController
-    participant Service as PedidoService
-    participant PecaDAO
-    participant NotificationService
-    participant BotService
-    participant DB as MySQL
-    participant Telegram
-    participant Firebase
-
-    Cliente->>API: POST /pedido
-    API->>Service: inserirPedido(pedido)
-    
-    loop Para cada item do pedido
-        Service->>PecaDAO: findById(pecaId)
-        PecaDAO->>DB: SELECT
-        DB-->>PecaDAO: Peça
-        PecaDAO-->>Service: Peça
-        
-        Service->>Service: validar estoque
-        alt Estoque insuficiente
-            Service-->>API: null (erro)
-            API-->>Cliente: 400 Bad Request
-        end
-        
-        Service->>Service: calcular preços
-        Service->>Service: atualizar estoque
-        Service->>Service: verificar status estoque
-        
-        alt Estoque mudou para crítico/baixo/zerado
-            Service->>NotificationService: notificar mudança
-            NotificationService->>Firebase: enviar push notification
-            Firebase-->>Cliente: 📱 Notificação
-        end
-        
-        Service->>PecaDAO: save(peca)
-        PecaDAO->>DB: UPDATE tbl_peca
-    end
-    
-    Service->>PecaDAO: save(pedido)
-    PecaDAO->>DB: INSERT tbl_pedido + tbl_item_pedido
-    DB-->>Service: Pedido salvo
-    
-    Service->>BotService: sendBotMessage(pedidoId)
-    BotService->>Telegram: POST sendMessage
-    Telegram-->>BotService: ✅ Mensagem enviada
-    
-    Service-->>API: Pedido criado
-    API-->>Cliente: 201 Created
-```
-
-### Fluxo de Autenticação JWT
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User
-    participant Controller as AuthController
-    participant Security as Spring Security
-    participant JWT as JWTTokenUtil
-    participant DB as MySQL
-
-    User->>Controller: POST /login {username, password}
-    Controller->>Security: authenticate(credentials)
-    Security->>DB: SELECT usuario WHERE username=?
-    DB-->>Security: Usuario encontrado
-    
-    Security->>Security: validar senha
-    alt Credenciais inválidas
-        Security-->>Controller: AuthenticationException
-        Controller-->>User: 401 Unauthorized
-    end
-    
-    Security-->>Controller: Authentication OK
-    Controller->>JWT: generateToken(usuario)
-    JWT->>JWT: criar payload (subject, issuer, expiration)
-    JWT->>JWT: assinar com HS256
-    JWT-->>Controller: "Bearer eyJhbG..."
-    Controller-->>User: 200 OK {token}
-    
-    Note over User: Armazena token
-    
-    User->>Controller: GET /pedido/status/1<br/>Authorization: Bearer token
-    Controller->>JWT: decodeToken(request)
-    JWT->>JWT: validar assinatura
-    JWT->>JWT: validar issuer
-    JWT->>JWT: validar expiração
-    
-    alt Token inválido/expirado
-        JWT-->>Controller: null
-        Controller-->>User: 403 Forbidden
-    end
-    
-    JWT-->>Controller: Authentication OK
-    Controller->>Controller: processar requisição
-    Controller-->>User: 200 OK {dados}
-```
-
-### Sistema de Notificações - Detecção de Mudanças
-
-```mermaid
-flowchart TD
-    START([Pedido Confirmado]) --> LOOP{Para cada<br/>item}
-    
-    LOOP -->|Item| GET[Buscar Peça no BD]
-    GET --> SAVE_OLD[Salvar Estoque Anterior]
-    SAVE_OLD --> CALC[Calcular Novo Estoque<br/>anterior - quantidade]
-    CALC --> UPDATE[Atualizar Peça no BD]
-    UPDATE --> CHECK{Estoque<br/>mudou?}
-    
-    CHECK -->|Não| LOOP
-    CHECK -->|Sim| GET_STATUS_OLD[Calcular Status Anterior]
-    GET_STATUS_OLD --> GET_STATUS_NEW[Calcular Status Atual]
-    GET_STATUS_NEW --> COMPARE{Status<br/>mudou?}
-    
-    COMPARE -->|Não| LOOP
-    COMPARE -->|Sim| WHICH{Qual novo<br/>status?}
-    
-    WHICH -->|BAIXO| NOTIF_BAIXO[⚠️ Notificar Estoque Baixo]
-    WHICH -->|CRITICO| NOTIF_CRIT[🚨 Notificar Estoque Crítico]
-    WHICH -->|ESGOTADO| NOTIF_ZERO[🔴 Notificar Esgotado<br/>+ Desabilitar Produto]
-    
-    NOTIF_BAIXO --> FIREBASE1[Firebase Push:<br/>titulo, corpo, url, tipo]
-    NOTIF_CRIT --> FIREBASE2[Firebase Push:<br/>titulo, corpo, url, tipo]
-    NOTIF_ZERO --> FIREBASE3[Firebase Push:<br/>titulo, corpo, url, tipo]
-    
-    FIREBASE1 --> LOOP
-    FIREBASE2 --> LOOP
-    FIREBASE3 --> LOOP
-    
-    LOOP -->|Próximo| LOOP
-    LOOP -->|Fim| SAVE_PEDIDO[Salvar Pedido]
-    SAVE_PEDIDO --> TELEGRAM[Enviar Telegram<br/>Novo Pedido]
-    TELEGRAM --> END([Fim])
-
-    style START fill:#e8f5e9
-    style END fill:#e8f5e9
-    style NOTIF_BAIXO fill:#fff9c4
-    style NOTIF_CRIT fill:#ffccbc
-    style NOTIF_ZERO fill:#ffcdd2
-    style FIREBASE1 fill:#e1f5ff
-    style FIREBASE2 fill:#e1f5ff
-    style FIREBASE3 fill:#e1f5ff
-    style TELEGRAM fill:#c8e6c9
-```
-
-### Padrão de Camadas
-```
-Controller → Service → DAO (Repository) → Database
-```
-
-### Sistema de Notificações Inteligente
-
-O projeto implementa um **sistema dual de notificações**:
-
-**1. Telegram Bot (Pedidos)**
-- Acionado automaticamente ao criar novo pedido
-- Envia mensagem formatada com ID do pedido
-- Inclui link direto ao dashboard administrativo
-
-**2. Firebase Push (Estoque)**
-- Monitora mudanças de status do estoque em tempo real
-- Envia apenas quando há **piora** no status (evita spam)
-- Notificações categorizadas por urgência:
-  - ⚠️ **BAIXO**: Quantidade ≤ estoque mínimo
-  - 🚨 **CRÍTICO**: Quantidade ≤ estoque crítico
-  - 🔴 **ESGOTADO**: Quantidade = 0
-
-**Lógica de Detecção de Mudanças:**
-```java
-// Compara status anterior vs. atual antes de enviar notificação
-if (!statusAnterior.equals(statusAtual)) {
-    switch (statusAtual) {
-        case "BAIXO":    → notificarEstoqueBaixo()
-        case "CRITICO":  → notificarEstoqueCritico()
-        case "ESGOTADO": → notificarEstoqueZerado()
-    }
-}
-```
-
-### Controle Transacional de Estoque
-
-Ao confirmar um pedido:
-1. Valida disponibilidade de **cada item** (`peca.podeVender(quantidade)`)
-2. Atualiza estoque atomicamente
-3. Desabilita produto se estoque = 0
-4. Calcula preços (promocional tem prioridade)
-5. Persiste pedido e itens
-6. Dispara notificações
-
-### Segurança JWT
-
-**Geração de Token:**
-- Subject: username do usuário
-- Issuer: `*Gabriel Nunez*`
-- Expiration: 7 dias
-- Algorithm: HS256
-- Secret: configurada em constante
-
-**Validação:**
-- Verifica subject válido
-- Confirma issuer correto
-- Valida expiração
-- Filtro customizado (`TokenFilter`) processa requests
-
-### CORS Multi-Ambiente
-
-Configuração explícita para:
-- `http://localhost:4200` (desenvolvimento Angular)
-- `https://projetoreal.dev.br` (produção)
-- `https://www.projetoreal.dev.br` (produção com www)
+- Java 21
+- Spring Boot 3.4.3
+- Spring Web + Spring WebFlux
+- Spring Data JPA
+- Spring Security
+- Spring WebSocket / STOMP
+- Thymeleaf
+- Firebase Admin SDK
+- JWT (`java-jwt` + `jjwt`)
+- MapStruct
+- Lombok
+- Springdoc OpenAPI
+- MySQL / PostgreSQL
+- Apache HttpClient
+- Caelum Stella (validação de CPF/CNPJ e formatação)
 
 ---
 
-## 📡 Documentação da API
+## Arquitetura do código
 
-### 📮 Postman Collection (Recomendado)
-A forma mais prática de testar a API é através do Postman:
+A aplicação segue um padrão clássico em camadas:
 
-**Collection completa com todos os endpoints:**
-[📘 Documentação Postman](https://documenter.getpostman.com/view/37859421/2sBXVZpFDn)
+- `controller/` — adaptadores HTTP REST e webhooks
+- `service/` — lógica de negócio e regras de domínio
+- `dao/` — acesso direto a repositórios e consultas customizadas
+- `model/` — entidades JPA e relacionamento de dados
+- `dto/` — contratos de API e payloads específicos
+- `integration/` — integração com serviços externos, como Asaas
+- `security/` — configuração de segurança, JWT e filtro de autenticação
+- `config/` — configuração de WebSocket e CORS
 
-A collection inclui:
-- ✅ Todos os endpoints organizados por categoria
-- ✅ Exemplos de requisições prontos para uso
-- ✅ Variáveis de ambiente pré-configuradas
-- ✅ Testes automatizados de resposta
-- ✅ Documentação detalhada de cada endpoint
-
-### Swagger UI (Opcional)
-Também disponível via Swagger para visualização:
-```
-http://localhost:8080/swagger-ui.html
-http://localhost:8080/v3/api-docs
-```
-
-> **💡 Dica:** Para desenvolvimento e testes, recomendamos usar o Postman pela praticidade e recursos avançados de teste.
+O pacote base é `com.gabriel_nunez.oficina_mecanica` por legado de projeto, mas o domínio atual é e-commerce de moda feminina.
 
 ---
 
-## 🔌 Principais Endpoints
+## Análise técnica
 
-### 🔓 Públicos (Sem Autenticação)
+- a arquitetura em camadas ajuda a deixar o projeto mais organizado e facilita manutenção
+- a separação de `controller`, `service`, `dao` e `integration` está clara, embora seja possível melhorar a centralização das regras de upload e mídia
+- o uso de JWT e `SecurityFilterChain` atende à necessidade de autenticação, mas a configuração de CORS merece atenção em ambientes de produção
+- `spring.jpa.hibernate.ddl-auto=update` é conveniente para desenvolvimento; em produção, um fluxo de migração de banco é mais seguro
+- o suporte a notificações em tempo real e processamento de webhook agrega valor ao e-commerce
+- alguns nomes como `Peca` e `CategoriaPeca` ainda carregam o histórico do projeto e podem ser revisitados em refatorações futuras
 
-#### Produtos
-```http
-GET /peca/todos
-GET /peca/{id}
-GET /peca/categoria/{idCategoria}
-GET /peca/busca?nome={nome}
-```
+### Pontos de atenção
 
-#### Pedidos
-```http
-POST /pedido
-GET /pedido/search/{id}
-```
+- há credenciais e URLs no `application.properties`; para produção, o ideal é externalizar esses segredos
+- o `UploadServiceImpl` usa caminho de arquivo local fixo, o que pode dificultar deploy em contêineres ou nuvem
+- capturas genéricas de `Exception` nos controllers podem ser melhoradas com tratamento de erros mais consistente
+- `RestTemplate` e Spring WebFlux coexistem, então há oportunidade de alinhar a comunicação externa com uma única abordagem
+- o uso de inteiros para status de pedido pode ser simplificado com enums para mais clareza
 
-#### Categorias
-```http
-GET /categoria_peca
-GET /categoria_by_id?id={id}
-```
+### Próximos passos
 
-#### Clientes
-```http
-GET /cliente/{id}
-```
-
-#### Fretes
-```http
-GET /fretes/prefixo/{cep}
-```
-
-### 🔒 Autenticados (Requer JWT)
-
-#### Gestão de Pedidos
-```http
-GET    /pedido/status/{status}
-PATCH  /pedido/status
-GET    /pedido/periodo?inicio={data}&fim={data}
-GET    /pedido/vendas-semana?inicio={data}&fim={data}
-PUT    /pedido/{id}
-```
-
-#### Gestão de Produtos
-```http
-POST   /peca
-PUT    /peca/{id}
-DELETE /peca/{id}
-POST   /peca/upload
-```
-
-#### Categorias
-```http
-POST   /categoria_peca
-PUT    /categoria_peca/{id}
-DELETE /categoria_peca/{id}
-```
+- revisar nomes de domínio para refletir melhor produtos de moda
+- adicionar validação de entrada com `@Valid`, `@NotNull`, `@Size`
+- aplicar tratamento global de exceções com `@ControllerAdvice`
+- preparar configuração separada para `dev` e `prod`
+- ampliar testes de integração para fluxos críticos, especialmente pagamento e webhook
+- considerar um armazenamento de mídia configurável para uploads
 
 ---
 
-## 📝 Exemplos de Requisições
+## Modelo de domínio
 
-### Criar Pedido
+### Pedido (`Pedido`)
 
-**Request:**
-```http
-POST /pedido
-Content-Type: application/json
-```
+- histórico de status: `NOVO_PEDIDO`, `PAGO`, `EM_TRANSPORTE`, `ENTREGUE`, `POS_VENDA`, `FINALIZADO`, `CANCELADO`
+- relacionamento `@ManyToOne` com `Cliente`
+- relacionamento `@OneToMany` com `ItemPedido`
+- campos de `valorTotal`, `valorFrete`, `linkPagamento`, `asaasPaymentId`
 
-```json
-{
-  "cliente": {
-    "id": 15
-  },
-  "valorFrete": 25.00,
-  "retirar": 0,
-  "observacoes": "Entrega pela manhã, tocar campainha",
-  "itensPedido": [
-    {
-      "peca": { "id": 42 },
-      "qtdtItem": 2
-    },
-    {
-      "peca": { "id": 87 },
-      "qtdtItem": 1
-    }
-  ]
-}
-```
+### Produto (`Peca`)
 
-**Response:** `201 Created`
-```json
-{
-  "id": 1523,
-  "dataPedido": "2026-01-25",
-  "valorTotal": 347.50,
-  "valorFrete": 25.00,
-  "status": 1,
-  "observacoes": "Entrega pela manhã, tocar campainha",
-  "cliente": {
-    "id": 15,
-    "nome": "João Silva"
-  },
-  "itensPedido": [
-    {
-      "id": 3401,
-      "qtdtItem": 2,
-      "precoUnitario": 89.90,
-      "precoTotal": 179.80,
-      "peca": {
-        "id": 42,
-        "nome": "Filtro de Óleo"
-      }
-    },
-    {
-      "id": 3402,
-      "qtdtItem": 1,
-      "precoUnitario": 142.70,
-      "precoTotal": 142.70,
-      "peca": {
-        "id": 87,
-        "nome": "Pastilha de Freio"
-      }
-    }
-  ]
-}
-```
+- catálogo de produtos que representa roupas e acessórios femininos
+- busca por palavra-chave, paginação e destaque de itens
+- upload de imagens por arquivo ou URL externa
+- múltiplas imagens por produto e definição de imagem principal
 
-**Comportamento Automático:**
-- ✅ Estoque dos produtos é reduzido
-- ✅ Preços promocionais aplicados automaticamente
-- ✅ Status inicial: `1` (NOVO_PEDIDO)
-- ✅ Notificação enviada ao Telegram
-- ✅ Produto desabilitado se estoque zerar
-- ✅ Push notification se estoque ficar baixo/crítico
+### Cliente (`Cliente`)
+
+- busca por telefone, nome, palavra-chave e aniversariantes
+- histórico de compras e relacionamento com pedido
 
 ---
+
+## Segurança e integrações
+
+### JWT e CORS
+
+- `MyWebApplicationSecurityConfig` configura filtros JWT e autorizações
+- endpoints públicos autorizados para login, busca de produtos, documentação e webhook
+- CORS habilitado para origens confiáveis incluindo `localhost:4200`, `localhost:4222`, `projetoreal.dev.br`
+
+### WebSocket
+
+- `WebSocketConfig` expõe endpoint STOMP em `/ws`
+- mensagens são publicadas em `/topic`
+- usado para eventos de pagamento e atualizações em tempo real
+
+### Firebase
+
+- `NotificationService` gera notificações com payload de dados
+- tópicos são usados para alertas de estoque e confirmação de pagamento
+- mensagens são construídas para evitar duplicação de notificações automáticas
+
+### Asaas
+
+- webhook em `/webhook/asaas`
+- eventos processados: `PAYMENT_CONFIRMED`, `PAYMENT_RECEIVED`
+- pedido atualizado para `PAGO` e notificado via Firebase/WebSocket
+
+---
+
+## Endpoints principais
 
 ### Autenticação
 
-**Request:**
-```http
-POST /login
-Content-Type: application/json
-```
+- `POST /login` — autentica usuário e retorna token JWT
 
-```json
-{
-  "username": "admin",
-  "password": "senha123"
-}
-```
+### Usuários
 
-**Response:** `200 OK`
-```json
-{
-  "token": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI6IipHYWJyaWVsIE51bmV6KiIsImV4cCI6MTczODAxNjQwMH0.xYz..."
-}
-```
+- `GET /usuario`
+- `GET /usuario/{id}`
+- `POST /usuario`
+- `PUT /usuario/{id}`
 
-**Uso do Token:**
-```http
-GET /pedido/status/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
-```
+### Clientes
+
+- `GET /cliente/{telefone}`
+- `GET /cliente/nome/{letra}`
+- `GET /cliente/busca/{keyword}`
+- `GET /cliente/compras/{id}`
+- `GET /cliente/aniversario/{mes}`
+- `POST /cliente`
+- `PUT /cliente`
+
+### Produtos e imagens
+
+- `POST /peca`
+- `PUT /peca/{idPeca}`
+- `GET /peca` — lista paginada de destaques
+- `GET /peca/todos`
+- `GET /peca/categoria/{id}`
+- `GET /peca/{id}`
+- `GET /peca/busca?key={texto}`
+- `POST /peca/upload` — upload de arquivo
+- `POST /peca/{id}/imagem` — upload de imagem para produto
+- `POST /peca/{id}/imagem/url` — adiciona imagem via URL externa
+- `GET /peca/{idPeca}/imagens`
+- `PATCH /peca/{idPeca}/imagem/{idImagem}/principal`
+- `PATCH /peca/{id}/imagens/reordenar`
+- `DELETE /peca/imagem/{idImagem}`
+- `POST /produtos_mais_pedidos`
+
+### Pedidos
+
+- `POST /pedido`
+- `PUT /pedido`
+- `PATCH /pedido/{id}?status={status}`
+- `GET /pedido/search/{id}`
+- `POST /pedido/filtrar`
+- `GET /pedido/recentes?inicio={yyyy-MM-dd}&fim={yyyy-MM-dd}`
+
+### Notificações
+
+- `POST /api/notifications/subscribe`
+- `POST /api/notifications/unsubscribe`
+
+### Pagamentos e webhook
+
+- `POST /webhook/asaas`
 
 ---
 
-### Filtrar Pedidos (Exemplo Avançado)
-
-**Request:**
-```http
-POST /pedido/filtro
-Content-Type: application/json
-Authorization: Bearer {token}
-```
-
-```json
-{
-  "dataInicio": "2026-01-01",
-  "dataFim": "2026-01-31",
-  "nome": "Silva",
-  "novo": 1,
-  "pago": 1,
-  "cancelado": 0
-}
-```
-
-**Response:** Lista de pedidos que atendem **todos** os critérios:
-- Data entre 01/01 e 31/01
-- Cliente com "Silva" no nome
-- Status = Novo OU Pago
-
----
-
-## 🚀 Como Executar
+## Configuração e execução
 
 ### Pré-requisitos
 
-- **JDK 21** (Oracle ou OpenJDK)
-- **MySQL 8.x**
-- **Maven 3.8+**
-- **Postman** (para testes da API)
-- Conta **Telegram** (para criar bot)
-- Projeto **Firebase** (para push notifications)
+- Java 21
+- Maven 3.x ou wrapper `./mvnw`
+- Banco de dados MySQL ou PostgreSQL
 
-### 1. Clone o Repositório
+### Executando localmente
 
 ```bash
-git clone https://github.com/seu-usuario/oficina-mecanica-api.git
-cd oficina-mecanica-api
+./mvnw clean package
+./mvnw spring-boot:run
 ```
 
-### 2. Configure o Banco de Dados
-
-Execute no MySQL:
-
-```sql
-CREATE DATABASE db_projetoreal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-CREATE USER 'springuser'@'localhost' IDENTIFIED BY 'SuaSenhaSegura123!';
-
-GRANT ALL PRIVILEGES ON db_projetoreal.* TO 'springuser'@'localhost';
-
-FLUSH PRIVILEGES;
-```
-
-### 3. Configure Variáveis de Ambiente
-
-Crie o arquivo `src/main/resources/application.properties`:
-
-```properties
-# Banco de Dados
-spring.datasource.url=jdbc:mysql://localhost:3306/db_projetoreal?useTimezone=true&serverTimezone=America/Sao_Paulo
-spring.datasource.username=springuser
-spring.datasource.password=SuaSenhaSegura123!
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-# JPA/Hibernate
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-spring.jpa.hibernate.ddl-auto=update
-
-# Swagger
-springdoc.packagesToScan=com.gabriel_nunez.oficina_mecanica.controller
-springdoc.api-docs.enabled=true
-
-# Frontend URL (para notificações)
-app.frontend.url=http://localhost:4200
-
-# Telegram Bot
-telegrambot_chat_id=SEU_CHAT_ID_AQUI
-telegrambot_url=https://api.telegram.org/botSEU_TOKEN_AQUI/sendMessage
-telegrambot_msg=Novo pedido #%PED% recebido! Acesse: ${app.frontend.url}/admin/pedidos/%PED%
-
-# Logs (opcional, para debug)
-logging.level.org.springframework.security=INFO
-logging.level.com.gabriel_nunez.oficina_mecanica=DEBUG
-```
-
-### 4. Configure Firebase
-
-1. Baixe o arquivo `serviceAccountKey.json` do Firebase Console
-2. Coloque na raiz do projeto: `src/main/resources/firebase-adminsdk.json`
-3. **IMPORTANTE:** Adicione ao `.gitignore`
-
-### 5. Execute a Aplicação
+#### Executando via JAR
 
 ```bash
-mvn clean install
-mvn spring-boot:run
+./mvnw clean package
+java -jar target/java-0.0.1-SNAPSHOT.jar
 ```
 
-A API estará disponível em: `http://localhost:8080`
+### Propriedades principais
 
-### 6. Acesse a Documentação
-
-**Postman (Recomendado):**
-1. Acesse: [Postman Collection](https://documenter.getpostman.com/view/37859421/2sBXVZpFDn)
-2. Clique em "Run in Postman"
-3. Configure a variável de ambiente `base_url` para `http://localhost:8080`
-
-**Swagger UI (Opcional):**
-- `http://localhost:8080/swagger-ui.html`
-- `http://localhost:8080/v3/api-docs`
+- `server.port`
+- `spring.datasource.url`
+- `spring.datasource.username`
+- `spring.datasource.password`
+- `spring.datasource.driver-class-name`
+- `spring.jpa.hibernate.ddl-auto`
+- `app.frontend.url`
+- `telegrambot_url`, `telegrambot_chat_id`, `telegrambot_msg`
+- `asaas.url`, `asaas.apikey`
+- `springdoc.packagesToScan`
 
 ---
 
-## 🧪 Testando a API
+## Documentação e teste
 
-### Configurar Postman
-
-1. **Importe a Collection:**
-   - Acesse a [documentação Postman](https://documenter.getpostman.com/view/37859421/2sBXVZpFDn)
-   - Clique em "Run in Postman" ou baixe o JSON
-
-2. **Configure o Environment:**
-   ```json
-   {
-     "base_url": "http://localhost:8080",
-     "token": ""
-   }
-   ```
-
-3. **Fluxo de Teste Básico:**
-
-#### Passo 1: Autenticar (se necessário)
-```
-POST {{base_url}}/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "senha123"
-}
-```
-
-Copie o token retornado e adicione à variável `{{token}}` no environment.
-
-#### Passo 2: Listar Produtos (Público)
-```
-GET {{base_url}}/peca/todos
-```
-
-#### Passo 3: Criar Pedido (Público)
-```
-POST {{base_url}}/pedido
-Content-Type: application/json
-
-{
-  "cliente": {"id": 1},
-  "valorFrete": 15.00,
-  "retirar": 0,
-  "itensPedido": [
-    {
-      "peca": {"id": 1},
-      "qtdtItem": 2
-    }
-  ]
-}
-```
-
-#### Passo 4: Consultar Pedidos (Autenticado)
-```
-GET {{base_url}}/pedido/status/1
-Authorization: Bearer {{token}}
-```
-
-### Testes com cURL (Alternativa)
-
-**Listar produtos:**
-```bash
-curl http://localhost:8080/peca/todos
-```
-
-**Buscar produto específico:**
-```bash
-curl http://localhost:8080/peca/1
-```
-
-**Criar pedido:**
-```bash
-curl -X POST http://localhost:8080/pedido \
-  -H "Content-Type: application/json" \
-  -d '{
-    "cliente": {"id": 1},
-    "valorFrete": 15.00,
-    "retirar": 0,
-    "itensPedido": [
-      {"peca": {"id": 1}, "qtdtItem": 2}
-    ]
-  }'
-```
-
-**Login:**
-```bash
-curl -X POST http://localhost:8080/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"senha123"}'
-```
-
-**Usar token (substitua TOKEN):**
-```bash
-curl http://localhost:8080/pedido/status/1 \
-  -H "Authorization: Bearer TOKEN"
-```
-
-### Verificar Logs
-
-Durante os testes, monitore os logs da aplicação para ver:
-- ✅ Execução de queries SQL
-- ✅ Notificações enviadas
-- ✅ Mudanças de status de estoque
-- ✅ Erros e validações
-
-```bash
-# Logs aparecem no console onde você executou mvn spring-boot:run
-```
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Testes: `./mvnw test`
 
 ---
 
-## 📊 Modelo de Dados
+## Boas práticas para produção
 
-### Principais Entidades
-
-**Pedido**
-- `id` (PK)
-- `dataPedido`
-- `valorTotal`
-- `valorFrete`
-- `status` (1-7)
-- `observacoes`
-- `cliente_id` (FK)
-
-**ItemPedido**
-- `id` (PK)
-- `pedido_id` (FK)
-- `peca_id` (FK)
-- `qtdtItem`
-- `precoUnitario`
-- `precoTotal`
-
-**Peca** (Produto)
-- `id` (PK)
-- `nome`
-- `descricao`
-- `preco`
-- `precoPromo`
-- `quantidadeEstoque`
-- `estoqueMinimo`
-- `estoqueCritico`
-- `disponivel` (0/1)
-- `categoria_id` (FK)
-
-**Cliente**
-- `id` (PK)
-- `nome`
-- `email`
-- `telefone`
-- `cpf`
-- `endereco`
+- use `spring.jpa.hibernate.ddl-auto=validate` ou `none` em produção
+- remova credenciais e tokens do `application.properties`
+- centralize segredos via variáveis de ambiente ou vault
+- habilite logs e tracing apenas em ambientes controlados
+- configure CORS estritamente para domínios conhecidos
+- monitore status do webhook Asaas e falhas de entrega
 
 ---
 
-## 🔐 Segurança - Boas Práticas
+## Pontos de atenção
 
-### ⚠️ NUNCA Versione
-
-Adicione ao `.gitignore`:
-
-```
-application.properties
-application-prod.properties
-firebase-adminsdk.json
-*.p12
-.env
-```
-
-### ✅ Use Arquivo de Exemplo
-
-Crie `application.properties.example`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/SEU_BANCO
-spring.datasource.username=SEU_USUARIO
-spring.datasource.password=SUA_SENHA
-
-telegrambot_chat_id=SEU_CHAT_ID
-telegrambot_url=https://api.telegram.org/botSEU_TOKEN/sendMessage
-
-app.frontend.url=http://localhost:4200
-```
-
-### 🔒 Recomendações
-
-- Altere a `SECRET_KEY` do JWT em produção
-- Use HTTPS em produção (certificado SSL configurado)
-- Implemente rate limiting
-- Configure logging adequado
-- Use variáveis de ambiente em produção
+- `NotificationService` envia notificações via topic com payload customizado
+- `PecaController` suporta upload de imagens e ingestão a partir de URL externa
+- `AsaasWebhookController` não reprocessa pedidos já confirmados
+- `MyWebApplicationSecurityConfig` abre endpoints públicos necessários para frontend e documentação
+- `WebSocketConfig` expõe `/ws` com SockJS para clientes de dashboard
 
 ---
 
-## 📈 Melhorias Futuras
+## Observações e próximos passos
 
-Possíveis evoluções do projeto:
+### O que já está bem resolvido
 
-- [ ] Implementar testes unitários (JUnit 5 + Mockito)
-- [ ] Testes de integração com TestContainers
-- [ ] Cache com Redis para produtos
-- [ ] Paginação de resultados
-- [ ] Exportação de relatórios em PDF/Excel
-- [ ] Integração com gateway de pagamento (Stripe/PagSeguro)
-- [ ] Sistema de cupons de desconto
-- [ ] API de rastreamento de entregas
-- [ ] Auditoria de alterações (Spring Data Envers)
-- [ ] Métricas e monitoring (Actuator + Prometheus)
+- a arquitetura em camadas e o uso de padrões Spring facilitam a manutenção
+- notificações em tempo real são um diferencial para o painel administrativo
+- integração com Asaas e Firebase traz automação de pagamento e alertas de estoque
 
----
+### O que pode ser melhorado
 
-## 👨‍💻 Autor
+- externalizar segredos e credenciais fora do repositório
+- adotar migrações de banco de dados mais previsíveis
+- adicionar tratamento global de exceções e melhores códigos HTTP
+- padronizar logs e reduzir `System.out.println`
+- tornar upload de mídia configurável e menos dependente do filesystem local
 
-**Gabriel Núñez**
+### Possíveis evoluções
 
-Desenvolvedor Backend Java | Spring Boot Specialist
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gabriel-nunez-contasti/)
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/gajonuco)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:gajonuco@gmail.com)
-
+- separar módulos de checkout e carrinho para maior desacoplamento
+- adicionar uma camada de aplicação para orquestração de fluxos de negócio
+- avaliar search full-text para catálogo de produtos
 
 ---
 
-<div align="center">
+## Arquivos-chave
 
-**⭐ Se este projeto foi útil, considere dar uma estrela!**
+- `pom.xml`
+- `src/main/java/com/gabriel_nunez/oficina_mecanica/OficinaMecanicaApplication.java`
+- `src/main/java/com/gabriel_nunez/oficina_mecanica/security/MyWebApplicationSecurityConfig.java`
+- `src/main/java/com/gabriel_nunez/oficina_mecanica/controller/PedidoController.java`
+- `src/main/java/com/gabriel_nunez/oficina_mecanica/controller/PecaController.java`
+- `src/main/java/com/gabriel_nunez/oficina_mecanica/controller/AsaasWebhookController.java`
+- `src/main/resources/application.properties`
 
-Made with ☕ and ❤️ by Gabriel Núñez
+---
 
-</div>
+

@@ -1,67 +1,61 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.dao.ClienteDAO
+ *  com.gabriel_nunez.oficina_mecanica.dto.CompradorDTO
+ *  com.gabriel_nunez.oficina_mecanica.model.Cliente
+ *  com.gabriel_nunez.oficina_mecanica.service.ClienteServiceImpl
+ *  com.gabriel_nunez.oficina_mecanica.service.IClienteService
+ *  org.springframework.beans.factory.annotation.Autowired
+ *  org.springframework.stereotype.Component
+ */
 package com.gabriel_nunez.oficina_mecanica.service;
-
-import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.gabriel_nunez.oficina_mecanica.dao.ClienteDAO;
 import com.gabriel_nunez.oficina_mecanica.dto.CompradorDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Cliente;
+import com.gabriel_nunez.oficina_mecanica.service.IClienteService;
+import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
-public class ClienteServiceImpl implements IClienteService{
-    
+public class ClienteServiceImpl
+implements IClienteService {
     @Autowired
     private ClienteDAO dao;
 
-    @Override
     public Cliente buscarPeloCPF(String cpf) {
-        /*if(cpf.charAt(0) == '0'){
-            cpf = cpf.substring(1);
-        }*/
-         return dao.findByCpf(cpf);
+        return this.dao.findByCpf(cpf);
     }
 
-    @Override
     public Cliente atualizarDados(Cliente dadosOriginais) {
-        // TODO Auto-generated method stub
-       return dao.save(dadosOriginais);
+        return (Cliente)this.dao.save(dadosOriginais);
     }
 
-    @Override
     public Cliente buscarPeloTefone(String telefone) {
-        // TODO Auto-generated method stub
-        return dao.findByTelefone(telefone);
+        return this.dao.findByTelefone(telefone);
     }
 
-    @Override
     public ArrayList<Cliente> buscarPorLetra(String letra) {
-        // TODO Auto-generated method stub
-        return dao.findByNomeStartsWith(letra);
+        return this.dao.findByNomeStartsWith(letra);
     }
 
-    @Override
     public ArrayList<Cliente> buscarPorPalavraChave(String palavraChave) {
-        // TODO Auto-generated method stub
-        return dao.findByNomeContaining(palavraChave);
+        return this.dao.findByNomeContaining(palavraChave);
     }
 
-    @Override
     public ArrayList<Cliente> buscarTodos() {
-        // TODO Auto-generated method stub
-        return dao.findAllByOrderByNomeAsc();
+        return this.dao.findAllByOrderByNomeAsc();
     }
 
-    @Override
     public ArrayList<CompradorDTO> recuperarCompradores(int idPeca) {
-        // TODO Auto-generated method stub
-        return dao.recuperarCompradores(idPeca);
+        return this.dao.recuperarCompradores(idPeca);
     }
 
-    @Override
     public ArrayList<Cliente> buscarAniversariantes(int mes) {
-        // TODO Auto-generated method stub
-        return dao.recuperarAniversariante(mes);
+        return this.dao.recuperarAniversariante(mes);
     }
 }
+

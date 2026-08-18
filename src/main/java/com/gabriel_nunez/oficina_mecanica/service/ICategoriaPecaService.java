@@ -1,27 +1,26 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca
+ *  com.gabriel_nunez.oficina_mecanica.service.ICategoriaPecaService
+ */
 package com.gabriel_nunez.oficina_mecanica.service;
 
+import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
 import java.util.ArrayList;
 
-import com.gabriel_nunez.oficina_mecanica.model.CategoriaPeca;
-
 public interface ICategoriaPecaService {
+    public CategoriaPeca adicionarNovaCategoriaPeca(CategoriaPeca var1);
 
-    //Este método vai receber uma categoria das peças mecânicas só com o nome preenchido e vai inserir no banco
-    public CategoriaPeca adicionarNovaCategoriaPeca (CategoriaPeca categoriaPeca);
+    public CategoriaPeca alterarCategoriaPeca(CategoriaPeca var1);
 
-    //Este método vai alterar a categoria das peças mecânicas e retorna-la se o update deu certo e null caso contrário
-
-    public CategoriaPeca alterarCategoriaPeca(CategoriaPeca categoriaPeca);
-
-    //Este método vai recuperar todas as categorias sem filtro
     public ArrayList<CategoriaPeca> recuperarTodasCategoriasPecas();
 
-    //Este método vai recuperar todas as categorias por palvra chave
-    public ArrayList<CategoriaPeca> recuperarPorPalavraChave(String palavraChave);
+    public ArrayList<CategoriaPeca> recuperarPorPalavraChave(String var1);
 
-    //recuperar uma única categoria
-    public CategoriaPeca recuperaPorID(int id);
+    public CategoriaPeca recuperaPorID(int var1);
 
-    //recuperar todas ordenadas pelo id
     public ArrayList<CategoriaPeca> recuperarTodasPeloId();
-} 
+}
+

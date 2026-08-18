@@ -1,45 +1,43 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gabriel_nunez.oficina_mecanica.dao.FormaPgtoDAO
+ *  com.gabriel_nunez.oficina_mecanica.model.FormaPagamento
+ *  com.gabriel_nunez.oficina_mecanica.service.FormaPgtoImpl
+ *  com.gabriel_nunez.oficina_mecanica.service.IFormaPgtoService
+ *  org.springframework.beans.factory.annotation.Autowired
+ *  org.springframework.stereotype.Component
+ */
 package com.gabriel_nunez.oficina_mecanica.service;
-
-
-import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.gabriel_nunez.oficina_mecanica.dao.FormaPgtoDAO;
 import com.gabriel_nunez.oficina_mecanica.model.FormaPagamento;
-
-
+import com.gabriel_nunez.oficina_mecanica.service.IFormaPgtoService;
+import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
-public class FormaPgtoImpl implements IFormaPgtoService {
+public class FormaPgtoImpl
+implements IFormaPgtoService {
+    @Autowired
+    private FormaPgtoDAO dao;
 
-	@Autowired
-	private FormaPgtoDAO dao;
-	
-	@Override
-	public ArrayList<FormaPagamento> buscarTodas() {
-		return (ArrayList<FormaPagamento>)dao.findAll();
-	}
+    public ArrayList<FormaPagamento> buscarTodas() {
+        return (ArrayList)this.dao.findAll();
+    }
 
-	@Override
-	public ArrayList<FormaPagamento> buscarVisiveis() {
-		// TODO Auto-generated method stub
-		return dao.findAllByVisivel(1);
-	}
+    public ArrayList<FormaPagamento> buscarVisiveis() {
+        return this.dao.findAllByVisivel(1);
+    }
 
-	@Override
-	public FormaPagamento buscarPeloId(int id) {
-		// TODO Auto-generated method stub
-		return dao.findById(id).orElse(null);
-	}
+    public FormaPagamento buscarPeloId(int id) {
+        return this.dao.findById(id).orElse(null);
+    }
 
-	@Override
-	public FormaPagamento atualizar(FormaPagamento novo) {
-		// TODO Auto-generated method stub
-		return dao.save(novo);
-	}
-
+    public FormaPagamento atualizar(FormaPagamento novo) {
+        return (FormaPagamento)this.dao.save(novo);
+    }
 }
-    
 

@@ -10,10 +10,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 // // Acesso para uso local
-                // .addResourceLocations("file:/Users/gajonuco/Downloads/projeto/pecasbr-admin/src/assets/img");
+                 .addResourceLocations("file:/Users/gajonuco/Desktop/Projetos/pecasbr-admin/src/assets/img");
 
 
                 // Acesso para producao 
-                .addResourceLocations("file:/var/www/projetoreal.dev.br/browser/assets/img/");
+                // .addResourceLocations("file:/var/www/projetoreal.dev.br/browser/assets/img/");
     }
 }

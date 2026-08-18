@@ -12,6 +12,8 @@ import com.gabriel_nunez.oficina_mecanica.dao.ClienteDAO;
 import com.gabriel_nunez.oficina_mecanica.dao.PecaDAO;
 import com.gabriel_nunez.oficina_mecanica.dao.PedidoDAO;
 import com.gabriel_nunez.oficina_mecanica.dto.VendasPorDataDTO;
+import com.gabriel_nunez.oficina_mecanica.integration.dto.DTOResponse;
+import com.gabriel_nunez.oficina_mecanica.integration.service.IAsaasService;
 import com.gabriel_nunez.oficina_mecanica.dto.FiltroPedidoDTO;
 import com.gabriel_nunez.oficina_mecanica.model.Cliente;
 import com.gabriel_nunez.oficina_mecanica.model.ItemPedido;
@@ -32,6 +34,9 @@ public class PedidoServiceImpl implements IPedidoService {
 
     @Autowired
     private IBotService botService;
+
+    @Autowired
+    private IAsaasService asaasService;
     
     @Autowired
     private NotificationService notificationService; 
@@ -74,6 +79,14 @@ public class PedidoServiceImpl implements IPedidoService {
             }
             novo.setStatus(Pedido.NOVO_PEDIDO);
             // novo.setValorTotal(total);
+
+            // ✅ salva primeiro para gerar o ID necessário para o link de pagamento
+            dao.save(novo);
+
+            DTOResponse dtoResponse = asaasService.createPaymentLink(novo.getValorTotal(), novo.getCliente(), novo.getId());
+            novo.setLinkPagamento(dtoResponse.invoiceUrl());
+            novo.setAsaasPaymentId(dtoResponse.id());
+
             dao.save(novo);
             /* enviando a mensagem do telegram */
             if (!botService.sendBotMessage(String.valueOf(novo.getId()))) {
@@ -83,6 +96,7 @@ public class PedidoServiceImpl implements IPedidoService {
             return novo;
         } catch (Exception ex) {
             // TODO: handle exception
+            ex.printStackTrace();
             return null;
         }
     }
@@ -265,5 +279,6 @@ public class PedidoServiceImpl implements IPedidoService {
         }
         return dao.save(pedido);
     }
+
 
 }
