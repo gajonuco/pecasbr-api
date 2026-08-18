@@ -1,0 +1,36 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.gajonuco.pecasbr.dto.VendasPorDataDTO
+ */
+package com.gajonuco.pecasbr.dto;
+
+import java.time.LocalDate;
+
+public class VendasPorDataDTO {
+    private Double total;
+    private LocalDate data;
+
+    public VendasPorDataDTO(Double total, LocalDate data) {
+        this.total = total;
+        this.data = data;
+    }
+
+    public Double getTotal() {
+        return this.total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
+    public LocalDate getData() {
+        return this.data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+}
+
