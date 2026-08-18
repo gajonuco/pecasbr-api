@@ -64,7 +64,7 @@ A aplicação segue um padrão clássico em camadas:
 - `security/` — configuração de segurança, JWT e filtro de autenticação
 - `config/` — configuração de WebSocket e CORS
 
-O pacote base é `com.gabriel_nunez.oficina_mecanica` por legado de projeto, mas o domínio atual é e-commerce de moda feminina.
+O pacote base é `com.gajonuco.pecasbr` por legado de projeto, mas o domínio atual é e-commerce de moda feminina.
 
 ---
 
@@ -300,11 +300,11 @@ java -jar target/java-0.0.1-SNAPSHOT.jar
 ## Arquivos-chave
 
 - `pom.xml`
-- `src/main/java/com/gabriel_nunez/oficina_mecanica/OficinaMecanicaApplication.java`
-- `src/main/java/com/gabriel_nunez/oficina_mecanica/security/MyWebApplicationSecurityConfig.java`
-- `src/main/java/com/gabriel_nunez/oficina_mecanica/controller/PedidoController.java`
-- `src/main/java/com/gabriel_nunez/oficina_mecanica/controller/PecaController.java`
-- `src/main/java/com/gabriel_nunez/oficina_mecanica/controller/AsaasWebhookController.java`
+- `src/main/java/com/gajonuco/pecasbr/OficinaMecanicaApplication.java`
+- `src/main/java/com/gajonuco/pecasbr/security/MyWebApplicationSecurityConfig.java`
+- `src/main/java/com/gajonuco/pecasbr/controller/PedidoController.java`
+- `src/main/java/com/gajonuco/pecasbr/controller/PecaController.java`
+- `src/main/java/com/gajonuco/pecasbr/controller/AsaasWebhookController.java`
 - `src/main/resources/application.properties`
 
 ---
