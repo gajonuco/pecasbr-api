@@ -44,60 +44,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="tbl_peca")
+@Table(name = "tbl_peca")
 public class Peca {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="id_peca")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_peca")
     private Integer id;
-    @Column(name="nome_peca", length=100, nullable=false)
-    @JsonProperty(value="nome")
+    @Column(name = "nome_peca", length = 100, nullable = false)
+    @JsonProperty(value = "nome")
     private String nome;
-    @Column(name="detalhe_peca", columnDefinition="TEXT", nullable=false)
-    @JsonProperty(value="detalhe")
+    @Column(name = "detalhe_peca", columnDefinition = "TEXT", nullable = false)
+    @JsonProperty(value = "detalhe")
     private String detalhe;
-    @Column(name="link_foto", length=255, nullable=false)
-    @JsonProperty(value="linkFoto")
+    @Column(name = "link_foto", length = 255, nullable = false)
+    @JsonProperty(value = "linkFoto")
     private String linkFoto;
-    @Column(name="preco_peca", nullable=false)
-    @JsonProperty(value="preco")
+    @Column(name = "preco_peca", nullable = false)
+    @JsonProperty(value = "preco")
     private double preco;
-    @Column(name="preco_promocional", nullable=false)
-    @JsonProperty(value="precoPromo")
+    @Column(name = "preco_promocional", nullable = false)
+    @JsonProperty(value = "precoPromo")
     private double precoPromo;
-    @Column(name="disponivel")
-    @JsonProperty(value="disponivel")
+    @Column(name = "disponivel")
+    @JsonProperty(value = "disponivel")
     private int disponivel;
-    @Column(name="destaque")
-    @JsonProperty(value="destaque")
+    @Column(name = "destaque")
+    @JsonProperty(value = "destaque")
     private Integer destaque;
-    @Column(name="pronta_entrega")
-    @JsonProperty(value="prontaEntrega")
+    @Column(name = "pronta_entrega")
+    @JsonProperty(value = "prontaEntrega")
     private Integer prontaEntrega;
-    @Column(name="quantidade_estoque", nullable=false)
-    @JsonProperty(value="quantidadeEstoque")
+    @Column(name = "quantidade_estoque", nullable = false)
+    @JsonProperty(value = "quantidadeEstoque")
     private Integer quantidadeEstoque;
-    @Column(name="estoque_minimo", nullable=false)
-    @JsonProperty(value="estoqueMinimo")
+    @Column(name = "estoque_minimo", nullable = false)
+    @JsonProperty(value = "estoqueMinimo")
     private Integer estoqueMinimo;
-    @Column(name="estoque_critico", nullable=false)
-    @JsonProperty(value="estoqueCritico")
+    @Column(name = "estoque_critico", nullable = false)
+    @JsonProperty(value = "estoqueCritico")
     private Integer estoqueCritico;
-    @Column(name="cor_unica")
-    @JsonProperty(value="corUnica")
+    @Column(name = "cor_unica")
+    @JsonProperty(value = "corUnica")
     private Boolean corUnica = false;
-    @Column(name="tamanho_unico")
-    @JsonProperty(value="tamanhoUnico")
+    @Column(name = "tamanho_unico")
+    @JsonProperty(value = "tamanhoUnico")
     private Boolean tamanhoUnico = false;
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="id_categoria_peca")
-    @JsonProperty(value="categoriaPeca")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_categoria_peca")
+    @JsonProperty(value = "categoriaPeca")
     private CategoriaPeca categoriaPeca;
-    @OneToMany(mappedBy="peca", cascade={CascadeType.ALL}, orphanRemoval=true)
-    @OrderBy(value="ordem ASC")
-    @JsonProperty(value="imagens")
+    @OneToMany(mappedBy = "peca", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OrderBy(value = "ordem ASC")
+    @JsonProperty(value = "imagens")
     private List<PecaImagem> imagens = new ArrayList();
-    @OneToMany(mappedBy="peca", cascade={CascadeType.ALL}, orphanRemoval=true, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy = "peca", cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<PecaVariacao> variacoes = new ArrayList();
 
@@ -106,12 +106,14 @@ public class Peca {
         if (this.variacoes == null || this.variacoes.isEmpty()) {
             return this.quantidadeEstoque;
         }
-        return this.variacoes.stream().mapToInt(v -> v.getQuantidadeEstoque() != null ? v.getQuantidadeEstoque() : 0).sum();
+        return this.variacoes.stream().mapToInt(v -> v.getQuantidadeEstoque() != null ? v.getQuantidadeEstoque() : 0)
+                .sum();
     }
 
     @JsonIgnore
     public String getImagemPrincipal() {
-        return this.imagens.stream().filter(img -> img.getPrincipal() != null && img.getPrincipal() == 1).map(PecaImagem::getLinkImagem).findFirst().orElse(this.linkFoto);
+        return this.imagens.stream().filter(img -> img.getPrincipal() != null && img.getPrincipal() == 1)
+                .map(PecaImagem::getLinkImagem).findFirst().orElse(this.linkFoto);
     }
 
     public List<PecaImagem> getImagens() {
@@ -289,8 +291,8 @@ public class Peca {
 
     public void sincronizarEstoqueTotal() {
         if (this.variacoes != null && !this.variacoes.isEmpty()) {
-            this.quantidadeEstoque = this.variacoes.stream().mapToInt(v -> v.getQuantidadeEstoque() != null ? v.getQuantidadeEstoque() : 0).sum();
+            this.quantidadeEstoque = this.variacoes.stream()
+                    .mapToInt(v -> v.getQuantidadeEstoque() != null ? v.getQuantidadeEstoque() : 0).sum();
         }
     }
 }
-
