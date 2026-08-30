@@ -12,12 +12,7 @@
  */
 package com.gajonuco.pecasbr.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="tbl_usuario")
@@ -36,6 +31,12 @@ public class Usuario {
     private String nome_usuario;
     @Column(name="usuario_ativo")
     private int ativo;
+    @Enumerated(EnumType.STRING)
+    @Column (name = "role", nullable = false)
+    private Role role;
+
+    public Role getRole() {return role;}
+    public void setRole(Role role){ this.role = role;}
 
     public int getId() {
         return this.id;
