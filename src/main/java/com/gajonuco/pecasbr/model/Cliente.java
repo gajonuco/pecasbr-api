@@ -102,7 +102,7 @@ public class Cliente {
         return telefone;
     }
 
-        public String getCpf() {
+    public String getCpf() {
         return cpf;
     }
 

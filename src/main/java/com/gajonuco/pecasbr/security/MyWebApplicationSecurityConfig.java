@@ -43,7 +43,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class MyWebApplicationSecurityConfig {
-    @Value(value="${frontend.url}")
+    @Value(value="${app.public-url}")
     private String frontendUrl;
 
     @Bean

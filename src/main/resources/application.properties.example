@@ -1,0 +1,17 @@
+# Copie as variáveis abaixo pro seu .env ou pras env vars do servidor
+
+DB_URL=jdbc:mysql://localhost:3306/db_projetoreal?useTimezone=true&serverTimezone=America/Sao_Paulo
+DB_USERNAME=
+DB_PASSWORD=
+
+TELEGRAM_CHAT_ID=
+TELEGRAM_BOT_URL=
+
+ASAAS_URL=
+ASAAS_API_KEY=
+
+APP_PUBLIC_URL=
+
+# Apenas produção
+SSL_KEYSTORE_PATH=
+SSL_KEYSTORE_PASSWORD=

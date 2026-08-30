@@ -42,18 +42,32 @@ implements IAsaasService {
     private String baseURL;
     @Value(value="${asaas.apikey}")
     private String apiKey;
-    @Value(value="${frontend.url}")
+    @Value(value="${app.public-url}")
     private String frontendUrl;
+    private final RestClient restClient;
+
+    public AsaasServiceImpl(RestClient.Builder restClientBuilder){
+        this.restClient = restClientBuilder.build();
+    }
 
     public DTOResponse createPaymentLink(Double valor_total, Cliente cliente, Integer idPedido) {
-        RestClient restClient = RestClient.create();
-        String customerId = this.resolverClienteAsaas(restClient, cliente);
+        String customerId = resolverClienteAsaas(cliente);
         if (customerId == null) {
             return null;
         }
-        DTOPixRequest pixRequest = new DTOPixRequest("UNDEFINED", customerId, valor_total, LocalDate.now().plusDays(1L), "App Moments", new DTOPixRequest.Callback(this.frontendUrl + "/recibo/" + idPedido, Boolean.valueOf(true)));
+        DTOPixRequest pixRequest = new DTOPixRequest(
+                "UNDEFINED",
+                customerId,
+                valor_total,
+                LocalDate.now().plusDays(1L),
+                "App Moments",
+                new DTOPixRequest.Callback(this.frontendUrl + "/recibo/" + idPedido, Boolean.valueOf(true)));
         try {
-            ResponseEntity response = ((RestClient.RequestBodySpec)((RestClient.RequestBodySpec)restClient.post().uri(this.baseURL + "/payments", new Object[0])).header("access_token", new String[]{this.apiKey})).contentType(MediaType.APPLICATION_JSON).body(pixRequest).retrieve().toEntity(DTOResponse.class);
+            ResponseEntity response = ((RestClient.RequestBodySpec)((RestClient.RequestBodySpec)restClient.post()
+                    .uri(this.baseURL + "/payments", new Object[0]))
+                    .header("access_token", new String[]{this.apiKey}))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(pixRequest).retrieve().toEntity(DTOResponse.class);
             return (DTOResponse)response.getBody();
         }
         catch (Exception e) {
@@ -62,10 +76,21 @@ implements IAsaasService {
         }
     }
 
-    private String resolverClienteAsaas(RestClient restClient, Cliente cliente) {
-        DTOClienteRequest clienteRequest = new DTOClienteRequest(cliente.getNome(), cliente.getCpf() != null ? cliente.getCpf().replaceAll("\\D", "") : null, cliente.getEmail(), cliente.getTelefone().replaceAll("\\D", ""), cliente.getNumero(), cliente.getComplemento(), cliente.getCep() != null ? cliente.getCep().replaceAll("\\D", "") : null);
+    private String resolverClienteAsaas(Cliente cliente) {
+        DTOClienteRequest clienteRequest = new DTOClienteRequest(
+                cliente.getNome(),
+                cliente.getCpf() != null ? cliente.getCpf().replaceAll("\\D", "") : null,
+                cliente.getEmail(), cliente.getTelefone().replaceAll("\\D", ""),
+                cliente.getNumero(),
+                cliente.getComplemento(),
+                cliente.getCep() != null ? cliente.getCep().replaceAll("\\D", "") : null);
         try {
-            ResponseEntity response = ((RestClient.RequestBodySpec)((RestClient.RequestBodySpec)restClient.post().uri(this.baseURL + "/customers", new Object[0])).header("access_token", new String[]{this.apiKey})).contentType(MediaType.APPLICATION_JSON).body(clienteRequest).retrieve().toEntity(DTOClienteResponse.class);
+            ResponseEntity response = ((RestClient.RequestBodySpec)((RestClient.RequestBodySpec)restClient.post().
+                    uri(this.baseURL + "/customers", new Object[0])).
+                    header("access_token", new String[]{this.apiKey})).
+                    contentType(MediaType.APPLICATION_JSON).body(clienteRequest).
+                    retrieve().
+                    toEntity(DTOClienteResponse.class);
             return ((DTOClienteResponse)response.getBody()).id();
         }
         catch (Exception e) {
@@ -79,7 +104,10 @@ implements IAsaasService {
 
     private String buscarClientePorCpf(RestClient restClient, String cpfCnpj) {
         try {
-            ResponseEntity response = restClient.get().uri(this.baseURL + "/customers?cpfCnpj=" + cpfCnpj, new Object[0]).header("access_token", new String[]{this.apiKey}).retrieve().toEntity(DTOClienteListResponse.class);
+            ResponseEntity response = restClient.get()
+                    .uri(this.baseURL + "/customers?cpfCnpj=" + cpfCnpj, new Object[0])
+                    .header("access_token", new String[]{this.apiKey})
+                    .retrieve().toEntity(DTOClienteListResponse.class);
             List lista = ((DTOClienteListResponse)response.getBody()).data();
             if (lista != null && !lista.isEmpty()) {
                 return ((DTOClienteResponse)lista.get(0)).id();

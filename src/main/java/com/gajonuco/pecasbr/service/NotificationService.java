@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     // Injeta a URL base do application.properties
-    @Value("${app.frontend.url}")
+    @Value("${app.public-url}")
     private String frontendUrl;
 
     /**

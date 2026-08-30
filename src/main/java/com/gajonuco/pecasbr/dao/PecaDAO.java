@@ -30,8 +30,6 @@ public interface PecaDAO
 extends JpaRepository<Peca, Integer> {
     public Page<Peca> findAllByDisponivel(int var1, Pageable var2);
 
-    public Optional<Peca> findById(int var1);
-
     public ArrayList<Peca> findAllByCategoriaPecaAndDisponivel(CategoriaPeca var1, int var2);
 
     public ArrayList<Peca> findAllByCategoriaPeca(CategoriaPeca var1);
