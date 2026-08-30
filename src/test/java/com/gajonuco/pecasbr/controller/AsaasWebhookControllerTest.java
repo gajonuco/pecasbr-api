@@ -31,12 +31,14 @@ public class AsaasWebhookControllerTest {
 
     private AsaasWebhookController controller;
 
+    private static final String TOKEN_VALIDO = "token-de-teste-bem-foret-e-longo";
+
     @BeforeEach
     void setUp() {
         // Diferente do AsaasServiceImplTest, aqui NÃO existe cadeia fluente pra
         // reconstruir (RestClient) — o controller recebe suas 3 dependências direto
         // no construtor, então o setup é só instanciar com os mocks.
-        controller = new AsaasWebhookController(pedidoDAO, messagingTemplate, notificationService);
+        controller = new AsaasWebhookController(pedidoDAO, messagingTemplate, notificationService, TOKEN_VALIDO);
     }
 
     // ---------- helpers de fixture ----------
@@ -53,13 +55,35 @@ public class AsaasWebhookControllerTest {
         return new DTOWebhookAsaas(event, new DTOWebhookAsaas.Payment(paymentId, "CONFIRMED"));
     }
 
+    @Test
+    void deveRetornar401QuandoTokenForAusente(){
+        DTOWebhookAsaas dto =criarEvento("PAYMENT_CONFIRMED", "pay_1");
+        ResponseEntity<Void> resposta = controller.receberEvento(null, dto);
+        assertEquals(401, resposta.getStatusCode().value());
+        verifyNoInteractions(pedidoDAO,notificationService,messagingTemplate);
+    }
+
+    @Test
+    void deveRetornar401QuandoTokenForInvalido(){
+        DTOWebhookAsaas dto =criarEvento("PAYMENT_CONFIRMED", "pay_1");
+
+        ResponseEntity<Void> resposta = controller.receberEvento("token-errado",dto);
+
+        assertEquals(401,resposta.getStatusCode().value());
+        verifyNoInteractions(pedidoDAO,notificationService,messagingTemplate);
+
+
+
+    }
+
+
     // ---------- curto-circuitos: 200 sem tocar em nada ----------
 
     @Test
     void deveRetornar200SemConsultarBancoQuandoEventoForNulo() {
         DTOWebhookAsaas dto = new DTOWebhookAsaas(null, new DTOWebhookAsaas.Payment("pay_1", "CONFIRMED"));
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         verify(pedidoDAO, never()).findByAsaasPaymentId(anyString());
@@ -70,7 +94,7 @@ public class AsaasWebhookControllerTest {
     void deveRetornar200SemConsultarBancoQuandoPaymentForNulo() {
         DTOWebhookAsaas dto = new DTOWebhookAsaas("PAYMENT_CONFIRMED", null);
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         verify(pedidoDAO, never()).findByAsaasPaymentId(anyString());
@@ -83,7 +107,7 @@ public class AsaasWebhookControllerTest {
         // PAYMENT_RECEIVED disparam o fluxo de confirmação.
         DTOWebhookAsaas dto = criarEvento("PAYMENT_OVERDUE", "pay_1");
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         verify(pedidoDAO, never()).findByAsaasPaymentId(anyString());
@@ -97,7 +121,7 @@ public class AsaasWebhookControllerTest {
         DTOWebhookAsaas dto = criarEvento("PAYMENT_CONFIRMED", "pay_inexistente");
         when(pedidoDAO.findByAsaasPaymentId("pay_inexistente")).thenReturn(Optional.empty());
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         verify(pedidoDAO, never()).save(any());
@@ -114,7 +138,7 @@ public class AsaasWebhookControllerTest {
         DTOWebhookAsaas dto = criarEvento("PAYMENT_CONFIRMED", "pay_10");
         when(pedidoDAO.findByAsaasPaymentId("pay_10")).thenReturn(Optional.of(pedidoJaPago));
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         verify(pedidoDAO, never()).save(any());
@@ -130,7 +154,7 @@ public class AsaasWebhookControllerTest {
         DTOWebhookAsaas dto = criarEvento("PAYMENT_CONFIRMED", "pay_20");
         when(pedidoDAO.findByAsaasPaymentId("pay_20")).thenReturn(Optional.of(pedido));
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         assertEquals(Pedido.PAGO, pedido.getStatus());
@@ -148,7 +172,7 @@ public class AsaasWebhookControllerTest {
         DTOWebhookAsaas dto = criarEvento("PAYMENT_RECEIVED", "pay_21");
         when(pedidoDAO.findByAsaasPaymentId("pay_21")).thenReturn(Optional.of(pedido));
 
-        ResponseEntity<Void> resposta = controller.receberEvento(dto);
+        ResponseEntity<Void> resposta = controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(200, resposta.getStatusCode().value());
         assertEquals(Pedido.PAGO, pedido.getStatus());
@@ -169,7 +193,7 @@ public class AsaasWebhookControllerTest {
         DTOWebhookAsaas dto = criarEvento("PAYMENT_CONFIRMED", "pay_30");
         when(pedidoDAO.findByAsaasPaymentId("pay_30")).thenReturn(Optional.of(pedidoCancelado));
 
-        controller.receberEvento(dto);
+        controller.receberEvento(TOKEN_VALIDO,dto);
 
         assertEquals(Pedido.PAGO, pedidoCancelado.getStatus());
         verify(notificationService, times(1)).notificarPagamentoConfirmado(pedidoCancelado);
