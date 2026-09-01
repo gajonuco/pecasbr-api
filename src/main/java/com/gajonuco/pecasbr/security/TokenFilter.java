@@ -28,19 +28,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-public class TokenFilter
-extends OncePerRequestFilter {
+public class TokenFilter extends OncePerRequestFilter {
+
+    private final JWTTokenUtil jwtTokenUtil;
+
+    public TokenFilter(JWTTokenUtil jwtTokenUtil){
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
         if (path.startsWith("/api/notifications")) {
-            filterChain.doFilter((ServletRequest)request, (ServletResponse)response);
+            filterChain.doFilter(request, response);
             return;
         }
         if (request.getHeader("Authorization") != null) {
-            Authentication auth = JWTTokenUtil.decodeToken((HttpServletRequest)request);
+            Authentication auth = jwtTokenUtil.decodeToken(request);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
-        filterChain.doFilter((ServletRequest)request, (ServletResponse)response);
+        filterChain.doFilter(request, response);
     }
 }
 
