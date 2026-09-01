@@ -16,57 +16,99 @@
 package com.gajonuco.pecasbr.security;
 
 import com.gajonuco.pecasbr.model.Usuario;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import javax.crypto.SecretKey;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /*
  * Exception performing whole class analysis ignored.
  */
 public class JWTTokenUtil {
-    private static final String SECRET_KEY = "OficianMecacniaWebToken2025XXA1B2C3";
-    private static final int EXPIRATION = 604800000;
-    private static final String TK_PREFIX = "Bearer ";
-    private static final String HEADER_AUTH = "Authorization";
 
-    public static String generateToken(Usuario usuario) {
-        SecretKey secretKey = Keys.hmacShaKeyFor((byte[])"OficianMecacniaWebToken2025XXA1B2C3".getBytes());
-        String jwt = Jwts.builder().setSubject(usuario.getUsername()).setIssuer("*Gabriel Nunez*").setExpiration(new Date(System.currentTimeMillis() + 604800000L)).signWith((Key)secretKey, SignatureAlgorithm.HS256).compact();
+    private static final Logger log = LoggerFactory.getLogger(JWTTokenUtil.class);
+    private static final String ISSUER = "pecasbr-api";
+    private static final long EXPIRATION = 604_800_000L; // 7 dias
+
+    private final SecretKey secretKey;
+
+    public JWTTokenUtil(@Value("${jwt.secret}") String secret) {
+        this.secretKey =Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateToken(Usuario usuario) {
+        String jwt = Jwts.builder()
+                .setSubject(usuario.getUsername())
+                .claim("role", usuario.getRole().name())
+                .setIssuer(ISSUER)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith((Key) secretKey, SignatureAlgorithm.HS256)
+                .compact();
         return "Bearer " + jwt;
     }
 
+    public  Authentication decodeToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+
+        if(token == null){
+            return null;
+        }
+        token = token.replace("Bearer", "");
+
+        try {
+            Jws<Claims> jwsClaims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
+
+            Claims claims = jwsClaims.getBody();
+            String username = claims.getSubject();
+            String issuer = claims.getIssuer();
+            Date expiration = claims.getExpiration();
+            String role = claims.get("role", String.class);
+
+            if (!isSubjectValid(username) || !isIssuerValid(issuer) || !isExpirationValid(expiration)) {
+                return null;
+            }
+
+            List<GrantedAuthority> authorities = role != null
+                    ? Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
+                    : Collections.emptyList();
+
+            return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        } catch (JwtException e) {
+            log.warn("[JWT] Token inválido ou expirado: {}", e.getMessage());
+            return null;
+        }
+    }
+
     public static boolean isIssuerValid(String issuer) {
-        return issuer.equals("*Gabriel Nunez*");
+        return ISSUER.equals(issuer);
     }
 
     public static boolean isSubjectValid(String subject) {
-        return subject != null && subject.length() > 0;
+        return subject != null && subject.isEmpty();
     }
 
     public static boolean isExpirationValid(Date expiration) {
-        return expiration.after(new Date(System.currentTimeMillis()));
+        return expiration != null && expiration.after(new Date());
+
     }
 
-    public static Authentication decodeToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        token = token.replace("Bearer ", "");
-        Jws jswClaims = Jwts.parserBuilder().setSigningKey("OficianMecacniaWebToken2025XXA1B2C3".getBytes()).build().parseClaimsJws(token);
-        String username = ((Claims)jswClaims.getBody()).getSubject();
-        String emissor = ((Claims)jswClaims.getBody()).getIssuer();
-        Date expira = ((Claims)jswClaims.getBody()).getExpiration();
-        if (JWTTokenUtil.isSubjectValid((String)username) && JWTTokenUtil.isIssuerValid((String)emissor) && JWTTokenUtil.isExpirationValid((Date)expira)) {
-            return new UsernamePasswordAuthenticationToken((Object)username, null, Collections.emptyList());
-        }
-        return null;
-    }
+
 }
 
