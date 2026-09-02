@@ -27,14 +27,12 @@ import com.gajonuco.pecasbr.security.TokenFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import jakarta.servlet.Filter;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -43,15 +41,57 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class MyWebApplicationSecurityConfig {
-    @Value(value="${app.public-url}")
+
+    @Value("${app.public-url}")
     private String frontendUrl;
+
+    private final TokenFilter tokenFilter;
+
+    public MyWebApplicationSecurityConfig(TokenFilter tokenFilter) {
+        this.tokenFilter = tokenFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("Configurando primeiro acesso.");
-        http.cors(cors -> cors.configurationSource(this.corsConfigurationSource())).csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)auth.requestMatchers(HttpMethod.GET, new String[]{"/categoria_peca"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/categoria_by_id"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/cliente/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/images/**"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/peca/todos"})).permitAll().requestMatchers(HttpMethod.POST, new String[]{"/pedido"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/pedido/search/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/peca/categoria/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/peca/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/peca/busca"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/peca"})).permitAll().requestMatchers(HttpMethod.POST, new String[]{"/login"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/fretes/prefixo/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/swagger-ui/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/swagger-ui.html"})).permitAll().requestMatchers(HttpMethod.POST, new String[]{"/api/notifications/**"})).permitAll().requestMatchers(HttpMethod.POST, new String[]{"/webhook"})).permitAll().requestMatchers(HttpMethod.POST, new String[]{"/webhook/asaas"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/createPayment/**"})).permitAll().requestMatchers(HttpMethod.POST, new String[]{"/createPayment/**"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/recibo/**"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/v3/api-docs*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/v3/api-docs/*"})).permitAll().requestMatchers(HttpMethod.GET, new String[]{"/pecas/**"})).permitAll().requestMatchers(new String[]{"/ws/**"})).permitAll().requestMatchers(new String[]{"/topic/**"})).permitAll().anyRequest()).authenticated());
-        http.addFilterBefore((Filter)new TokenFilter(), UsernamePasswordAuthenticationFilter.class);
-        return (SecurityFilterChain)http.build();
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // --- endpoints públicos (mantidos como já estavam) ---
+                        .requestMatchers(HttpMethod.GET, "/categoria_peca", "/categoria_by_id").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cliente/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/peca/todos", "/peca", "/peca/busca", "/peca/*", "/peca/categoria/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/pedido", "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/pedido/search/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/fretes/prefixo/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/*", "/swagger-ui.html", "/v3/api-docs*", "/v3/api-docs/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/**", "/webhook", "/webhook/asaas").permitAll()
+                        .requestMatchers("/createPayment/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/recibo/**", "/pecas/**").permitAll()
+                        .requestMatchers("/ws/**", "/topic/**").permitAll()
+
+                        // --- gestão de usuários: só ADMIN ---
+                        .requestMatchers(HttpMethod.GET, "/usuario", "/usuario/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/usuario").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/usuario/*").hasRole("ADMIN")
+
+                        // --- catálogo (escrita) e pedidos: equipe operacional ---
+                        .requestMatchers(HttpMethod.POST, "/peca", "/peca/upload",
+                                "/peca/*/imagem", "/peca/*/imagem/url").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT, "/peca/*").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PATCH, "/peca/*/imagem/*/principal",
+                                "/peca/*/imagens/reordenar").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.DELETE, "/peca/imagem/*").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PATCH, "/pedido/*").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT, "/pedido").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.POST, "/pedido/filtrar").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/pedido/recentes").hasAnyRole("ADMIN", "VENDEDOR")
+
+                        .anyRequest().authenticated()
+                );
+
+        http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
     @Bean
