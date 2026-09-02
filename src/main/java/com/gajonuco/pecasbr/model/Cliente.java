@@ -1,15 +1,13 @@
 package com.gajonuco.pecasbr.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tbl_cliente")
@@ -24,7 +22,7 @@ public class Cliente {
     @Column(name =  "nome_cliente", length = 100, nullable = false)
     private String nome;
 
-    @Column(name = "email_cliente", length = 100, nullable = false)
+    @Column(name = "email_cliente", length = 100, nullable = false, unique = true)
     private String email;
 
     @Column(name = "telefone_cliente", length = 20, nullable = false, unique = true)
@@ -39,27 +37,25 @@ public class Cliente {
     private String cpf;
 
 
-    @Column(name = "cep_cliente", length = 10, nullable =  false)
-    private String cep;
+    @Column(name = "senha", length = 100)
+    private String senha;
 
-    @Column(name = "logradouro", length = 100)
-    private String logradouro;
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("cliente")
+    private List<Endereco> enderecos = new ArrayList<>();
 
-    @Column(name = "numero", length = 100)
-    private String numero;
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
+    public List<Endereco> getEnderecos() { return enderecos; }
+    public void setEnderecos(List<Endereco> enderecos) { this.enderecos = enderecos; }
 
-    @Column(name = "complemento", length = 50)
-    private String complemento;
-    
-    @Column(name = "bairro", length = 100)
-    private String bairro;
-
-    @Column(name = "cidade", length = 100)
-    private String cidade;
-
-    @Column(name = "estado", length = 2)
-    private String estado;
-
+    @Transient
+    public Endereco getEnderecoPrincipal() {
+        return enderecos.stream()
+                .filter(Endereco::isPrincipal)
+                .findFirst()
+                .orElse(enderecos.isEmpty() ? null : enderecos.get(0));
+    }
 
     
 
