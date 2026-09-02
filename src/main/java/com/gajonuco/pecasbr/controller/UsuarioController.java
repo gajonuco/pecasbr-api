@@ -34,26 +34,30 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(value={"*"})
 @RestController
 public class UsuarioController {
-    @Autowired
-    private IUsuarioService service;
+
+    private final IUsuarioService service;
+    private final JWTTokenUtil jwtTokenUtil;
+
+    public UsuarioController(IUsuarioService service, JWTTokenUtil jwtTokenUtil) {
+        this.service = service;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @PostMapping(value={"/login"})
     public ResponseEntity<JWTToken> fazerLogin(@RequestBody Usuario dadosLogin) {
-        System.out.println("dados login: " + String.valueOf(dadosLogin));
         Usuario user = this.service.recuperarUsuario(dadosLogin);
         if (user != null) {
             JWTToken jwtToken = new JWTToken();
-            jwtToken.setToken(JWTTokenUtil.generateToken((Usuario)user));
+            jwtToken.setToken(jwtTokenUtil.generateToken(user));
             return ResponseEntity.ok(jwtToken);
         }
         Usuario userInativo = this.service.buscarUsuarioPorCredenciais(dadosLogin);
         if (userInativo != null && userInativo.getAtivo() == 0) {
-            return ResponseEntity.status((int)403).build();
+            return ResponseEntity.status(403).build();
         }
-        return ResponseEntity.status((int)401).build();
+        return ResponseEntity.status(401).build();
     }
 
     @GetMapping(value={"/usuario"})
