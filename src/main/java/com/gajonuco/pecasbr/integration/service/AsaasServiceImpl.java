@@ -29,6 +29,8 @@ import com.gajonuco.pecasbr.integration.service.IAsaasService;
 import com.gajonuco.pecasbr.model.Cliente;
 import java.time.LocalDate;
 import java.util.List;
+
+import com.gajonuco.pecasbr.model.Endereco;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -76,14 +78,16 @@ implements IAsaasService {
         }
     }
 
+
     private String resolverClienteAsaas(Cliente cliente) {
+        Endereco endereco = cliente.getEnderecoPrincipal();
         DTOClienteRequest clienteRequest = new DTOClienteRequest(
                 cliente.getNome(),
                 cliente.getCpf() != null ? cliente.getCpf().replaceAll("\\D", "") : null,
                 cliente.getEmail(), cliente.getTelefone().replaceAll("\\D", ""),
-                cliente.getNumero(),
-                cliente.getComplemento(),
-                cliente.getCep() != null ? cliente.getCep().replaceAll("\\D", "") : null);
+                endereco != null ? endereco.getNumero() : null,
+                endereco != null ? endereco.getComplemento() : null,
+                endereco != null ? endereco.getCep().replaceAll("\\D", "") : null);
         try {
             ResponseEntity response = ((RestClient.RequestBodySpec)((RestClient.RequestBodySpec)restClient.post().
                     uri(this.baseURL + "/customers", new Object[0])).
