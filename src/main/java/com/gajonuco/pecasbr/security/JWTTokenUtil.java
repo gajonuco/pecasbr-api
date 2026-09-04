@@ -103,7 +103,7 @@ public class JWTTokenUtil {
     }
 
     public static boolean isSubjectValid(String subject) {
-        return subject != null && subject.isEmpty();
+        return subject != null && !subject.isEmpty();
     }
 
     public static boolean isExpirationValid(Date expiration) {
