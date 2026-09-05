@@ -18,10 +18,13 @@ import com.google.firebase.FirebaseOptions;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import javax.annotation.PostConstruct;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 @Configuration
+@ConditionalOnProperty(name = "firebase.enabled", havingValue = "true", matchIfMissing = true)
 public class FirebaseConfig {
     @PostConstruct
     public void initialize() {
