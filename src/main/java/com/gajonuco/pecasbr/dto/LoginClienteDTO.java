@@ -1,4 +1,4 @@
 package com.gajonuco.pecasbr.dto;
 
-public class LoginClienteDTO {
+public record LoginClienteDTO(String email, String senha) {
 }

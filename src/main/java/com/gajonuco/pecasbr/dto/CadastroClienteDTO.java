@@ -1,8 +1,8 @@
-package com.gajonuco.pecasbr.integration.dto;
+package com.gajonuco.pecasbr.dto;
 
 import java.time.LocalDate;
 
-public record DTOCadastroCliente(
+public record CadastroClienteDTO(
         String nome,
         String email,
         String senha,
