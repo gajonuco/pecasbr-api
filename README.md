@@ -1,5 +1,7 @@
 # Fashion Store API
 
+[![CI](https://github.com/gajonuco/pecasbr-api/actions/workflows/ci.yml/badge.svg)](https://github.com/gajonuco/pecasbr-api/actions/workflows/ci.yml)
+
 API backend para um e-commerce de moda feminina, com foco em catálogo de roupas, gestão de estoque, vendas por pedido e integrações de pagamento.
 Este projeto entrega uma arquitetura corporativa com autenticação JWT, integração externa com Asaas e Firebase, suporte a upload de mídia e uma camada de serviços bem definida.
 

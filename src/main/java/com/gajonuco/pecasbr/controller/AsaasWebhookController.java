@@ -93,10 +93,14 @@ public class AsaasWebhookController {
 
     }
 
-    private boolean tokenValido(String tokenRecebido){
+    private boolean tokenValido(String tokenRecebido) {
+        if (tokenRecebido == null || webhookToken == null) {
+            return false;
+        }
+
         return MessageDigest.isEqual(
                 tokenRecebido.getBytes(StandardCharsets.UTF_8),
-                webhookToken.getBytes(StandardCharsets.UTF_8));
-
+                webhookToken.getBytes(StandardCharsets.UTF_8)
+        );
     }
 }
