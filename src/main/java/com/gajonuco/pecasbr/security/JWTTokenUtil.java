@@ -15,6 +15,7 @@
  */
 package com.gajonuco.pecasbr.security;
 
+import com.gajonuco.pecasbr.model.Cliente;
 import com.gajonuco.pecasbr.model.Usuario;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -52,15 +53,23 @@ public class JWTTokenUtil {
         this.secretKey =Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(Usuario usuario) {
+    public String generateToken(String subject, String role) {
         String jwt = Jwts.builder()
-                .setSubject(usuario.getUsername())
-                .claim("role", usuario.getRole().name())
+                .setSubject(subject)
+                .claim("role", role)
                 .setIssuer(ISSUER)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith((Key) secretKey, SignatureAlgorithm.HS256)
                 .compact();
         return "Bearer " + jwt;
+    }
+
+    public String generateToken(Usuario usuario) {
+        return generateToken(usuario.getUsername(), usuario.getRole().name());
+    }
+
+    public String generateToken(Cliente cliente) {
+        return generateToken(cliente.getEmail(), "CLIENTE");
     }
 
     public  Authentication decodeToken(HttpServletRequest request) {
