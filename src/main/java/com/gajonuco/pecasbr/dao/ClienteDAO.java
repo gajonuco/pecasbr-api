@@ -20,6 +20,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface ClienteDAO
 extends CrudRepository<Cliente, Integer> {
+
+    public Cliente findByEmail(String email);
+
     public Cliente findByEmailOrTelefone(String var1, String var2);
 
     @Query("SELECT c FROM Cliente c WHERE REGEXP_REPLACE(c.telefone, '[^0-9]', '') = :telefone")
@@ -39,4 +42,5 @@ extends CrudRepository<Cliente, Integer> {
     @Query("SELECT new com.gajonuco.pecasbr.model.Cliente(cli.nome, cli.dataNasc, cli.telefone) from Cliente cli WHERE month(cli.dataNasc) = :mes ORDER BY day(cli.dataNasc)")
     public ArrayList<Cliente> recuperarAniversariante(@Param("mes") int var1);
 }
+
 

@@ -8,7 +8,9 @@
  */
 package com.gajonuco.pecasbr.service;
 
+import com.gajonuco.pecasbr.dto.CadastroClienteDTO;
 import com.gajonuco.pecasbr.dto.CompradorDTO;
+import com.gajonuco.pecasbr.dto.LoginClienteDTO;
 import com.gajonuco.pecasbr.model.Cliente;
 import java.util.ArrayList;
 
@@ -28,5 +30,9 @@ public interface IClienteService {
     public ArrayList<Cliente> buscarAniversariantes(int var1);
 
     public ArrayList<CompradorDTO> recuperarCompradores(int var1);
+
+    public Cliente cadastrar(CadastroClienteDTO dadosCadastro);
+
+    public Cliente autenticar(LoginClienteDTO dadosLogin);
 }
 
