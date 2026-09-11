@@ -18,11 +18,17 @@
  */
 package com.gajonuco.pecasbr.controller;
 
+import com.gajonuco.pecasbr.dto.CadastroClienteDTO;
 import com.gajonuco.pecasbr.dto.CompradorDTO;
+import com.gajonuco.pecasbr.dto.LoginClienteDTO;
+import com.gajonuco.pecasbr.exception.ClienteJaCadastradoException;
 import com.gajonuco.pecasbr.model.Cliente;
+import com.gajonuco.pecasbr.security.JWTToken;
+import com.gajonuco.pecasbr.security.JWTTokenUtil;
 import com.gajonuco.pecasbr.service.IClienteService;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,10 +39,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(value={"*"})
 public class ClienteController {
-    @Autowired
-    public IClienteService service;
+
+    private final IClienteService service;
+    private final JWTTokenUtil jwtTokenUtil;
+
+    public ClienteController(IClienteService service, JWTTokenUtil jwtTokenUtil) {
+        this.service = service;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
+
+    @PostMapping("/cliente/cadastro")
+    public ResponseEntity<JWTToken> cadastrar(@RequestBody CadastroClienteDTO dados){
+        try {
+            Cliente cliente = service.cadastrar(dados);
+            JWTToken token = new JWTToken();
+            token.setToken(jwtTokenUtil.generateToken(cliente));
+            return ResponseEntity.status(HttpStatus.CREATED).body(token);
+        } catch (ClienteJaCadastradoException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PostMapping("/cliente/login")
+    public ResponseEntity<JWTToken> login(@RequestBody LoginClienteDTO dados){
+        Cliente cliente = service.autenticar(dados);
+        if (cliente == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        JWTToken token = new JWTToken();
+        token.setToken(jwtTokenUtil.generateToken(cliente));
+        return  ResponseEntity.ok(token);
+    }
 
     @GetMapping(value={"/cliente/{telefone}"})
     public ResponseEntity<Cliente> buscarPeloTelefone(@PathVariable String telefone) {
