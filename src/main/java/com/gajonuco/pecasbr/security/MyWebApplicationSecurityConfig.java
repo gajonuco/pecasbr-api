@@ -60,11 +60,9 @@ public class MyWebApplicationSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // --- endpoints públicos (mantidos como já estavam) ---
                         .requestMatchers(HttpMethod.GET, "/categoria_peca", "/categoria_by_id").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/cliente/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/peca/todos", "/peca", "/peca/busca", "/peca/*", "/peca/categoria/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/pedido", "/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/pedido/search/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/fretes/prefixo/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/*", "/swagger-ui.html", "/v3/api-docs*", "/v3/api-docs/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/notifications/**", "/webhook", "/webhook/asaas").permitAll()
@@ -72,6 +70,15 @@ public class MyWebApplicationSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/recibo/**", "/pecas/**").permitAll()
                         .requestMatchers("/ws/**", "/topic/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/cliente/cadastro", "/cliente/login").permitAll()
+
+                        // --- staff-only  —> POST/PUT /cliente ---
+                        .requestMatchers(HttpMethod.GET,"/cliente/me").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.PUT,"/cliente/me").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.GET,"/pedido/meus").hasRole("CLIENTE")
+
+                        .requestMatchers(HttpMethod.GET,"/cliente","/cliente/nome/*","/cliente/busca/*","/cliente/aniversario/*", "/cliente/compras/*").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.POST,"/cliente").hasAnyRole("ADMIN","VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT,"/cliente").hasAnyRole("ADMIN","VENDEDOR")
 
                         // --- gestão de usuários: só ADMIN ---
                         .requestMatchers(HttpMethod.GET, "/usuario", "/usuario/*").hasRole("ADMIN")
