@@ -91,6 +91,11 @@ public class ClienteServiceImpl implements IClienteService {
         return dao.save(novo);
     }
 
+    @Override
+    public Cliente buscarPeloEmail(String email) {
+        return dao.findByEmail(email);
+    }
+
     public Cliente autenticar(LoginClienteDTO dadosLogin) {
         Cliente cliente = dao.findByEmail(dadosLogin.email());
         if(cliente == null || cliente.getSenha() == null){

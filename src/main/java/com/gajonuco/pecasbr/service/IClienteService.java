@@ -33,6 +33,8 @@ public interface IClienteService {
 
     public Cliente cadastrar(CadastroClienteDTO dadosCadastro);
 
+    Cliente buscarPeloEmail(String email);
+
     public Cliente autenticar(LoginClienteDTO dadosLogin);
 }
 
