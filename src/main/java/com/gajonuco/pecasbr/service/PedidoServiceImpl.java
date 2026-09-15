@@ -182,6 +182,11 @@ public class PedidoServiceImpl implements IPedidoService {
     }
 
     @Override
+    public List<Pedido> buscarPorCliente(Cliente cliente) {
+        return dao.findAllByClienteByIdDesc(cliente);
+    }
+
+    @Override
     public ArrayList<Pedido> filtrarPorVariosCriterios(FiltroPedidoDTO filtro) {
         // TODO Auto-generated method stub
         boolean temData = filtro.getDataInicio() != null && filtro.getDataFim() != null;
@@ -262,7 +267,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Override
     public Pedido buscarPeloId(int id) {
         // TODO Auto-generated method stub
-        return dao.findById(id).get();
+        return dao.findById(id).orElse(null);
     }
 
     @Override

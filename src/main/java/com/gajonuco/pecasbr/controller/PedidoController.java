@@ -33,7 +33,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,10 +49,14 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(value={"*"})
 @RestController
 public class PedidoController {
-    @Autowired
-    private IPedidoService service;
-    @Autowired
-    private IClienteService cliService;
+
+    private final IPedidoService service;
+    private final IClienteService cliService;
+
+    public PedidoController(IPedidoService service, IClienteService cliservice){
+        this.service = service;
+        this.cliService = cliservice;
+    }
 
     @PostMapping(value={"/pedido"})
     public ResponseEntity<Pedido> inserirNovoPedido(@RequestBody Pedido novo) {
@@ -83,10 +89,36 @@ public class PedidoController {
         }
     }
 
-    @GetMapping(value={"/pedido/search/{id}"})
-    public ResponseEntity<Pedido> recuperarPedido(@PathVariable(name="id") int id) {
-        return ResponseEntity.ok(this.service.buscarPeloId(id));
+    @GetMapping("/pedido/search/{id}")
+    public ResponseEntity<Pedido> recuperarPedido(@PathVariable(name="id") int id, Authentication authentication) {
+        Pedido pedido = service.buscarPeloId(id);
+        if(pedido == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(!podeAcessar(pedido, authentication)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(pedido);
     }
+    @GetMapping("/pedido/meus")
+    public ResponseEntity<List<Pedido>> meusPedidos(Authentication authentication){
+        Cliente cliente = cliService.buscarPeloEmail(authentication.getName());
+        if(cliente == null){
+            return  ResponseEntity.ok(List.of());
+        }
+        return  ResponseEntity.ok(service.buscarPorCliente(cliente));
+    }
+
+    private boolean podeAcessar(Pedido pedido,Authentication authentication){
+        boolean ehStaff = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_VENDEDOR"));
+        if (ehStaff){
+            return true;
+        }
+        Cliente dono = pedido.getCliente();
+        return  dono != null && dono.getEmail() != null && dono.getEmail().equals(authentication.getName());
+    }
+
 
     @GetMapping(value={"/pedido/recentes"})
     public ResponseEntity<List<VendasPorDataDTO>> recuperarUltimasVendas(@RequestParam(value="inicio") String dataIni, @RequestParam(value="fim") String dataFim) {
