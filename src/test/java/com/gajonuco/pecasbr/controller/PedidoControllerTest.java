@@ -59,7 +59,7 @@ public class PedidoControllerTest {
     void clienteNaoDonoNaoAcessaPedidoDeOutroCliente(){
         when(service.buscarPeloId(1)).thenReturn(pedidoDoCliente("maria@teste.com"));
         when(authentication.getName()).thenReturn("outro@teste.com");
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"))).when(authentication.getAuthorities());
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"))).when(authentication).getAuthorities();
 
         ResponseEntity<Pedido> resposta = controller.recuperarPedido(1,authentication);
 
@@ -70,7 +70,7 @@ public class PedidoControllerTest {
     @Test
     void staffAcessaQualquerPedido(){
         when(service.buscarPeloId(1)).thenReturn(pedidoDoCliente("maria@teste.com"));
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_VENDEDOR"))).when(authentication.getAuthorities());
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_VENDEDOR"))).when(authentication).getAuthorities();
 
         ResponseEntity<Pedido> resposta = controller.recuperarPedido(1, authentication);
 
