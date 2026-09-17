@@ -61,8 +61,6 @@ extends CrudRepository<Pedido, Integer> {
 
     public Optional<Pedido> findByAsaasPaymentId(String var1);
 
-    ArrayList<Pedido> findAllByClienteByIdDesc(Cliente cliente);
-
     ArrayList<Pedido> findAllByClienteOrderByIdDesc(Cliente cliente);
 }
 
