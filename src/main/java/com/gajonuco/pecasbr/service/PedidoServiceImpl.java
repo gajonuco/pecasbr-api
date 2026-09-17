@@ -183,8 +183,8 @@ public class PedidoServiceImpl implements IPedidoService {
 
     @Override
     public List<Pedido> buscarPorCliente(Cliente cliente) {
-        return dao.findAllByClienteByIdDesc(cliente);
-    }
+        return dao.findAllByClienteOrderByIdDesc(cliente);
+  }
 
     @Override
     public ArrayList<Pedido> filtrarPorVariosCriterios(FiltroPedidoDTO filtro) {
