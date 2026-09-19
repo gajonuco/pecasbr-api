@@ -75,6 +75,7 @@ public class MyWebApplicationSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/cliente/me").hasRole("CLIENTE")
                         .requestMatchers(HttpMethod.PUT,"/cliente/me").hasRole("CLIENTE")
                         .requestMatchers(HttpMethod.GET,"/pedido/meus").hasRole("CLIENTE")
+                        .requestMatchers("/cliente/me/enderecos", "/cliente/me/enderecos/**").hasRole("CLIENTE")
 
                         .requestMatchers(HttpMethod.GET,"/cliente","/cliente/nome/*","/cliente/busca/*","/cliente/aniversario/*", "/cliente/compras/*").hasAnyRole("ADMIN", "VENDEDOR")
                         .requestMatchers(HttpMethod.POST,"/cliente").hasAnyRole("ADMIN","VENDEDOR")
