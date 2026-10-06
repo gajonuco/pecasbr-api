@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.152.
- * 
+ *
  * Could not load the following classes:
  *  com.gajonuco.pecasbr.dto.FiltroRankingProdutosDTO
  *  com.gajonuco.pecasbr.dto.ProdutoMaisPedidoDTO
@@ -39,4 +39,3 @@ public interface IPecaService {
 
     public ArrayList<ProdutoMaisPedidoDTO> listarProdutosMaisPedidos(FiltroRankingProdutosDTO var1);
 }
-

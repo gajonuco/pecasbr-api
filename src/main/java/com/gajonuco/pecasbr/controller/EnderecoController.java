@@ -44,7 +44,7 @@ public class EnderecoController {
         }
     }
 
-    @DeleteMapping("/clientes/me/enderecos/{id}")
+    @DeleteMapping("/cliente/me/enderecos/{id}")
     public ResponseEntity<Void> remover (Authentication authentication, @PathVariable int id) {
         try {
             service.remover(clienteAutenticado(authentication), id);
