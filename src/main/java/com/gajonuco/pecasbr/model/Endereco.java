@@ -1,5 +1,6 @@
 package com.gajonuco.pecasbr.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
@@ -40,7 +41,7 @@ public class Endereco {
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
-    @JsonIgnoreProperties({"enderecos","senha"})
+    @JsonIgnore
     private Cliente cliente;
 
     public Endereco() {}
