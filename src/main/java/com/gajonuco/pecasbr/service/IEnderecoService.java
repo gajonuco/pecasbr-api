@@ -12,4 +12,5 @@ public interface IEnderecoService {
     Endereco atualizar(Cliente cliente, int idEndereco, EnderecoDTO dados);
     void remover (Cliente cliente, int idEndereco);
     Endereco marcarComoPrincipal(Cliente cliente, int idEndereco);
+    Endereco buscarPorIdDoCliente(Cliente cliente, int idEndereco);
 }

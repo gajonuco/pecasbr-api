@@ -87,5 +87,9 @@ public class EnderecoServiceImpl implements IEnderecoService{
         endereco.setEstado(dados.estado());
     }
 
+    public Endereco buscarPorIdDoCliente(Cliente cliente, int idEndereco) {
+        return dao.findByIdAndClienteId(idEndereco, cliente.getId())
+                .orElseThrow(EnderecoNaoEncontradoException::new);
+    }
 
 }
