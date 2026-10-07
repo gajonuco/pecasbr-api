@@ -3,7 +3,6 @@ package com.gajonuco.pecasbr.controller;
 import com.gajonuco.pecasbr.model.Cliente;
 import com.gajonuco.pecasbr.model.Pedido;
 import com.gajonuco.pecasbr.service.IClienteService;
-import com.gajonuco.pecasbr.service.IEnderecoService;
 import com.gajonuco.pecasbr.service.IPedidoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.when;
 public class PedidoControllerTest {
 
     @Mock
-    private IEnderecoService enderecoService;
-    @Mock
     private IPedidoService service;
     @Mock
     private IClienteService cliService;
@@ -36,7 +33,7 @@ public class PedidoControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller = new PedidoController(service, cliService, enderecoService);
+        controller = new PedidoController(service, cliService);
     }
 
     private Pedido pedidoDoCliente(String emailDono) {
