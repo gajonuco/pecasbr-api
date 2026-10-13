@@ -84,6 +84,9 @@ public class PedidoController {
         novo.setEnderecoEntrega(enderecoEntrega);
         novo.setObservacoes(dados.observacoes());
         novo.setRetirar(dados.retirar() ? 1 : 0);
+        novo.setValorFrete(dados.retirar() || dados.valorFrete() == null
+                ? 0
+                : dados.valorFrete());
         novo.setDataPedido(LocalDate.now());
         novo.setItensPedido(montarItens(dados.itens()));
 

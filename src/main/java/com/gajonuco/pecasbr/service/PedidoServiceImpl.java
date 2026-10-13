@@ -45,11 +45,12 @@ public class PedidoServiceImpl implements IPedidoService {
     public Pedido inserirPedido(Pedido novo) {
         // TODO Auto-generated method stub
         try {
-            // double total = 0.0;
+            double total = 0.0;
             /* aqui em tese vem a regra de negócios */
             for (ItemPedido item : novo.getItensPedido()) {
                 Peca peca = pecaDAO.findById(item.getPeca().getId()).orElse(null);
-                if (!peca.podeVender(item.getQtdtItem())) {
+
+                if (peca ==  null || !peca.podeVender(item.getQtdtItem())) {
                     return null;
                 }
                 int qtdAnterior = peca.getQuantidadeEstoque();
@@ -63,24 +64,20 @@ public class PedidoServiceImpl implements IPedidoService {
 
                 pecaDAO.save(peca);
 
-                if (item.getPeca().getPrecoPromo() != 0) {
-                    item.setPrecoUnitario(item.getPeca().getPrecoPromo());
-                    item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
-                } else {
-                    item.setPrecoUnitario(item.getPeca().getPreco());
-                    item.setPrecoTotal(item.getPrecoUnitario() * item.getQtdtItem());
-                }
-
-                // total += item.getPrecoTotal();
+                double precoUnitario = peca.getPrecoPromo() != 0
+                        ? peca.getPrecoPromo()
+                        : peca.getPreco();
+                item.setPrecoUnitario(precoUnitario);
+                item.setPrecoTotal(precoUnitario * item.getQtdtItem());
+                total += item.getPrecoTotal();
             }
             /* ---- */
             for (ItemPedido item : novo.getItensPedido()) {
                 item.setPedido(novo);
             }
             novo.setStatus(Pedido.NOVO_PEDIDO);
-            // novo.setValorTotal(total);
+            novo.setValorTotal(total + novo.getValorFrete());
 
-            // ✅ salva primeiro para gerar o ID necessário para o link de pagamento
             dao.save(novo);
 
             DTOResponse dtoResponse = asaasService.createPaymentLink(novo.getValorTotal(), novo.getCliente(), novo.getId());
