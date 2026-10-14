@@ -101,7 +101,7 @@ public class PedidoControllerTest {
                 new DadosClienteDTO("Maria Teste", "maria@teste.com", "12345678900", "11999999999", null),
                 List.of(new ItemPedidoDTO(1, 2, null, null, null)),
                 "sem observações", false, null,
-                new EnderecoDTO(null, "89800-000", "Rua A", "100", null, "Centro", "Chapecó", "SC"));
+                new EnderecoDTO(null, "89800-000", "Rua A", "100", null, "Centro", "Chapecó", "SC"),null);
 
         Cliente clienteSalvo = new Cliente();
         clienteSalvo.setId(10);
@@ -121,7 +121,9 @@ public class PedidoControllerTest {
     @Test
     void clienteLogadoCriaPedidoReferenciandoEnderecoSalvo() {
         CriarPedidoDTO dados = new CriarPedidoDTO(
-                null, List.of(new ItemPedidoDTO(1, 1, null, null, null)), null, false, 7, null);
+                null,
+                List.of(new ItemPedidoDTO(1, 1, null, null, null)),
+                null, false, 7, null, null);
 
         Authentication auth = mock(Authentication.class);
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"))).when(auth).getAuthorities();
@@ -146,7 +148,8 @@ public class PedidoControllerTest {
     void pedidoParaRetirarNaoExigeEndereco() {
         CriarPedidoDTO dados = new CriarPedidoDTO(
                 new DadosClienteDTO("Maria", "maria@teste.com", "12345678900", "11999999999", null),
-                List.of(new ItemPedidoDTO(1, 1, null, null, null)), null, true, null, null);
+                List.of(new ItemPedidoDTO(1, 1, null, null, null)),
+                null, true, null, null,null);
 
         when(cliService.atualizarDados(any(Cliente.class))).thenReturn(new Cliente());
         when(service.inserirPedido(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -162,13 +165,15 @@ public class PedidoControllerTest {
     void guestSemEnderecoNemIdRetorna400() {
         CriarPedidoDTO dados = new CriarPedidoDTO(
                 new DadosClienteDTO("Maria", "maria@teste.com", "12345678900", "11999999999", null),
-                List.of(new ItemPedidoDTO(1, 1, null, null, null)), null, false, null, null);
+                List.of(new ItemPedidoDTO(1, 1, null, null, null)), null, false, null, null, null);
         when(cliService.atualizarDados(any(Cliente.class))).thenReturn(new Cliente());
 
         ResponseEntity<Pedido> resposta = controller.inserirNovoPedido(dados, null);
 
         assertEquals(400, resposta.getStatusCode().value());
     }
+
+
 
 
 
