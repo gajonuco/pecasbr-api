@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.gajonuco.pecasbr.dto.VendasPorDataDTO;
 import com.gajonuco.pecasbr.dto.FiltroPedidoDTO;
 
+import com.gajonuco.pecasbr.model.Cliente;
 import com.gajonuco.pecasbr.model.Pedido;
 
 public interface IPedidoService {
@@ -25,5 +26,6 @@ public interface IPedidoService {
     public ArrayList<Pedido> filtrarPorVariosCriterios(FiltroPedidoDTO filtro);
     public List<VendasPorDataDTO> recuperarTotaisUltimaSemana(LocalDate inicio, LocalDate fim);
 
+    List<Pedido> buscarPorCliente(Cliente cliente);
 
 }

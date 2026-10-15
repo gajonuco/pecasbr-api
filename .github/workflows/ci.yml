@@ -41,6 +41,11 @@ jobs:
       - name: Compilar
         run: ./mvnw -B compile
 
+      - name: Testar conexão MySQL
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u springuser -pspringpassword -e "SELECT USER(), CURRENT_USER();"
+         
+
       - name: Rodar testes
         run: ./mvnw -B test
 

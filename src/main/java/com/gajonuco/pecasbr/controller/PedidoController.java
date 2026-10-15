@@ -23,17 +23,24 @@
  */
 package com.gajonuco.pecasbr.controller;
 
+import com.gajonuco.pecasbr.dto.CriarPedidoDTO;
 import com.gajonuco.pecasbr.dto.FiltroPedidoDTO;
+import com.gajonuco.pecasbr.dto.ItemPedidoDTO;
 import com.gajonuco.pecasbr.dto.VendasPorDataDTO;
-import com.gajonuco.pecasbr.model.Cliente;
-import com.gajonuco.pecasbr.model.Pedido;
+import com.gajonuco.pecasbr.exception.EnderecoNaoEncontradoException;
+import com.gajonuco.pecasbr.model.*;
 import com.gajonuco.pecasbr.service.IClienteService;
+import com.gajonuco.pecasbr.service.IEnderecoService;
 import com.gajonuco.pecasbr.service.IPedidoService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,21 +54,103 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(value={"*"})
 @RestController
 public class PedidoController {
-    @Autowired
-    private IPedidoService service;
-    @Autowired
-    private IClienteService cliService;
 
-    @PostMapping(value={"/pedido"})
-    public ResponseEntity<Pedido> inserirNovoPedido(@RequestBody Pedido novo) {
-        novo.setDataPedido(LocalDate.now());
-        Cliente cli = this.cliService.atualizarDados(novo.getCliente());
-        novo.setCliente(cli);
-        novo = this.service.inserirPedido(novo);
-        if (novo != null) {
-            return ResponseEntity.status((int)201).body(novo);
+    private final IPedidoService service;
+    private final IClienteService cliService;
+    private final IEnderecoService enderecoService;
+    public PedidoController(IPedidoService service, IClienteService cliservice, IEnderecoService enderecoService){
+        this.service = service;
+        this.cliService = cliservice;
+        this.enderecoService = enderecoService;
+    }
+
+    @PostMapping("/pedido")
+    public ResponseEntity<Pedido> inserirNovoPedido(@Valid @RequestBody CriarPedidoDTO dados, Authentication authentication) {
+        Cliente cliente = resolverCliente(dados, authentication);
+        if (cliente == null) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.badRequest().build();
+
+        Endereco enderecoEntrega = null;
+        if (!dados.retirar()) {
+            enderecoEntrega = resolverEndereco(dados, cliente);
+            if (enderecoEntrega == null) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        Pedido novo = new Pedido();
+        novo.setCliente(cliente);
+        novo.setEnderecoEntrega(enderecoEntrega);
+        novo.setObservacoes(dados.observacoes());
+        novo.setRetirar(dados.retirar() ? 1 : 0);
+        novo.setValorFrete(dados.retirar() || dados.valorFrete() == null
+                ? 0
+                : dados.valorFrete());
+        novo.setDataPedido(LocalDate.now());
+        novo.setItensPedido(montarItens(dados.itens()));
+
+        Pedido criado = service.inserirPedido(novo);
+        if (criado == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+    }
+
+    private Cliente resolverCliente(CriarPedidoDTO dados, Authentication authentication) {
+        if (authentication != null && ehClienteLogado(authentication)) {
+            return cliService.buscarPeloEmail(authentication.getName());
+        }
+        if (dados.cliente() == null) {
+            return null;
+        }
+        Cliente guest = new Cliente();
+        guest.setNome(dados.cliente().nome());
+        guest.setEmail(dados.cliente().email());
+        guest.setCpf(dados.cliente().cpf());
+        guest.setTelefone(dados.cliente().telefone());
+        guest.setDataNasc(dados.cliente().dataNasc());
+        return cliService.atualizarDados(guest);
+    }
+
+    private boolean ehClienteLogado(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"));
+    }
+
+    private Endereco resolverEndereco(CriarPedidoDTO dados, Cliente cliente) {
+        try {
+            if (dados.idEndereco() != null) {
+                return enderecoService.buscarPorIdDoCliente(cliente, dados.idEndereco());
+            }
+            if (dados.enderecoNovo() != null) {
+                return enderecoService.criar(cliente, dados.enderecoNovo());
+            }
+        } catch (EnderecoNaoEncontradoException e) {
+            return null;
+        }
+        return null;
+    }
+
+    private List<ItemPedido> montarItens(List<ItemPedidoDTO> itensDTO) {
+        List<ItemPedido> itens = new ArrayList<>();
+        for (ItemPedidoDTO dto : itensDTO) {
+            Peca peca = new Peca();
+            peca.setId(dto.idPeca());
+
+            ItemPedido item = new ItemPedido();
+            item.setPeca(peca);
+            item.setQtdtItem(dto.quantidade());
+            item.setCorEscolhida(dto.corEscolhida());
+            item.setTamanhoEscolhido(dto.tamanhoEscolhido());
+            if (dto.idVariacao() != null) {
+                PecaVariacao variacao = new PecaVariacao();
+                variacao.setId(dto.idVariacao());
+                item.setVariacao(variacao);
+            }
+            itens.add(item);
+        }
+        return itens;
     }
 
     @PostMapping(value={"/pedido/filtrar"})
@@ -83,10 +172,36 @@ public class PedidoController {
         }
     }
 
-    @GetMapping(value={"/pedido/search/{id}"})
-    public ResponseEntity<Pedido> recuperarPedido(@PathVariable(name="id") int id) {
-        return ResponseEntity.ok(this.service.buscarPeloId(id));
+    @GetMapping("/pedido/search/{id}")
+    public ResponseEntity<Pedido> recuperarPedido(@PathVariable(name="id") int id, Authentication authentication) {
+        Pedido pedido = service.buscarPeloId(id);
+        if(pedido == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(!podeAcessar(pedido, authentication)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(pedido);
     }
+    @GetMapping("/pedido/meus")
+    public ResponseEntity<List<Pedido>> meusPedidos(Authentication authentication){
+        Cliente cliente = cliService.buscarPeloEmail(authentication.getName());
+        if(cliente == null){
+            return  ResponseEntity.ok(List.of());
+        }
+        return  ResponseEntity.ok(service.buscarPorCliente(cliente));
+    }
+
+    private boolean podeAcessar(Pedido pedido,Authentication authentication){
+        boolean ehStaff = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_VENDEDOR"));
+        if (ehStaff){
+            return true;
+        }
+        Cliente dono = pedido.getCliente();
+        return  dono != null && dono.getEmail() != null && dono.getEmail().equals(authentication.getName());
+    }
+
 
     @GetMapping(value={"/pedido/recentes"})
     public ResponseEntity<List<VendasPorDataDTO>> recuperarUltimasVendas(@RequestParam(value="inicio") String dataIni, @RequestParam(value="fim") String dataFim) {

@@ -33,6 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -58,17 +60,26 @@ public class MyWebApplicationSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // --- endpoints públicos (mantidos como já estavam) ---
                         .requestMatchers(HttpMethod.GET, "/categoria_peca", "/categoria_by_id").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/cliente/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/peca/todos", "/peca", "/peca/busca", "/peca/*", "/peca/categoria/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/pedido", "/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/pedido/search/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/fretes/prefixo/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/*", "/swagger-ui.html", "/v3/api-docs*", "/v3/api-docs/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/notifications/**", "/webhook", "/webhook/asaas").permitAll()
                         .requestMatchers("/createPayment/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/recibo/**", "/pecas/**").permitAll()
                         .requestMatchers("/ws/**", "/topic/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/cliente/cadastro", "/cliente/login").permitAll()
+
+                        // --- staff-only  —> POST/PUT /cliente ---
+                        .requestMatchers(HttpMethod.GET,"/cliente/me").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.PUT,"/cliente/me").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.GET,"/pedido/meus").hasRole("CLIENTE")
+                        .requestMatchers("/cliente/me/enderecos", "/cliente/me/enderecos/**").hasRole("CLIENTE")
+
+                        .requestMatchers(HttpMethod.GET,"/cliente","/cliente/nome/*","/cliente/busca/*","/cliente/aniversario/*", "/cliente/compras/*").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.POST,"/cliente").hasAnyRole("ADMIN","VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT,"/cliente").hasAnyRole("ADMIN","VENDEDOR")
 
                         // --- gestão de usuários: só ADMIN ---
                         .requestMatchers(HttpMethod.GET, "/usuario", "/usuario/*").hasRole("ADMIN")
@@ -110,5 +121,10 @@ public class MyWebApplicationSecurityConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI().components(new Components().addSecuritySchemes("bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("Bearer").bearerFormat("JWT")));
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();
+    }
+
 }
 

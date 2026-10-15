@@ -18,12 +18,19 @@
  */
 package com.gajonuco.pecasbr.controller;
 
+import com.gajonuco.pecasbr.dto.CadastroClienteDTO;
 import com.gajonuco.pecasbr.dto.CompradorDTO;
+import com.gajonuco.pecasbr.dto.LoginClienteDTO;
+import com.gajonuco.pecasbr.exception.ClienteJaCadastradoException;
 import com.gajonuco.pecasbr.model.Cliente;
+import com.gajonuco.pecasbr.security.JWTToken;
+import com.gajonuco.pecasbr.security.JWTTokenUtil;
 import com.gajonuco.pecasbr.service.IClienteService;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,18 +40,64 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(value={"*"})
 public class ClienteController {
-    @Autowired
-    public IClienteService service;
 
-    @GetMapping(value={"/cliente/{telefone}"})
-    public ResponseEntity<Cliente> buscarPeloTelefone(@PathVariable String telefone) {
-        Cliente resultado = this.service.buscarPeloTefone(telefone);
-        if (resultado != null) {
-            return ResponseEntity.ok(resultado);
+    private final IClienteService service;
+    private final JWTTokenUtil jwtTokenUtil;
+
+    public ClienteController(IClienteService service, JWTTokenUtil jwtTokenUtil) {
+        this.service = service;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
+
+    @PostMapping("/cliente/cadastro")
+    public ResponseEntity<JWTToken> cadastrar(@RequestBody CadastroClienteDTO dados){
+        try {
+            Cliente cliente = service.cadastrar(dados);
+            JWTToken token = new JWTToken();
+            token.setToken(jwtTokenUtil.generateToken(cliente));
+            return ResponseEntity.status(HttpStatus.CREATED).body(token);
+        } catch (ClienteJaCadastradoException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/cliente/login")
+    public ResponseEntity<JWTToken> login(@RequestBody LoginClienteDTO dados){
+        Cliente cliente = service.autenticar(dados);
+        if (cliente == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        JWTToken token = new JWTToken();
+        token.setToken(jwtTokenUtil.generateToken(cliente));
+        return  ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/cliente/me")
+    public ResponseEntity<Cliente> meusDados(Authentication authentication){
+        Cliente cliente = service.buscarPeloEmail(authentication.getName());
+        if(cliente == null) {
+            return ResponseEntity.notFound().build();
+        }
+        cliente.setSenha(null); //nunca devolve o hash
+        return ResponseEntity.ok(cliente);
+    }
+
+    @PutMapping("/cliente/me")
+    public ResponseEntity<Cliente> atualizarMeusDados(Authentication authentication,@RequestBody Cliente dados) {
+        Cliente cliente = service.buscarPeloEmail(authentication.getName());
+        if(cliente == null){
+            return ResponseEntity.notFound().build();
+        }
+        // escopo deliberadamente limitado: e-mail, senha e endereços não mudam por aqui
+        // (login tem endpoint próprio; endereços são a sub-issue 4)
+        cliente.setNome(dados.getNome());
+        cliente.setTelefone(dados.getTelefone());
+        cliente.setDataNasc(dados.getDataNasc());
+
+        Cliente atualizado = service.atualizarDados(cliente);
+        atualizado.setSenha(null);
+        return ResponseEntity.ok(atualizado);
     }
 
     @GetMapping(value={"/cliente/nome/{letra}"})

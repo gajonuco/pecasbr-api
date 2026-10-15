@@ -60,5 +60,7 @@ extends CrudRepository<Pedido, Integer> {
     public ArrayList<VendasPorDataDTO> recuperarVendasPorData(@Param("inicio") LocalDate var1, @Param("fim") LocalDate var2);
 
     public Optional<Pedido> findByAsaasPaymentId(String var1);
+
+    ArrayList<Pedido> findAllByClienteOrderByIdDesc(Cliente cliente);
 }
 
