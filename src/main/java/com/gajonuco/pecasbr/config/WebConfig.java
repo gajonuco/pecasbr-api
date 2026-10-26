@@ -1,19 +1,22 @@
 package com.gajonuco.pecasbr.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    private final String imagesDir;
+
+    public WebConfig(@Value("${app.images-dir}") String imagesDir) {
+        this.imagesDir = imagesDir.endsWith("/") ? imagesDir : imagesDir + "/";
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
-                // // Acesso para uso local
-                 .addResourceLocations("file:/Users/gajonuco/Desktop/Projetos/pecasbr-admin/src/assets/img");
-
-
-                // Acesso para producao 
-                // .addResourceLocations("file:/var/www/projetoreal.dev.br/browser/assets/img/");
+                .addResourceLocations("file:" + imagesDir);
     }
 }

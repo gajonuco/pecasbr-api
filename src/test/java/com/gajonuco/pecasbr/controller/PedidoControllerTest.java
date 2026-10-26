@@ -173,8 +173,4 @@ public class PedidoControllerTest {
         assertEquals(400, resposta.getStatusCode().value());
     }
 
-
-
-
-
 }

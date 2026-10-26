@@ -46,6 +46,8 @@ import com.gajonuco.pecasbr.service.IUploadService;
 import com.gajonuco.pecasbr.service.PecaImagemService;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -67,6 +69,9 @@ public class PecaController {
     private final IPecaService service;
     private final IUploadService upload;
     private final PecaImagemService pecaImagemService;
+
+    @Value("${app.images-base-url}")
+    private String imagesBaseUrl;
 
     public PecaController(IPecaService service, IUploadService upload, PecaImagemService pecaImagemService) {
         this.service = service;
@@ -99,8 +104,10 @@ public class PecaController {
             if (path == null) {
                 return ResponseEntity.badRequest().build();
             }
+
+            String linkFoto = imagesBaseUrl + "/" + path;
             //String linkFoto = "https://projetoreal.dev.br/assets/img/" + path;
-              String linkFoto = "http://localhost:8080/images/" + path;
+             // String linkFoto = "http://localhost:8080/images/" + path;
             PecaImagemDTO imagemDTO = this.pecaImagemService.adicionarImagem(id, linkFoto, dto.getPrincipal());
             return ResponseEntity.status((int)201).body(imagemDTO);
         }
@@ -199,8 +206,10 @@ public class PecaController {
             if (path == null) {
                 return ResponseEntity.badRequest().build();
             }
+            String linkFoto = imagesBaseUrl + "/" + path;
+
             // String linkFoto = "https://projetoreal.dev.br/assets/img/" + path;
-               String linkFoto = "http://localhost:8080/images/" + path;
+            //   String linkFoto = "http://localhost:8080/images/" + path;
             PecaImagemDTO dto = this.pecaImagemService.adicionarImagem(id, linkFoto, principal);
             return ResponseEntity.status((int)201).body(dto);
         }
