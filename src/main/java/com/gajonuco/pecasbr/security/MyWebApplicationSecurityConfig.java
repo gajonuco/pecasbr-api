@@ -71,6 +71,9 @@ public class MyWebApplicationSecurityConfig {
                         .requestMatchers("/ws/**", "/topic/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/cliente/cadastro", "/cliente/login").permitAll()
 
+                        // --- agente de IA: público (visitante anônimo e cliente autenticado) ---
+                        .requestMatchers(HttpMethod.POST, "/agente/mensagem").permitAll()
+
                         // --- staff-only  —> POST/PUT /cliente ---
                         .requestMatchers(HttpMethod.GET,"/cliente/me").hasRole("CLIENTE")
                         .requestMatchers(HttpMethod.PUT,"/cliente/me").hasRole("CLIENTE")
