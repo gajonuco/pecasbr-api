@@ -86,12 +86,19 @@
         </dependency>
 
              <!-- Gemini (agente conversacional) -->
-      <dependency>
-          <groupId>dev.langchain4j</groupId>
-          <artifactId>langchain4j-google-ai-gemini</artifactId>
-           <version>1.22.0</version>
-       </dependency>
+        <!-- LangChain4j AI Services -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>1.17.2</version>
+        </dependency>
 
+        <!-- Integração com Google Gemini -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-google-ai-gemini</artifactId>
+            <version>1.17.2</version>
+        </dependency>
 
         <!-- Banco de Dados -->
         <dependency>

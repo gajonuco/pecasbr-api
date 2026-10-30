@@ -6,13 +6,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class AgenteService {
 
-    private final ChatModel geminiChatModel;
+    private  final GeminiAssistant geminiAssistant;
 
-    public AgenteService(ChatModel geminiChatModel) {
-        this.geminiChatModel = geminiChatModel;
+    public AgenteService(GeminiAssistant geminiAssistant)
+    {
+        this.geminiAssistant = geminiAssistant;
     }
 
     public String responder(String mensagem) {
-        return geminiChatModel.chat(mensagem);
+
+        return geminiAssistant.chat(mensagem);
     }
 }
