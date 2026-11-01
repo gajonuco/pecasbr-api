@@ -61,6 +61,9 @@ class CatalogoToolsTest {
         peca.setDisponivel(1);
         peca.setProntaEntrega(1);
         peca.setDestaque(0);
+        peca.setQuantidadeEstoque(10);
+        peca.setEstoqueMinimo(2);
+        peca.setEstoqueCritico(1);
         CategoriaPeca categoria = new CategoriaPeca();
         categoria.setNome("Camisas");
         peca.setCategoriaPeca(categoria);
