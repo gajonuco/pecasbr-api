@@ -2,6 +2,7 @@ package com.gajonuco.pecasbr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gajonuco.pecasbr.dto.AgenteMensagemRequest;
+import com.gajonuco.pecasbr.security.JWTTokenUtil;
 import com.gajonuco.pecasbr.service.AgenteService;
 import dev.langchain4j.exception.RateLimitException;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,9 @@ class AgenteControllerTest {
 
     @MockitoBean
     private AgenteService agenteService;
+
+    @MockitoBean
+    private JWTTokenUtil jwtTokenUtil;
 
     @Test
     void deveResponderComSucessoQuandoAgenteProcessaMensagem() throws Exception {
