@@ -41,25 +41,25 @@ class AgenteControllerTest {
 
     @Test
     void deveResponderComSucessoQuandoAgenteProcessaMensagem() throws Exception {
-        when(agenteService.responder(anyString())).thenReturn("Olá! Como posso ajudar?");
+        when(agenteService.responder(anyString(), anyString())).thenReturn("Olá! Como posso ajudar?");
 
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest("Oi, tudo bem?"))))
+                                new AgenteMensagemRequest("sessao-teste-1","Oi, tudo bem?"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resposta").value("Olá! Como posso ajudar?"));
     }
 
     @Test
     void deveRetornar429QuandoGeminiAtingeLimiteDeTaxa() throws Exception {
-        when(agenteService.responder(anyString()))
+        when(agenteService.responder(anyString(), anyString()))
                 .thenThrow(new RateLimitException("quota excedida"));
 
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest("Quais produtos vocês têm?"))))
+                                new AgenteMensagemRequest("sessao-teste-2","Quais produtos vocês têm?"))))
                 .andExpect(status().isTooManyRequests());
     }
 
@@ -68,7 +68,16 @@ class AgenteControllerTest {
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest(""))))
+                                new AgenteMensagemRequest("sessao-teste-3",""))))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveRetornar400QuandoSesseionIdEstiverVazio() throws Exception{
+        mockMvc.perform(post("/agente/mensagem")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(
+                        new AgenteMensagemRequest("", "Oi"))))
+        .andExpect(status().isBadRequest());
     }
 }
