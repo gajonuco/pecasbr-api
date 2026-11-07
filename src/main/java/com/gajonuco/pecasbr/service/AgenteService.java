@@ -13,8 +13,7 @@ public class AgenteService {
         this.geminiAssistant = geminiAssistant;
     }
 
-    public String responder(String mensagem) {
-
-        return geminiAssistant.chat(mensagem);
+    public String responder(String sessionId, String mensagem) {
+        return geminiAssistant.chat(sessionId, mensagem);
     }
 }

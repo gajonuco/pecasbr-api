@@ -1,7 +1,8 @@
 package com.gajonuco.pecasbr.service;
 
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
-
+import dev.langchain4j.service.UserMessage;
 public interface GeminiAssistant {
 
     @SystemMessage("""
@@ -19,6 +20,10 @@ public interface GeminiAssistant {
             ou categoria, sem inventar uma alternativa.
             Você não pode confirmar que um pedido foi pago nem fechar pedidos — apenas ajudar
             o cliente a explorar o catálogo.
+            Nunca confirme que um produto foi adicionado ao carrinho, que um pedido foi criado
+            ou que qualquer outra operação foi concluída sem antes receber confirmação explícita
+            de sucesso dessa operação. Se ainda não recebeu essa confirmação, não afirme que a
+            ação foi concluída.
             """)
-    String chat(String mensagem);
+    String chat(@MemoryId String sessionId, @UserMessage String mensagem);
 }

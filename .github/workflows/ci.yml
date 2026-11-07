@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'epic/**'
+      - 'feature/**'
   pull_request:
     branches:
       - main
@@ -19,7 +20,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: db_projetoreal_test
           MYSQL_USER: springuser
-          MYSQL_PASSWORD: springpassword
+          MYSQL_PASSWORD: 26623933Gn##
         ports:
           - 3306:3306
         options: >-
@@ -43,7 +44,7 @@ jobs:
 
       - name: Testar conexão MySQL
         run: |
-          mysql -h 127.0.0.1 -P 3306 -u springuser -pspringpassword -e "SELECT USER(), CURRENT_USER();"
+          mysql -h 127.0.0.1 -P 3306 -u springuser -p'26623933Gn##' -e "SELECT USER(), CURRENT_USER();"
          
 
       - name: Rodar testes

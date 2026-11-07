@@ -2,6 +2,8 @@ package com.gajonuco.pecasbr.config;
 
 import com.gajonuco.pecasbr.service.CatalogoTools;
 import com.gajonuco.pecasbr.service.GeminiAssistant;
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.googleai.GeminiThinkingConfig;
 import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
@@ -35,10 +37,19 @@ public class GeminiConfig {
     }
 
     @Bean
-    public GeminiAssistant geminiAssistant(ChatModel geminiChatModel, CatalogoTools catalogoTools) {
+    public ChatMemoryProvider chatMemoryProvider() {
+        return sessionId -> MessageWindowChatMemory.withMaxMessages(20);
+    }
+
+    @Bean
+    public GeminiAssistant geminiAssistant(
+            ChatModel geminiChatModel,
+            CatalogoTools catalogoTools,
+            ChatMemoryProvider chatMemoryProvider) {
         return dev.langchain4j.service.AiServices.builder(GeminiAssistant.class)
                 .chatModel(geminiChatModel)
                 .tools(catalogoTools)
+                .chatMemoryProvider(chatMemoryProvider)
                 .toolArgumentsErrorHandler(dev.langchain4j.service.tool.ToolArgumentsErrorHandler.failInvocation())
                 .toolExecutionErrorHandler(dev.langchain4j.service.tool.ToolExecutionErrorHandler.sendExceptionMessageToLlm())
                 .build();
