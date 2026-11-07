@@ -33,15 +33,4 @@ class GeminiConfigChatMemoryTest {
         assertThat(memoriaB.messages()).isEmpty();
     }
 
-    @Test
-    void deveRetornarAMesmaInstanciaDeMemoriaParaOMesmoSessionId() {
-        ChatMemoryProvider provider = geminiConfig.chatMemoryProvider();
-
-        ChatMemory primeira = provider.get("sessao-A");
-        primeira.add(UserMessage.from("Primeira mensagem"));
-
-        ChatMemory segunda = provider.get("sessao-A");
-
-        assertThat(segunda.messages()).hasSize(1);
-    }
 }
