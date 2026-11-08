@@ -1,6 +1,7 @@
 package com.gajonuco.pecasbr.service;
 
 import com.gajonuco.pecasbr.dto.PecaConsultaDTO;
+import com.gajonuco.pecasbr.dto.PecaVariacaoConsultaDTO;
 import com.gajonuco.pecasbr.model.CategoriaPeca;
 import com.gajonuco.pecasbr.model.Peca;
 import dev.langchain4j.agent.tool.Tool;
@@ -19,10 +20,13 @@ public class CatalogoTools {
 
     private final  IPecaService pecaService;
     private final ICategoriaPecaService categoriaPecaService;
+    private final PecaVariacaoService pecaVariacaoService;
 
-    public CatalogoTools(IPecaService pecaService, ICategoriaPecaService categoriaPecaService){
+
+    public CatalogoTools(IPecaService pecaService, ICategoriaPecaService categoriaPecaService, PecaVariacaoService pecaVariacaoService){
         this.pecaService = pecaService;
         this.categoriaPecaService = categoriaPecaService;
+        this.pecaVariacaoService =pecaVariacaoService;
     }
     @Tool("Busca produtos de catálogo real pelo nome ou palavra-chave da descrição")
     public List<PecaConsultaDTO> consultarProdutosPorNome(String termoBusca) {
@@ -48,6 +52,18 @@ public class CatalogoTools {
         }
         ArrayList<Peca> pecas = pecaService.listarPorCategoria(categorias.get(0));
         return mapear(pecas);
+    }
+
+    @Tool("Lista as variações de cor e tamanho disponíveis para um produto específico, pelo seu id." +
+    "Use antes de adicionar um produto ao carrinho, se ele tiver variações.")
+    public List<PecaVariacaoConsultaDTO>consultarVariacoesDoProduto(int pecaId) {
+        try {
+            return  pecaVariacaoService.listar(pecaId).stream()
+                    .map(PecaVariacaoConsultaDTO::from)
+                    .collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            return  List.of();
+        }
     }
 
 

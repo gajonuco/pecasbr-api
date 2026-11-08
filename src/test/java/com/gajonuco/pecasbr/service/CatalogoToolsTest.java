@@ -1,6 +1,8 @@
 package com.gajonuco.pecasbr.service;
 
 import com.gajonuco.pecasbr.dto.PecaConsultaDTO;
+import com.gajonuco.pecasbr.dto.PecaVariacaoConsultaDTO;
+import com.gajonuco.pecasbr.dto.PecaVariacaoDTO;
 import com.gajonuco.pecasbr.model.CategoriaPeca;
 import com.gajonuco.pecasbr.model.Peca;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,36 @@ class CatalogoToolsTest {
 
     private final IPecaService pecaService = mock(IPecaService.class);
     private final ICategoriaPecaService categoriaPecaService = mock(ICategoriaPecaService.class);
-    private final CatalogoTools catalogoTools = new CatalogoTools(pecaService, categoriaPecaService);
+    private final PecaVariacaoService pecaVariacaoService = mock(PecaVariacaoService.class);
+    private final CatalogoTools catalogoTools =
+            new CatalogoTools(pecaService, categoriaPecaService, pecaVariacaoService);
+
+    @Test
+    void deveRetornarVariacoesDisponiveisDoProduto(){
+        PecaVariacaoDTO variacaoComEstoque = new PecaVariacaoDTO();
+        variacaoComEstoque.setCor("Preto");
+        variacaoComEstoque.setTamanho("M");
+        variacaoComEstoque.setQuantidadeEstoque(3);
+
+        PecaVariacaoDTO variacaoSemEstoque = new PecaVariacaoDTO();
+        variacaoSemEstoque.setCor("Branco");
+        variacaoSemEstoque.setTamanho("G");
+        variacaoSemEstoque.setQuantidadeEstoque(0);
+
+        when(pecaVariacaoService.listar(1)).thenReturn(List.of(variacaoComEstoque, variacaoSemEstoque));
+
+        List<PecaVariacaoConsultaDTO> resultado = catalogoTools.consultarVariacoesDoProduto(1);
+
+        assertThat(resultado).hasSize(2);
+        assertThat(resultado.get(0).disponivel()).isTrue();
+        assertThat(resultado.get(1).disponivel()).isFalse();
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoProdutoNaoTemVariacoes() {
+        when(pecaVariacaoService.listar(99)).thenReturn(List.of());
+        assertThat(catalogoTools.consultarVariacoesDoProduto(99)).isEmpty();
+    }
 
     @Test
     void deveRetornarProdutosQuandoEncontradosPorNome() {
