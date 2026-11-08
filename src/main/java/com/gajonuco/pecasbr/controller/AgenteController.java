@@ -27,7 +27,7 @@ public class AgenteController {
     public ResponseEntity<?> conversar(@Valid @RequestBody AgenteMensagemRequest request) {
         try {
             String resposta = agenteService.responder(request.sessionId(), request.mensagem());
-            return ResponseEntity.ok(new AgenteMensagemResponse(resposta));
+            return ResponseEntity.ok(AgenteMensagemResponse.semAcao(resposta));
         } catch (RateLimitException e) {
             log.warn("Limite de requisições do Gemini atingido");
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)

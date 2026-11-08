@@ -2,6 +2,8 @@ package com.gajonuco.pecasbr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gajonuco.pecasbr.dto.AgenteMensagemRequest;
+import com.gajonuco.pecasbr.dto.ResultadoAcao;
+import com.gajonuco.pecasbr.dto.TipoAcaoAgente;
 import com.gajonuco.pecasbr.security.JWTTokenUtil;
 import com.gajonuco.pecasbr.service.AgenteService;
 import dev.langchain4j.exception.RateLimitException;
@@ -13,17 +15,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
-          controllers = AgenteController.class,
-           excludeAutoConfiguration = {
-               org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
-               org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
-    })
+        controllers = AgenteController.class,
+        excludeAutoConfiguration = {
+                org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+                org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
+        })
 @AutoConfigureMockMvc(addFilters = false) // testa só a camada web; segurança já validada separadamente via permitAll
 class AgenteControllerTest {
 
@@ -46,7 +49,7 @@ class AgenteControllerTest {
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest("sessao-teste-1","Oi, tudo bem?"))))
+                                new AgenteMensagemRequest("sessao-teste-1", "Oi, tudo bem?", null))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resposta").value("Olá! Como posso ajudar?"));
     }
@@ -59,7 +62,7 @@ class AgenteControllerTest {
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest("sessao-teste-2","Quais produtos vocês têm?"))))
+                                new AgenteMensagemRequest("sessao-teste-2", "Quais produtos vocês têm?", null))))
                 .andExpect(status().isTooManyRequests());
     }
 
@@ -68,16 +71,38 @@ class AgenteControllerTest {
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest("sessao-teste-3",""))))
+                                new AgenteMensagemRequest("sessao-teste-3", "", null))))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void deveRetornar400QuandoSesseionIdEstiverVazio() throws Exception{
+    void deveRetornar400QuandoSesseionIdEstiverVazio() throws Exception {
         mockMvc.perform(post("/agente/mensagem")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        new AgenteMensagemRequest("", "Oi"))))
-        .andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new AgenteMensagemRequest("", "Oi", null))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveRetornar400QuandoMensagemEResultadoAcaoAmbosAusentes() throws Exception {
+        mockMvc.perform(post("/agente/mensagem")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new AgenteMensagemRequest("sessao-teste-4", null, null))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveAceitarRequisicaoApenasComResultadoAcao() throws Exception {
+        when(agenteService.responder(anyString(), any())).thenReturn("Produto adicionado com sucesso, Gabriel!");
+
+        ResultadoAcao resultado = new ResultadoAcao(TipoAcaoAgente.ADICIONAR_CARRINHO, true, "Produto X adicionado");
+
+        mockMvc.perform(post("/agente/mensagem")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new AgenteMensagemRequest("sessao-teste-5", null, resultado))))
+                .andExpect(status().isOk());
     }
 }
