@@ -1,9 +1,7 @@
 package com.gajonuco.pecasbr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gajonuco.pecasbr.dto.AgenteMensagemRequest;
-import com.gajonuco.pecasbr.dto.ResultadoAcao;
-import com.gajonuco.pecasbr.dto.TipoAcaoAgente;
+import com.gajonuco.pecasbr.dto.*;
 import com.gajonuco.pecasbr.security.JWTTokenUtil;
 import com.gajonuco.pecasbr.service.AgenteService;
 import dev.langchain4j.exception.RateLimitException;
@@ -44,7 +42,8 @@ class AgenteControllerTest {
 
     @Test
     void deveResponderComSucessoQuandoAgenteProcessaMensagem() throws Exception {
-        when(agenteService.responder(anyString(), anyString())).thenReturn("Olá! Como posso ajudar?");
+        when(agenteService.responder(anyString(), anyString(), any()))
+                .thenReturn(new AgenteMensagemResponse("Olá! Como posso ajudar?", null));
 
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,7 +55,7 @@ class AgenteControllerTest {
 
     @Test
     void deveRetornar429QuandoGeminiAtingeLimiteDeTaxa() throws Exception {
-        when(agenteService.responder(anyString(), anyString()))
+        when(agenteService.responder(anyString(), anyString(), any()))
                 .thenThrow(new RateLimitException("quota excedida"));
 
         mockMvc.perform(post("/agente/mensagem")
@@ -93,16 +92,19 @@ class AgenteControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void deveAceitarRequisicaoApenasComResultadoAcao() throws Exception {
-        when(agenteService.responder(anyString(), any())).thenReturn("Produto adicionado com sucesso, Gabriel!");
 
-        ResultadoAcao resultado = new ResultadoAcao(TipoAcaoAgente.ADICIONAR_CARRINHO, true, "Produto X adicionado");
+    @Test
+    void deveRetornarAcaoSugeridaQuandoAgenteDecideSugeriLa() throws Exception {
+        AcaoSugerida acao = new AcaoSugerida(TipoAcaoAgente.ADICIONAR_CARRINHO, 10, 1, "Preto", "M");
+        when(agenteService.responder(anyString(), anyString(), any()))
+                .thenReturn(new AgenteMensagemResponse("Confirma a adição?", acao));
 
         mockMvc.perform(post("/agente/mensagem")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new AgenteMensagemRequest("sessao-teste-5", null, resultado))))
-                .andExpect(status().isOk());
+                                new AgenteMensagemRequest("sessao-teste-6", "Quero essa camisa preta M", null))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.acaoSugerida.tipo").value("ADICIONAR_CARRINHO"))
+                .andExpect(jsonPath("$.acaoSugerida.pecaId").value(10));
     }
 }

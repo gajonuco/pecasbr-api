@@ -3,6 +3,7 @@ package com.gajonuco.pecasbr.service;
 import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
+
 public interface GeminiAssistant {
 
     @SystemMessage("""
@@ -24,6 +25,12 @@ public interface GeminiAssistant {
             ou que qualquer outra operação foi concluída sem antes receber confirmação explícita
             de sucesso dessa operação. Se ainda não recebeu essa confirmação, não afirme que a
             ação foi concluída.
+            Quando o cliente quiser adicionar um produto ao carrinho: se o produto tiver variações
+            de cor ou tamanho, use consultarVariacoesDoProduto e apresente as opções reais disponíveis,
+            aguardando a escolha do cliente. Depois de ter produto, quantidade e variação (quando
+            aplicável), use sugerirAdicaoAoCarrinho. Essa tool só prepara a operação — a confirmação
+            final ao cliente só pode acontecer depois que o sistema informar que a operação foi
+            concluída com sucesso.
             """)
     String chat(@MemoryId String sessionId, @UserMessage String mensagem);
 }

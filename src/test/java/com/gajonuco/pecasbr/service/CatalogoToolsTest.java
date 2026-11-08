@@ -1,5 +1,6 @@
 package com.gajonuco.pecasbr.service;
 
+import com.gajonuco.pecasbr.dto.AcaoSugerida;
 import com.gajonuco.pecasbr.dto.PecaConsultaDTO;
 import com.gajonuco.pecasbr.dto.PecaVariacaoConsultaDTO;
 import com.gajonuco.pecasbr.dto.PecaVariacaoDTO;
@@ -21,11 +22,87 @@ class CatalogoToolsTest {
     private final IPecaService pecaService = mock(IPecaService.class);
     private final ICategoriaPecaService categoriaPecaService = mock(ICategoriaPecaService.class);
     private final PecaVariacaoService pecaVariacaoService = mock(PecaVariacaoService.class);
+    private final AcaoSugeridaHolder acaoSugeridaHolder = new AcaoSugeridaHolder();
     private final CatalogoTools catalogoTools =
-            new CatalogoTools(pecaService, categoriaPecaService, pecaVariacaoService);
+            new CatalogoTools(pecaService, categoriaPecaService, pecaVariacaoService, acaoSugeridaHolder);
 
     @Test
-    void deveRetornarVariacoesDisponiveisDoProduto(){
+    void deveRecusarQuandoProdutoNaoEncontrado() {
+        when(pecaService.recuperarPorId(999)).thenReturn(null);
+
+        String resultado = catalogoTools.sugerirAdicaoAoCarrinho(999, 1, null, null);
+
+        assertThat(resultado).contains("não encontrado");
+        assertThat(acaoSugeridaHolder.consumir()).isNull();
+    }
+
+    @Test
+    void devePedirCorQuandoProdutoExigeEElaNaoForInformada() {
+        Peca peca = new Peca();
+        peca.setCorUnica(false);
+        peca.setTamanhoUnico(true);
+        when(pecaService.recuperarPorId(1)).thenReturn(peca);
+
+        String resultado = catalogoTools.sugerirAdicaoAoCarrinho(1, 1, null, null);
+
+        assertThat(resultado).contains("cor");
+        assertThat(acaoSugeridaHolder.consumir()).isNull();
+    }
+
+    @Test
+    void deveRecusarCombinacaoDeVariacaoInexistente() {
+        Peca peca = new Peca();
+        peca.setCorUnica(false);
+        peca.setTamanhoUnico(false);
+        when(pecaService.recuperarPorId(1)).thenReturn(peca);
+        when(pecaVariacaoService.buscarPorCorETamanho(1, "Roxo", "GG"))
+                .thenThrow(new RuntimeException("Variação não encontrada."));
+
+        String resultado = catalogoTools.sugerirAdicaoAoCarrinho(1, 1, "Roxo", "GG");
+
+        assertThat(resultado).contains("não existe");
+        assertThat(acaoSugeridaHolder.consumir()).isNull();
+    }
+
+    @Test
+    void deveRecusarQuandoEstoqueDaVariacaoForInsuficiente() {
+        Peca peca = new Peca();
+        peca.setCorUnica(false);
+        peca.setTamanhoUnico(false);
+        when(pecaService.recuperarPorId(1)).thenReturn(peca);
+
+        PecaVariacaoDTO variacao = new PecaVariacaoDTO();
+        variacao.setQuantidadeEstoque(0);
+        when(pecaVariacaoService.buscarPorCorETamanho(1, "Preto", "M")).thenReturn(variacao);
+
+        String resultado = catalogoTools.sugerirAdicaoAoCarrinho(1, 1, "Preto", "M");
+
+        assertThat(resultado).contains("estoque");
+        assertThat(acaoSugeridaHolder.consumir()).isNull();
+    }
+
+    @Test
+    void devePrepararAcaoQuandoTudoEstaValido() {
+        Peca peca = new Peca();
+        peca.setCorUnica(false);
+        peca.setTamanhoUnico(false);
+        when(pecaService.recuperarPorId(1)).thenReturn(peca);
+
+        PecaVariacaoDTO variacao = new PecaVariacaoDTO();
+        variacao.setQuantidadeEstoque(5);
+        when(pecaVariacaoService.buscarPorCorETamanho(1, "Preto", "M")).thenReturn(variacao);
+
+        String resultado = catalogoTools.sugerirAdicaoAoCarrinho(1, 1, "Preto", "M");
+
+        assertThat(resultado).contains("validado");
+        AcaoSugerida acao = acaoSugeridaHolder.consumir();
+        assertThat(acao).isNotNull();
+        assertThat(acao.pecaId()).isEqualTo(1);
+        assertThat(acao.cor()).isEqualTo("Preto");
+    }
+
+    @Test
+    void deveRetornarVariacoesDisponiveisDoProduto() {
         PecaVariacaoDTO variacaoComEstoque = new PecaVariacaoDTO();
         variacaoComEstoque.setCor("Preto");
         variacaoComEstoque.setTamanho("M");
