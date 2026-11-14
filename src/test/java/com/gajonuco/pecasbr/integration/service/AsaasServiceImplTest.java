@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -110,13 +111,13 @@ public class AsaasServiceImplTest {
     }
 
     @Test
-    void deveCriarLinkDePagamentoQuandoClienteForCriadoComSucesso(){
+    void deveCriarLinkDePagamentoQuandoClienteForCriadoComSucesso() {
         DTOClienteResponse clienteResponse =
-                new DTOClienteResponse("cus_123", "Maria Teste","12345678900","maria@teste.com");
+                new DTOClienteResponse("cus_123", "Maria Teste", "12345678900", "maria@teste.com");
         DTOResponse pagamentoResponse = new DTOResponse(
                 "sub_001",
                 "Plano Básico",
-                49.90,
+                new BigDecimal("49.90"),
                 true,
                 "RECURRENT",
                 "https://example.com/invoice/001",
@@ -136,19 +137,19 @@ public class AsaasServiceImplTest {
         when(postResponseSpec.toEntity(DTOResponse.class)).
                 thenReturn(ResponseEntity.ok(pagamentoResponse));
 
-        DTOResponse resultado = asaasService.createPaymentLink(150.0, cliente, 42);
+        DTOResponse resultado = asaasService.createPaymentLink(BigDecimal.valueOf(150.0), cliente, 42);
 
         assertNotNull(resultado);
-        verify(restClient,never()).get();
+        verify(restClient, never()).get();
 
     }
 
     @Test
-    void deveBuscarClienteExistenteQuandoCriacaoFalharMasCpfExistir(){
+    void deveBuscarClienteExistenteQuandoCriacaoFalharMasCpfExistir() {
         DTOResponse pagamentoResponse = new DTOResponse(
                 "sub_002",
                 "Plano Premium",
-                149.90,
+                new BigDecimal("149.90"),
                 true,
                 "RECURRENT",
                 "https://example.com/invoice/002",
@@ -162,7 +163,7 @@ public class AsaasServiceImplTest {
                 15,
                 false
         );
-        DTOClienteResponse clienteExistente=
+        DTOClienteResponse clienteExistente =
                 new DTOClienteResponse("cus_999", "Maria Teste", "12345678900", "maria@teste.com");
 
         // Simula falha ao tentar criar o cliente (ex: já existe, ou erro de validação do Asaas)
@@ -176,7 +177,7 @@ public class AsaasServiceImplTest {
         when(postResponseSpec.toEntity(DTOResponse.class))
                 .thenReturn(ResponseEntity.ok(pagamentoResponse));
 
-        DTOResponse resultado = asaasService.createPaymentLink(150.0, cliente, 42);
+        DTOResponse resultado = asaasService.createPaymentLink(BigDecimal.valueOf(150.0), cliente, 42);
 
         assertNotNull(resultado);
         verify(restClient, times(1)).get();
@@ -184,19 +185,17 @@ public class AsaasServiceImplTest {
     }
 
     @Test
-    void deveRetornarNuloQuandoClienteNaoTemCpfCriacaoFalha(){
+    void deveRetornarNuloQuandoClienteNaoTemCpfCriacaoFalha() {
         cliente.setCpf(null);
 
         lenient().when(postResponseSpec.toEntity(DTOClienteResponse.class)).
                 thenThrow(new RuntimeException("Erro qualquer"));
 
-        DTOResponse resultado = asaasService.createPaymentLink(150.0, cliente, 42);
+        DTOResponse resultado = asaasService.createPaymentLink(new BigDecimal("150.00"), cliente, 42);
         assertNull(resultado);
         // Sem CPF, nem tenta buscar o cliente existente
         verify(restClient, never()).get();
     }
-
-
 
 
 }

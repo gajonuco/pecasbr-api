@@ -27,6 +27,8 @@ import com.gajonuco.pecasbr.integration.dto.DTOPixRequest;
 import com.gajonuco.pecasbr.integration.dto.DTOResponse;
 import com.gajonuco.pecasbr.integration.service.IAsaasService;
 import com.gajonuco.pecasbr.model.Cliente;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -52,7 +54,7 @@ implements IAsaasService {
         this.restClient = restClientBuilder.build();
     }
 
-    public DTOResponse createPaymentLink(Double valor_total, Cliente cliente, Integer idPedido) {
+    public DTOResponse createPaymentLink(BigDecimal valor_total, Cliente cliente, Integer idPedido) {
         String customerId = resolverClienteAsaas(cliente);
         if (customerId == null) {
             return null;

@@ -16,8 +16,6 @@
  */
 package com.gajonuco.pecasbr.model;
 
-import com.gajonuco.pecasbr.model.FormaPagamento;
-import com.gajonuco.pecasbr.model.Pedido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,6 +24,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -42,13 +42,13 @@ public class RegistroFinanceiro {
     @Column(name="vencimento")
     private LocalDate vencimento;
     @Column(name="valor_bruto")
-    private double valorBruto;
+    private BigDecimal valorBruto;
     @Column(name="percent_retencao")
-    private double percentRetencao;
+    private BigDecimal percentRetencao;
     @Column(name="valor_retencao")
-    private double valorRetencao;
+    private BigDecimal valorRetencao;
     @Column(name="valor_liquido")
-    private double valorLiquido;
+    private BigDecimal valorLiquido;
     @Column(name="status")
     private int status;
     @ManyToOne
@@ -90,35 +90,35 @@ public class RegistroFinanceiro {
         this.vencimento = vencimento;
     }
 
-    public double getValorBruto() {
+    public BigDecimal getValorBruto() {
         return this.valorBruto;
     }
 
-    public void setValorBruto(double valorBruto) {
+    public void setValorBruto(BigDecimal valorBruto) {
         this.valorBruto = valorBruto;
     }
 
-    public double getPercentRetencao() {
+    public BigDecimal getPercentRetencao() {
         return this.percentRetencao;
     }
 
-    public void setPercentRetencao(double percentRetencao) {
+    public void setPercentRetencao(BigDecimal percentRetencao) {
         this.percentRetencao = percentRetencao;
     }
 
-    public double getValorRetencao() {
+    public BigDecimal getValorRetencao() {
         return this.valorRetencao;
     }
 
-    public void setValorRetencao(double valorRetencao) {
+    public void setValorRetencao(BigDecimal valorRetencao) {
         this.valorRetencao = valorRetencao;
     }
 
-    public double getValorLiquido() {
+    public BigDecimal getValorLiquido() {
         return this.valorLiquido;
     }
 
-    public void setValorLiquido(double valorLiquido) {
+    public void setValorLiquido(BigDecimal valorLiquido) {
         this.valorLiquido = valorLiquido;
     }
 

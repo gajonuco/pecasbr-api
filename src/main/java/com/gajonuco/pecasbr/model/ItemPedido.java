@@ -20,9 +20,6 @@
 package com.gajonuco.pecasbr.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.gajonuco.pecasbr.model.Peca;
-import com.gajonuco.pecasbr.model.PecaVariacao;
-import com.gajonuco.pecasbr.model.Pedido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +30,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name="tbl_itempedido")
 public class ItemPedido {
@@ -42,9 +41,9 @@ public class ItemPedido {
     @Column(name="qtdt_item", unique=true)
     private int qtdtItem;
     @Column(name="preco_unitario")
-    private double precoUnitario;
+    private BigDecimal precoUnitario;
     @Column(name="preco_total")
-    private double precoTotal;
+    private BigDecimal precoTotal;
     @Column(name="cor_escolhida", length=50)
     private String corEscolhida;
     @Column(name="tamanho_escolhido", length=20)
@@ -77,19 +76,19 @@ public class ItemPedido {
         this.qtdtItem = qtdtItem;
     }
 
-    public double getPrecoUnitario() {
+    public BigDecimal getPrecoUnitario() {
         return this.precoUnitario;
     }
 
-    public void setPrecoUnitario(double precoUnitario) {
+    public void setPrecoUnitario(BigDecimal precoUnitario) {
         this.precoUnitario = precoUnitario;
     }
 
-    public double getPrecoTotal() {
+    public BigDecimal getPrecoTotal() {
         return this.precoTotal;
     }
 
-    public void setPrecoTotal(double precoTotal) {
+    public void setPrecoTotal(BigDecimal precoTotal) {
         this.precoTotal = precoTotal;
     }
 

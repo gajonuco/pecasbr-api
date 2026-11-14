@@ -32,6 +32,8 @@ import com.gajonuco.pecasbr.model.*;
 import com.gajonuco.pecasbr.service.IClienteService;
 import com.gajonuco.pecasbr.service.IEnderecoService;
 import com.gajonuco.pecasbr.service.IPedidoService;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +87,7 @@ public class PedidoController {
         novo.setObservacoes(dados.observacoes());
         novo.setRetirar(dados.retirar() ? 1 : 0);
         novo.setValorFrete(dados.retirar() || dados.valorFrete() == null
-                ? 0
+                ? BigDecimal.ZERO
                 : dados.valorFrete());
         novo.setDataPedido(LocalDate.now());
         novo.setItensPedido(montarItens(dados.itens()));

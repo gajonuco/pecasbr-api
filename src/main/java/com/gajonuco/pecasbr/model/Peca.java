@@ -40,6 +40,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,10 +63,10 @@ public class Peca {
     private String linkFoto;
     @Column(name="preco_peca", nullable=false)
     @JsonProperty(value="preco")
-    private double preco;
+    private BigDecimal preco;
     @Column(name="preco_promocional", nullable=false)
     @JsonProperty(value="precoPromo")
-    private double precoPromo;
+    private BigDecimal precoPromo;
     @Column(name="disponivel")
     @JsonProperty(value="disponivel")
     private int disponivel;
@@ -188,19 +190,19 @@ public class Peca {
         this.linkFoto = linkFoto;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return this.preco;
     }
 
-    public void setPreco(double preco) {
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 
-    public double getPrecoPromo() {
+    public BigDecimal getPrecoPromo() {
         return this.precoPromo;
     }
 
-    public void setPrecoPromo(double precoPromo) {
+    public void setPrecoPromo(BigDecimal precoPromo) {
         this.precoPromo = precoPromo;
     }
 
@@ -251,7 +253,6 @@ public class Peca {
     }
 
     public void setEstoqueCritico(Integer estoqueCritico) {
-        System.out.println("\ud83d\udd25 SETTER CHAMADO - setEstoqueCritico: " + estoqueCritico);
         this.estoqueCritico = estoqueCritico;
     }
 

@@ -2,12 +2,14 @@ package com.gajonuco.pecasbr.dto;
 
 import com.gajonuco.pecasbr.model.Peca;
 
+import java.math.BigDecimal;
+
 public record PecaConsultaDTO(
         Integer id,
         String nome,
         String detalhe,
-        double preco,
-        double precoPromo,
+        BigDecimal preco,
+        BigDecimal precoPromo,
         boolean emPromocao,
         String categoria,
         boolean disponivel,
@@ -17,7 +19,7 @@ public record PecaConsultaDTO(
         String imagemPrincipal
 ) {
     public static PecaConsultaDTO from (Peca peca){
-        boolean emPromocao = peca.getPrecoPromo() > 0 && peca.getPrecoPromo() < peca.getPreco();
+        boolean emPromocao = peca.getPrecoPromo().compareTo(BigDecimal.ZERO) > 0 && peca.getPrecoPromo().compareTo(peca.getPreco()) < 0;
 
         return new PecaConsultaDTO(
                 peca.getId(),

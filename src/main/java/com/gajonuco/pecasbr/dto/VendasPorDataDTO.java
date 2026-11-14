@@ -6,22 +6,23 @@
  */
 package com.gajonuco.pecasbr.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class VendasPorDataDTO {
-    private Double total;
+    private BigDecimal total;
     private LocalDate data;
 
-    public VendasPorDataDTO(Double total, LocalDate data) {
+    public VendasPorDataDTO(BigDecimal total, LocalDate data) {
         this.total = total;
         this.data = data;
     }
 
-    public Double getTotal() {
+    public BigDecimal getTotal() {
         return this.total;
     }
 
-    public void setTotal(Double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 

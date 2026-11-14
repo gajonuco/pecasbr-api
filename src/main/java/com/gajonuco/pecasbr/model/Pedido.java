@@ -1,6 +1,8 @@
 package com.gajonuco.pecasbr.model;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class Pedido {
     private LocalDate dataPedido;
 
     @Column(name = "valor_total")
-    private double valorTotal;
+    private BigDecimal valorTotal;
 
     @Column(name = "observacoes", length = 500)
     private String observacoes;
@@ -37,7 +39,7 @@ public class Pedido {
     private int status;
 
     @Column(name = "valor_frete")
-    private double valorFrete;
+    private BigDecimal valorFrete;
 
     @Column(name = "retirar")
     private int retirar;
@@ -67,7 +69,7 @@ public class Pedido {
         super();
     }
 
-    public Pedido(int id, LocalDate data, String nomeCliente, double valorTotal, double frete, int retirar,
+    public Pedido(int id, LocalDate data, String nomeCliente, BigDecimal valorTotal, BigDecimal frete, int retirar,
             String observacao, int status) {
         this.id = id;
         this.dataPedido = data;
@@ -97,11 +99,11 @@ public class Pedido {
         this.dataPedido = dataPedido;
     }
 
-    public double getValorTotal() {
+    public BigDecimal getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(double valorTotal) {
+    public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
 
@@ -137,11 +139,11 @@ public class Pedido {
         this.itensPedido = itensPedido;
     }
 
-    public double getValorFrete() {
+    public BigDecimal getValorFrete() {
         return valorFrete;
     }
 
-    public void setValorFrete(double valorFrete) {
+    public void setValorFrete(BigDecimal valorFrete) {
         this.valorFrete = valorFrete;
     }
 
