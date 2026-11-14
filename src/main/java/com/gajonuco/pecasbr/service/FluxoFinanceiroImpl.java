@@ -22,6 +22,9 @@ import com.gajonuco.pecasbr.model.FormaPagamento;
 import com.gajonuco.pecasbr.model.Pedido;
 import com.gajonuco.pecasbr.model.RegistroFinanceiro;
 import com.gajonuco.pecasbr.service.IFluxoFinanceiroService;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,22 +38,54 @@ implements IFluxoFinanceiroService {
 
     public int gerarFluxoFinanceiro(RegistroFinanceiroDTO registro) {
         LocalDate vencimento = LocalDate.now();
-        LocalDate dataParcela = LocalDate.of(vencimento.getYear(), vencimento.getMonth(), registro.getDiaVencimento());
+
+        LocalDate dataParcela = LocalDate.of(
+                vencimento.getYear(),
+                vencimento.getMonth(),
+                registro.getDiaVencimento()
+        );
+
+        BigDecimal totalPedido = registro.getPedido().getValorTotal();
+        BigDecimal retencao = registro.getFormaPagamento().getRetencao();
+
+        BigDecimal quantidadeParcelas = BigDecimal.valueOf(registro.getTotalParcelas());
+
         for (int parcela = 1; parcela <= registro.getTotalParcelas(); ++parcela) {
+
             RegistroFinanceiro r = new RegistroFinanceiro();
+
             r.setForma(registro.getFormaPagamento());
             r.setNumParcela(parcela);
             r.setTotalParcelas(registro.getTotalParcelas());
-            r.setPercentRetencao(registro.getFormaPagamento().getRetencao());
-            r.setValorBruto(registro.getPedido().getValorTotal() / (double)registro.getTotalParcelas());
-            r.setValorRetencao(r.getValorBruto() * r.getPercentRetencao() / 100.0);
+            r.setPercentRetencao(retencao);
+
+            BigDecimal valorBruto = totalPedido.divide(
+                    quantidadeParcelas,
+                    2,
+                    RoundingMode.HALF_UP
+            );
+
+            r.setValorBruto(valorBruto);
+
+            BigDecimal valorRetencao = valorBruto
+                    .multiply(retencao)
+                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+            r.setValorRetencao(valorRetencao);
+
             r.setVencimento(dataParcela);
             dataParcela = dataParcela.plusMonths(1L);
-            r.setValorLiquido(registro.getPedido().getValorTotal() * (1.0 - registro.getFormaPagamento().getRetencao() / 100.0) / (double)registro.getTotalParcelas());
+
+            BigDecimal valorLiquido = valorBruto.subtract(valorRetencao);
+
+            r.setValorLiquido(valorLiquido);
+
             r.setStatus(0);
             r.setPedido(registro.getPedido());
+
             this.dao.save(r);
         }
+
         return registro.getTotalParcelas();
     }
 

@@ -6,16 +6,18 @@
  */
 package com.gajonuco.pecasbr.dto;
 
+import java.math.BigDecimal;
+
 public class ProdutoMaisPedidoDTO {
     private Integer idProduto;
     private String nomePeca;
     private String linkFoto;
-    private double precoPeca;
-    private double precoPromo;
+    private BigDecimal precoPeca;
+    private BigDecimal precoPromo;
     private Long quantidadeTotal;
-    private Double valorTotal;
+    private BigDecimal valorTotal;
 
-    public ProdutoMaisPedidoDTO(Integer idProduto, String nomePeca, String linkFoto, double precoPeca, double precoPromo, Long quantidadeTotal, Double valorTotal) {
+    public ProdutoMaisPedidoDTO(Integer idProduto, String nomePeca, String linkFoto, BigDecimal precoPeca, BigDecimal precoPromo, Long quantidadeTotal, BigDecimal valorTotal) {
         this.idProduto = idProduto;
         this.nomePeca = nomePeca;
         this.linkFoto = linkFoto;
@@ -49,19 +51,19 @@ public class ProdutoMaisPedidoDTO {
         this.linkFoto = linkFoto;
     }
 
-    public double getPrecoPeca() {
+    public BigDecimal getPrecoPeca() {
         return this.precoPeca;
     }
 
-    public void setPrecoPeca(double precoPeca) {
+    public void setPrecoPeca(BigDecimal precoPeca) {
         this.precoPeca = precoPeca;
     }
 
-    public double getPrecoPromo() {
+    public BigDecimal getPrecoPromo() {
         return this.precoPromo;
     }
 
-    public void setPrecoPromo(double precoPromo) {
+    public void setPrecoPromo(BigDecimal precoPromo) {
         this.precoPromo = precoPromo;
     }
 
@@ -73,11 +75,11 @@ public class ProdutoMaisPedidoDTO {
         this.quantidadeTotal = quantidadeTotal;
     }
 
-    public Double getValorTotal() {
+    public BigDecimal getValorTotal() {
         return this.valorTotal;
     }
 
-    public void setValorTotal(Double valorTotal) {
+    public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
 }

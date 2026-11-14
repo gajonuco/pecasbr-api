@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,7 +73,7 @@ public class PedidoServiceImplTest {
 
     // ---------- helpers de fixture ----------
 
-    private Peca criarPeca(int quantidadeEstoque, int estoqueMinimo, int estoqueCritico, double preco, double precoPromo) {
+    private Peca criarPeca(int quantidadeEstoque, int estoqueMinimo, int estoqueCritico, BigDecimal preco, BigDecimal precoPromo) {
         Peca peca = new Peca();
         peca.setId(1);
         peca.setNome("Peça Teste");
@@ -106,7 +107,7 @@ public class PedidoServiceImplTest {
         return new DTOResponse(
                 id,
                 "Plano Teste",
-                99.9,
+                new BigDecimal("99.9"),
                 true,
                 "RECURRENT",
                 invoiceUrl,
@@ -128,12 +129,12 @@ public class PedidoServiceImplTest {
 
     @Test
     void deveInserirPedidoComSucessoQuandoEstoqueForSuficiente() {
-        Peca peca = criarPeca(50, 10, 3, 100.0, 0);
+        Peca peca = criarPeca(50, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO);
         ItemPedido item = criarItem(peca, 5);
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
+        when(asaasService.createPaymentLink(any(BigDecimal.class), any(Cliente.class), anyInt()))
                 .thenReturn(criarDtoResponse("pay_abc", "https://asaas.com/i/abc"));
 
         Pedido resultado = pedidoService.inserirPedido(novo);
@@ -143,31 +144,31 @@ public class PedidoServiceImplTest {
         assertEquals("https://asaas.com/i/abc", resultado.getLinkPagamento());
         assertEquals("pay_abc", resultado.getAsaasPaymentId());
         assertEquals(45, peca.getQuantidadeEstoque()); // 50 - 5
-        assertEquals(100.0, item.getPrecoUnitario());
-        assertEquals(500.0, item.getPrecoTotal());
+        assertEquals(new BigDecimal("100.00"), item.getPrecoUnitario());
+        assertEquals(new BigDecimal("500.00"), item.getPrecoTotal());
         verify(pecaDAO, times(1)).save(peca);
         verify(dao, times(2)).save(novo); // salva antes e depois de gerar o link
     }
 
     @Test
     void deveUsarPrecoPromocionalQuandoDisponivel() {
-        Peca peca = criarPeca(50, 10, 3, 100.0, 79.90);
+        Peca peca = criarPeca(50, 10, 3, new BigDecimal("100.00"), new BigDecimal("79.90"));
         ItemPedido item = criarItem(peca, 2);
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
+        when(asaasService.createPaymentLink(any(BigDecimal.class), any(Cliente.class), anyInt()))
                 .thenReturn(criarDtoResponse("pay_x", "https://asaas.com/i/x"));
 
         pedidoService.inserirPedido(novo);
 
-        assertEquals(79.90, item.getPrecoUnitario());
-        assertEquals(159.80, item.getPrecoTotal(), 0.001);
+        assertEquals(new BigDecimal("79.90"), item.getPrecoUnitario());
+        assertEquals(new BigDecimal("159.80"), item.getPrecoTotal());
     }
 
     @Test
     void deveRetornarNuloSemAlterarEstoqueQuandoQuantidadeForMaiorQueODisponivel() {
-        Peca peca = criarPeca(2, 10, 3, 100.0, 0);
+        Peca peca = criarPeca(2, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO);
         ItemPedido item = criarItem(peca, 5);
         Pedido novo = criarPedidoComItens(item);
 
@@ -179,19 +180,21 @@ public class PedidoServiceImplTest {
         assertEquals(2, peca.getQuantidadeEstoque()); // estoque não foi tocado
         verify(pecaDAO, never()).save(any());
         verify(dao, never()).save(any());
-        verify(asaasService, never()).createPaymentLink(anyDouble(), any(), anyInt());
+        verify(asaasService, never()).createPaymentLink(any(BigDecimal.class), any(), anyInt());
     }
 
     @Test
     void deveMarcarPecaComoIndisponivelQuandoEstoqueZerarAposVenda() {
-        Peca peca = criarPeca(5, 10, 3, 100.0, 0);
+        Peca peca = criarPeca(5, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO);
         ItemPedido item = criarItem(peca, 5); // vende exatamente o que sobrou
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
-                .thenReturn(criarDtoResponse("pay_y", "https://asaas.com/i/y"));
-
+        when(asaasService.createPaymentLink(
+                any(BigDecimal.class),
+                any(Cliente.class),
+                anyInt()
+        )).thenReturn(criarDtoResponse("pay_abc", "https://asaas.com/i/abc"));
         pedidoService.inserirPedido(novo);
 
         assertEquals(0, peca.getQuantidadeEstoque());
@@ -203,12 +206,12 @@ public class PedidoServiceImplTest {
 
     @Test
     void deveNotificarEstoqueBaixoQuandoTransicionarDeNormalParaBaixo() {
-        Peca peca = criarPeca(15, 10, 3, 100.0, 0); // NORMAL (15 > 10)
+        Peca peca = criarPeca(15, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO); // NORMAL (15 > 10)
         ItemPedido item = criarItem(peca, 6); // fica em 9 -> BAIXO (<=10 e >3)
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
+        when(asaasService.createPaymentLink(any(BigDecimal.class), any(Cliente.class), anyInt()))
                 .thenReturn(criarDtoResponse("pay_z", "https://asaas.com/i/z"));
 
         pedidoService.inserirPedido(novo);
@@ -221,12 +224,12 @@ public class PedidoServiceImplTest {
 
     @Test
     void deveNotificarEstoqueCriticoQuandoTransicionarDeBaixoParaCritico() {
-        Peca peca = criarPeca(5, 10, 3, 100.0, 0); // BAIXO (5 <=10 e >3)
+        Peca peca = criarPeca(5, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO); // BAIXO (5 <=10 e >3)
         ItemPedido item = criarItem(peca, 3); // fica em 2 -> CRITICO (<=3 e >0)
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
+        when(asaasService.createPaymentLink(any(BigDecimal.class), any(Cliente.class), anyInt()))
                 .thenReturn(criarDtoResponse("pay_w", "https://asaas.com/i/w"));
 
         pedidoService.inserirPedido(novo);
@@ -237,12 +240,12 @@ public class PedidoServiceImplTest {
 
     @Test
     void naoDeveNotificarQuandoStatusDeEstoqueNaoMudarDeCategoria() {
-        Peca peca = criarPeca(50, 10, 3, 100.0, 0); // NORMAL
+        Peca peca = criarPeca(50, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO); // NORMAL
         ItemPedido item = criarItem(peca, 5); // fica em 45, continua NORMAL
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
+        when(asaasService.createPaymentLink(any(BigDecimal.class), any(Cliente.class), anyInt()))
                 .thenReturn(criarDtoResponse("pay_v", "https://asaas.com/i/v"));
 
         pedidoService.inserirPedido(novo);
@@ -257,12 +260,12 @@ public class PedidoServiceImplTest {
         // genérico — mas o pedido e o desconto de estoque JÁ foram salvos
         // antes disso. O método retorna null como se nada tivesse acontecido,
         // porém o pedido continua no banco sem link de pagamento (órfão).
-        Peca peca = criarPeca(50, 10, 3, 100.0, 0);
+        Peca peca = criarPeca(50, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO);
         ItemPedido item = criarItem(peca, 5);
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.of(peca));
-        when(asaasService.createPaymentLink(anyDouble(), any(Cliente.class), anyInt()))
+        when(asaasService.createPaymentLink(any(BigDecimal.class), any(Cliente.class), anyInt()))
                 .thenReturn(null);
 
         Pedido resultado = pedidoService.inserirPedido(novo);
@@ -275,7 +278,7 @@ public class PedidoServiceImplTest {
 
     @Test
     void deveRetornarNuloQuandoPecaDoItemNaoForEncontrada() {
-        ItemPedido item = criarItem(criarPeca(50, 10, 3, 100.0, 0), 5);
+        ItemPedido item = criarItem(criarPeca(50, 10, 3, new BigDecimal("100.00"), BigDecimal.ZERO), 5);
         Pedido novo = criarPedidoComItens(item);
 
         when(pecaDAO.findById(1)).thenReturn(Optional.empty());
@@ -508,8 +511,8 @@ public class PedidoServiceImplTest {
 
     @Test
     void atualizarPedidoDeveVincularItensAoPedidoAntesDeSalvar() {
-        ItemPedido item1 = criarItem(criarPeca(10, 5, 2, 50.0, 0), 1);
-        ItemPedido item2 = criarItem(criarPeca(10, 5, 2, 50.0, 0), 1);
+        ItemPedido item1 = criarItem(criarPeca(10, 5, 2, new BigDecimal("50.00"), BigDecimal.ZERO), 1);
+        ItemPedido item2 = criarItem(criarPeca(10, 5, 2, new BigDecimal("50.00"), BigDecimal.ZERO), 1);
         Pedido pedido = criarPedidoComItens(item1, item2);
 
         Pedido resultado = pedidoService.atualizarPedido(pedido);

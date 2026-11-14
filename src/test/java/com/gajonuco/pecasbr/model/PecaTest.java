@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class PecaTest {
     private Peca criarPeca(int quantidadeEstoque) {
         Peca p = new Peca();
         p.setNome("Vestido Teste");
-        p.setPreco(100.0);
+        p.setPreco(BigDecimal.valueOf(100.0));
         p.setEstoqueMinimo(10);
         p.setEstoqueCritico(3);
         p.setQuantidadeEstoque(quantidadeEstoque);

@@ -11,7 +11,9 @@ package com.gajonuco.pecasbr.integration.service;
 import com.gajonuco.pecasbr.integration.dto.DTOResponse;
 import com.gajonuco.pecasbr.model.Cliente;
 
+import java.math.BigDecimal;
+
 public interface IAsaasService {
-    public DTOResponse createPaymentLink(Double var1, Cliente var2, Integer var3);
+    public DTOResponse createPaymentLink(BigDecimal var1, Cliente var2, Integer var3);
 }
 

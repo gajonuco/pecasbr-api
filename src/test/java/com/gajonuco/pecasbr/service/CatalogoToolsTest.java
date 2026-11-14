@@ -6,6 +6,7 @@ import com.gajonuco.pecasbr.model.Peca;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,8 +57,8 @@ class CatalogoToolsTest {
         peca.setId(1);
         peca.setNome("Camisa Teste");
         peca.setDetalhe("Camisa de algodão");
-        peca.setPreco(99.9);
-        peca.setPrecoPromo(79.9);
+        peca.setPreco(BigDecimal.valueOf(99.9));
+        peca.setPrecoPromo(BigDecimal.valueOf(79.9));
         peca.setDisponivel(1);
         peca.setProntaEntrega(1);
         peca.setDestaque(0);

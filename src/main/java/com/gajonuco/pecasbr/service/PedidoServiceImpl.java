@@ -1,5 +1,6 @@
 package com.gajonuco.pecasbr.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,20 +38,20 @@ public class PedidoServiceImpl implements IPedidoService {
 
     @Autowired
     private IAsaasService asaasService;
-    
+
     @Autowired
-    private NotificationService notificationService; 
+    private NotificationService notificationService;
 
     @Override
     public Pedido inserirPedido(Pedido novo) {
         // TODO Auto-generated method stub
         try {
-            double total = 0.0;
+            BigDecimal total = BigDecimal.valueOf(0.0);
             /* aqui em tese vem a regra de negócios */
             for (ItemPedido item : novo.getItensPedido()) {
                 Peca peca = pecaDAO.findById(item.getPeca().getId()).orElse(null);
 
-                if (peca ==  null || !peca.podeVender(item.getQtdtItem())) {
+                if (peca == null || !peca.podeVender(item.getQtdtItem())) {
                     return null;
                 }
                 int qtdAnterior = peca.getQuantidadeEstoque();
@@ -64,23 +65,37 @@ public class PedidoServiceImpl implements IPedidoService {
 
                 pecaDAO.save(peca);
 
-                double precoUnitario = peca.getPrecoPromo() != 0
+                BigDecimal precoUnitario = peca.getPrecoPromo().compareTo(BigDecimal.ZERO) != 0
                         ? peca.getPrecoPromo()
                         : peca.getPreco();
                 item.setPrecoUnitario(precoUnitario);
-                item.setPrecoTotal(precoUnitario * item.getQtdtItem());
-                total += item.getPrecoTotal();
+                item.setPrecoTotal(
+                        precoUnitario.multiply(BigDecimal.valueOf(item.getQtdtItem()))
+                );
+                total = total.add(item.getPrecoTotal());
             }
             /* ---- */
             for (ItemPedido item : novo.getItensPedido()) {
                 item.setPedido(novo);
             }
             novo.setStatus(Pedido.NOVO_PEDIDO);
-            novo.setValorTotal(total + novo.getValorFrete());
+            BigDecimal valorFrete = novo.getValorFrete() != null
+                    ? novo.getValorFrete()
+                    : BigDecimal.ZERO;
 
+            novo.setValorTotal(total.add(valorFrete));
             dao.save(novo);
 
-            DTOResponse dtoResponse = asaasService.createPaymentLink(novo.getValorTotal(), novo.getCliente(), novo.getId());
+            DTOResponse dtoResponse = asaasService.createPaymentLink(
+                    novo.getValorTotal(),
+                    novo.getCliente(),
+                    novo.getId()
+            );
+
+            if (dtoResponse == null) {
+                return null;
+            }
+
             novo.setLinkPagamento(dtoResponse.invoiceUrl());
             novo.setAsaasPaymentId(dtoResponse.id());
 
@@ -92,17 +107,17 @@ public class PedidoServiceImpl implements IPedidoService {
 
             return novo;
         } catch (Exception ex) {
-            // TODO: handle exception
             ex.printStackTrace();
             return null;
         }
     }
-        /**
+
+    /**
      * Verifica se o estoque mudou de status e envia notificação
      */
     private void verificarENotificarEstoque(Peca peca, Integer estoqueAnterior) {
         Integer estoqueAtual = peca.getQuantidadeEstoque();
-        
+
         // Se não mudou, não faz nada
         if (estoqueAtual.equals(estoqueAnterior)) {
             return;
@@ -181,7 +196,7 @@ public class PedidoServiceImpl implements IPedidoService {
     @Override
     public List<Pedido> buscarPorCliente(Cliente cliente) {
         return dao.findAllByClienteOrderByIdDesc(cliente);
-  }
+    }
 
     @Override
     public ArrayList<Pedido> filtrarPorVariosCriterios(FiltroPedidoDTO filtro) {
@@ -196,15 +211,11 @@ public class PedidoServiceImpl implements IPedidoService {
             System.out.println("primeira condição");
             // return dao.findAllByOrderByDataPedidoDesc();
             return dao.findAllByStatusNotOrderByDataPedidoDesc();
-        }
-
-        else if (!temData && temNome && !temStatus) {
+        } else if (!temData && temNome && !temStatus) {
 
             ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());
             return dao.findAllByClienteIn(clientes);
-        }
-
-        else if (!temData && !temNome && temStatus) {
+        } else if (!temData && !temNome && temStatus) {
 
             System.out.println("segunda condição");
             return dao.findAllByStatusInOrderByIdDesc(this.getStatus(filtro));
@@ -228,9 +239,7 @@ public class PedidoServiceImpl implements IPedidoService {
             ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());
             return dao.findAllByDataPedidoBetweenAndClienteInOrderByIdDesc(filtro.getDataInicio(), filtro.getDataFim(),
                     clientes);
-        }
-
-        else if (temData && temNome && temStatus) {
+        } else if (temData && temNome && temStatus) {
 
             System.out.println("séptima condição");
             ArrayList<Cliente> clientes = clienteDao.findByNomeContaining(filtro.getNome());

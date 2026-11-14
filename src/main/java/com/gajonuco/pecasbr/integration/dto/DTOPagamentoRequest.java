@@ -1,5 +1,6 @@
 package com.gajonuco.pecasbr.integration.dto;
 
 import com.gajonuco.pecasbr.model.Cliente;
+import java.math.BigDecimal;
 
-public record DTOPagamentoRequest(Double valorTotal, Cliente cliente, Integer idPedido) {}
+public record DTOPagamentoRequest(BigDecimal valorTotal, Cliente cliente, Integer idPedido) {}

@@ -6,6 +6,7 @@
  */
 package com.gajonuco.pecasbr.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ItemFinanceiroDTO {
@@ -16,15 +17,15 @@ public class ItemFinanceiroDTO {
     private int numParcela;
     private int totalParcelas;
     private LocalDate dataVencimento;
-    private double valorBruto;
+    private BigDecimal valorBruto;
     private int idFormaPagamento;
     private String formaPagamento;
-    private double percentRetencao;
-    private double valorRetencao;
-    private double valorReceber;
+    private BigDecimal percentRetencao;
+    private BigDecimal valorRetencao;
+    private BigDecimal valorReceber;
     private int status;
 
-    public ItemFinanceiroDTO(int numSeq, int idPedido, String nomeCliente, String telefone, int numParcela, int totalParcelas, LocalDate dataVencimento, double valorBruto, int idForma, String formaPagamento, double percentRetencao, double valorRetencao, double valorReceber, int status) {
+    public ItemFinanceiroDTO(int numSeq, int idPedido, String nomeCliente, String telefone, int numParcela, int totalParcelas, LocalDate dataVencimento, BigDecimal valorBruto, int idForma, String formaPagamento, BigDecimal percentRetencao, BigDecimal valorRetencao, BigDecimal valorReceber, int status) {
         this.numSeq = numSeq;
         this.idPedido = idPedido;
         this.nomeCliente = nomeCliente;
@@ -97,11 +98,11 @@ public class ItemFinanceiroDTO {
         this.dataVencimento = dataVencimento;
     }
 
-    public double getValorBruto() {
+    public BigDecimal getValorBruto() {
         return this.valorBruto;
     }
 
-    public void setValorBruto(double valorBruto) {
+    public void setValorBruto(BigDecimal valorBruto) {
         this.valorBruto = valorBruto;
     }
 
@@ -113,27 +114,27 @@ public class ItemFinanceiroDTO {
         this.formaPagamento = formaPagamento;
     }
 
-    public double getPercentRetencao() {
+    public BigDecimal getPercentRetencao() {
         return this.percentRetencao;
     }
 
-    public void setPercentRetencao(double percentRetencao) {
+    public void setPercentRetencao(BigDecimal percentRetencao) {
         this.percentRetencao = percentRetencao;
     }
 
-    public double getValorRetencao() {
+    public BigDecimal getValorRetencao() {
         return this.valorRetencao;
     }
 
-    public void setValorRetencao(double valorRetencao) {
+    public void setValorRetencao(BigDecimal valorRetencao) {
         this.valorRetencao = valorRetencao;
     }
 
-    public double getValorReceber() {
+    public BigDecimal getValorReceber() {
         return this.valorReceber;
     }
 
-    public void setValorReceber(double valorReceber) {
+    public void setValorReceber(BigDecimal valorReceber) {
         this.valorReceber = valorReceber;
     }
 

@@ -19,6 +19,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name="tbl_frete")
 public class Frete {
@@ -31,7 +33,7 @@ public class Frete {
     @Column(name="descricao", length=100)
     private String descricao;
     @Column(name="valor")
-    private double valor;
+    private BigDecimal valor;
     @Column(name="disponivel")
     private int disponivel;
 
@@ -63,11 +65,11 @@ public class Frete {
         this.descricao = descricao;
     }
 
-    public double getValor() {
+    public BigDecimal getValor() {
         return this.valor;
     }
 
-    public void setValor(double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 

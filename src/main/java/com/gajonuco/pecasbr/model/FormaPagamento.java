@@ -19,6 +19,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name="tbl_formapgto")
 public class FormaPagamento {
@@ -31,7 +33,7 @@ public class FormaPagamento {
     @Column(name="visivel", nullable=false)
     private int visivel;
     @Column(name="retencao", nullable=false)
-    private double retencao;
+    private BigDecimal retencao;
 
     public int getNumSeq() {
         return this.numSeq;
@@ -57,11 +59,11 @@ public class FormaPagamento {
         this.visivel = visivel;
     }
 
-    public double getRetencao() {
+    public BigDecimal getRetencao() {
         return this.retencao;
     }
 
-    public void setRetencao(double retencao) {
+    public void setRetencao(BigDecimal retencao) {
         this.retencao = retencao;
     }
 }
