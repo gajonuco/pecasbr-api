@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -67,6 +69,44 @@ public class Pedido {
 
     public Pedido() {
         super();
+    }
+
+    public static Pedido novoPedido(
+            Cliente cliente,
+            Endereco enderecoEntrega,
+            boolean retirar,
+            BigDecimal valorFrete,
+            String observacoes,
+            List<ItemPedido> itens){
+
+        Objects.requireNonNull(cliente, "O cliente é obrigatório.");
+        Objects.requireNonNull(itens, "A lista de itens é obrigatória.");
+
+        if (!retirar) {
+            Objects.requireNonNull(enderecoEntrega,
+                    "O endereço de entrega é obrigatório para pedidos com entrega.");
+        }
+
+        Pedido pedido = new Pedido();
+
+        pedido.cliente = cliente;
+        pedido.enderecoEntrega = retirar ? null : enderecoEntrega;
+        pedido.observacoes = observacoes;
+        pedido.retirar = retirar ? 1 : 0;
+        pedido.valorFrete = retirar || valorFrete == null
+                ? BigDecimal.ZERO
+                : valorFrete;
+        pedido.dataPedido = LocalDate.now();
+
+        pedido.itensPedido = new ArrayList<>();
+
+        for (ItemPedido item : itens) {
+            Objects.requireNonNull(item, "A lista não pode conter itens nulos.");
+
+            item.setPedido(pedido);
+            pedido.itensPedido.add(item);
+        }
+        return pedido;
     }
 
     public Pedido(int id, LocalDate data, String nomeCliente, BigDecimal valorTotal, BigDecimal frete, int retirar,

@@ -33,13 +33,11 @@ import com.gajonuco.pecasbr.service.IClienteService;
 import com.gajonuco.pecasbr.service.IEnderecoService;
 import com.gajonuco.pecasbr.service.IPedidoService;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -81,16 +79,14 @@ public class PedidoController {
             }
         }
 
-        Pedido novo = new Pedido();
-        novo.setCliente(cliente);
-        novo.setEnderecoEntrega(enderecoEntrega);
-        novo.setObservacoes(dados.observacoes());
-        novo.setRetirar(dados.retirar() ? 1 : 0);
-        novo.setValorFrete(dados.retirar() || dados.valorFrete() == null
-                ? BigDecimal.ZERO
-                : dados.valorFrete());
-        novo.setDataPedido(LocalDate.now());
-        novo.setItensPedido(montarItens(dados.itens()));
+        Pedido novo = Pedido.novoPedido(
+          cliente,
+          enderecoEntrega,
+          dados.retirar(),
+          dados.valorFrete(),
+          dados.observacoes(),
+          montarItens(dados.itens())
+        );
 
         Pedido criado = service.inserirPedido(novo);
         if (criado == null) {
